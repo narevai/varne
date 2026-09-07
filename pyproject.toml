@@ -75,10 +75,17 @@ testpaths = ["tests"]
 asyncio_mode = "auto"
 main_file = "src/varne/app.py"
 addopts = "-p nicegui.testing.user_plugin"
-
 filterwarnings = [
     "ignore:fetch_arrow_table\\(\\) is deprecated, use to_arrow_table\\(\\) instead.:DeprecationWarning",
 ]
+
+
+[tool.basedpyright]
+reportUnusedCallResult = false
+reportUnusedImport = false
+reportUnknownMemberType = false
+useLibraryCodeForTypes = true
+reportMissingTypeStubs = false
 
 [dependency-groups]
 dev = [
