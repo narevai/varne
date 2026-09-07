@@ -4,9 +4,13 @@
 [![Latest tag](https://img.shields.io/github/v/tag/narevai/varne?label=latest)](https://github.com/narevai/varne/tags)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 
-## Development log
-1. [YouTube - Intro and plans for V1](https://youtube.com/live/obq8IIN0epY)
-2. [Youtube - Basic UI 1](https://youtube.com/live/50ahIxMfuJU?feature=share), [YouTube - Basic UI 2](https://www.youtube.com/watch?v=ZE-k7V4Ymk8)
+## Devlog
+| YouTube                                                          | PR                                                |
+| ---------------------------------------------------------------- | ------------------------------------------------- |
+| [Intro and plans for V1](https://youtube.com/live/obq8IIN0epY)   | N/A                                               |
+| [Basic UI 1](https://youtube.com/live/50ahIxMfuJU?feature=share) | [#207](https://github.com/narevai/varne/pull/207) |
+| [Basic UI 2](https://www.youtube.com/watch?v=ZE-k7V4Ymk8)        | [#208](https://github.com/narevai/varne/pull/208) |
+| [Data pipeline](https://youtu.be/KRvkaM2O2ho)                    | [#212](https://github.com/narevai/varne/pull/212) |
 
 ## Run
 
