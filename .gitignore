@@ -4,6 +4,7 @@
 .pnpm-store
 .ruff_cache/
 data/
+config/
 logs/
 temp/
 *.egg-info/

@@ -2,7 +2,6 @@ from functools import lru_cache
 
 import httpx2 as httpx
 
-from varne.config import get_settings
 from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.db.types import DatabaseBackend
@@ -10,6 +9,7 @@ from varne.http import create_http_client
 from varne.providers.base import ProviderService
 from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
 from varne.providers.jsonplaceholder.service import JsonPlaceholderService
+from varne.settings import get_settings
 
 
 @lru_cache
