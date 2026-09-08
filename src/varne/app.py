@@ -1,7 +1,8 @@
 import sys
 
 from loguru import logger
-from nicegui import app, ui
+from nicegui import app as nicegui_app
+from nicegui import ui
 
 from varne.api.v1 import router
 from varne.config import get_settings
@@ -14,7 +15,7 @@ settings = get_settings()
 logger.remove()
 logger.add(sys.stderr, level=settings.log_level)
 
-
+app = nicegui_app
 app.include_router(router, prefix="/api/v1")
 
 

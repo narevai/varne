@@ -1,4 +1,7 @@
-def test_health_endpoint(client):
+import httpx2 as httpx
+
+
+def test_health_endpoint(client: httpx.Client):
     response = client.get("/api/v1/health")
     assert response.status_code == 200
 

@@ -9,6 +9,8 @@ from varne.providers.types import RowRaw, RowStaging
 
 
 class ProviderClient(ABC):
+    http: httpx.Client
+
     def __init__(
         self,
         http: httpx.Client,
@@ -22,6 +24,10 @@ class ProviderClient(ABC):
 
 
 class ProviderService(ABC):
+    db: ibis.BaseBackend
+    raw_table: TableRaw
+    staging_table: TableStaging
+
     def __init__(self, db: ibis.BaseBackend) -> None:
         self.db = db
         self.raw_table = TableRaw()

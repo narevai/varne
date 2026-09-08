@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from typing import override
 
 import ibis
 from loguru import logger
@@ -10,10 +11,13 @@ from varne.providers.types import RowRaw, RowStaging
 
 
 class JsonPlaceholderService(ProviderService):
+    client: JsonPlaceholderClient
+
     def __init__(self, db: ibis.BaseBackend, client: JsonPlaceholderClient):
         super().__init__(db)
         self.client = client
 
+    @override
     def fetch_and_store(self) -> None:
         posts_payload: str = self.client.fetch_posts()
         posts_rows = [
