@@ -4,6 +4,8 @@ from typing import override
 import ibis
 import ibis.expr.datatypes as dt
 
+from varne.db.types import DatabaseBackend
+
 
 class Table(ABC):
     @property
@@ -48,7 +50,7 @@ class TableStaging(Table):
 TABLES: list[Table] = [TableRaw(), TableStaging()]
 
 
-def create_tables(db: ibis.BaseBackend) -> None:
+def create_tables(db: DatabaseBackend) -> None:
     existing_tables = set(db.list_tables())
 
     for table in TABLES:
