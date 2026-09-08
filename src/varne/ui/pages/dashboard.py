@@ -6,7 +6,7 @@ from nicegui import run, ui
 
 from varne.analytics.usage import get_usage_by_id
 from varne.db.types import DatabaseBackend
-from varne.dependencies import get_db, get_json_placeholder_service
+from varne.dependencies import get_config_manager, get_db, get_json_placeholder_service
 from varne.ui.layout import create_layout
 
 
@@ -21,8 +21,17 @@ def get_usage_rows(db: DatabaseBackend) -> list[dict[str, object]]:
 async def page_dashboard() -> None:
     layout = create_layout()
     db = get_db()
+    config_manager = get_config_manager()
+
     with layout:
         ui.label("Dashboard").classes("text-2xl font-bold")
+        if config_manager.config is not None:
+            stack_names = [stack.name for stack in config_manager.config.stacks]
+            stack_select = ui.select(
+                options=stack_names, label="stack", value=stack_names[0]
+            )
+        else:
+            ui.label("no stacks found, define in Settings")
         columns = [
             {
                 "name": "id",

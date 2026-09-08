@@ -36,15 +36,15 @@ class ConfigManager:
     def load(self) -> ConfigVarne:
         try:
             raw = yaml.safe_load(self.path.read_text())  # pyright: ignore[reportAny]
-            config = ConfigVarne.model_validate(raw or {})
+            self.config = ConfigVarne.model_validate(raw or {})
         except yaml.YAMLError as exc:
             self.error = str(exc)
-            config = ConfigVarne(stacks=[])
+            self.config = ConfigVarne(stacks=[])
         except ValidationError as exc:
             error = exc.errors()[0]
             self.error = f"{'.'.join(map(str, error['loc']))}: {error['msg']}"
-            config = ConfigVarne(stacks=[])
-        return config
+            self.config = ConfigVarne(stacks=[])
+        return self.config
 
     def save(self):
 
