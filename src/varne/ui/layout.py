@@ -19,10 +19,6 @@ def create_layout() -> Column:
             close_button=True,
         )
         logger.error(message)
-    elif config_manager.config is not None:
-        message = f"Configuration loaded {config_manager.path.resolve()}"
-        ui.notify(message=message)
-        logger.info(message)
 
     with ui.left_drawer(top_corner=True, bottom_corner=True, value=True).props(
         "breakpoint=768"

@@ -4,9 +4,11 @@ from typing import Annotated, Literal
 import yaml
 from pydantic import BaseModel, Field, ValidationError
 
+type SourceId = str
+
 
 class ConfigSourceBase(BaseModel):
-    id: str
+    id: SourceId
     name: str
 
 
@@ -16,9 +18,11 @@ class ConfigJsonPlaceholder(ConfigSourceBase):
 
 ConfigSource = Annotated[ConfigJsonPlaceholder, Field(discriminator="type")]
 
+type StackId = str
+
 
 class ConfigStack(BaseModel):
-    id: str
+    id: StackId
     name: str
     sources: list[ConfigSource] = Field(default_factory=list)
 
