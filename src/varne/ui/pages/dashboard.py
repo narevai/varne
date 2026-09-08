@@ -25,7 +25,9 @@ def create_stack_select(config: ConfigVarne | None) -> Select:
 
     stack_options = {stack.id: stack.name for stack in config.stacks}
 
-    return ui.select(options=stack_options, label="stack", value=config.stacks[0].id)
+    return ui.select(
+        options=stack_options, label="stack", value=config.stacks[0].id
+    ).classes("w-64")
 
 
 def refresh_stack_select(select: Select, config: ConfigVarne):
@@ -41,39 +43,27 @@ async def page_dashboard() -> None:
     config_manager = get_config_manager()
 
     with layout:
-        ui.label("Dashboard").classes("text-2xl font-bold")
 
-        if config_manager.config is None or not config_manager.config.stacks:
-            ui.label("No stacks found, define in Settings")
+        def reload_config() -> None:
+            config_manager.load()
 
-        stack_select = create_stack_select(config_manager.config)
+            if config_manager.config is not None:
+                refresh_stack_select(stack_select, config_manager.config)
+                message = f"Configuration loaded {config_manager.path.resolve()}"
+                ui.notify(message=message)
+                logger.info(message)
+            else:
+                message = (
+                    f"Configuration failed to load {config_manager.error} from file {config_manager.path.resolve()}",
+                )
 
-        @ui.refreshable
-        async def content():
-            stack_id = cast(StackId, stack_select.value)
-
-            rows = await run.io_bound(get_usage_rows, db, stack_id)
-
-            ui.table(
-                columns=[
-                    {
-                        "name": "id",
-                        "label": "ID",
-                        "field": "id",
-                        "align": "left",
-                    },
-                    {
-                        "name": "total_amount",
-                        "label": "Total Amount",
-                        "field": "total_amount",
-                        "align": "right",
-                    },
-                ],
-                rows=rows or [],
-                row_key="id",
-            )
-
-        stack_select.on_value_change(lambda _: content.refresh())
+                ui.notify(
+                    message=message,
+                    type="negative",
+                    timeout=0,
+                    close_button=True,
+                )
+                logger.error(message)
 
         async def sync_usage() -> None:
             if config_manager.config is None:
@@ -105,27 +95,43 @@ async def page_dashboard() -> None:
                         finally:
                             button_sync.enable()
 
-        def reload_config() -> None:
-            config_manager.load()
+        @ui.refreshable
+        async def content():
+            stack_id = cast(StackId, stack_select.value)
 
-            if config_manager.config is not None:
-                refresh_stack_select(stack_select, config_manager.config)
-                message = f"Configuration loaded {config_manager.path.resolve()}"
-                ui.notify(message=message)
-                logger.info(message)
-            else:
-                message = (
-                    f"Configuration failed to load {config_manager.error} from file {config_manager.path.resolve()}",
-                )
+            rows = await run.io_bound(get_usage_rows, db, stack_id)
 
-                ui.notify(
-                    message=message,
-                    type="negative",
-                    timeout=0,
-                    close_button=True,
-                )
-                logger.error(message)
+            ui.table(
+                columns=[
+                    {
+                        "name": "id",
+                        "label": "ID",
+                        "field": "id",
+                        "align": "left",
+                    },
+                    {
+                        "name": "total_amount",
+                        "label": "Total Amount",
+                        "field": "total_amount",
+                        "align": "right",
+                    },
+                ],
+                rows=rows or [],
+                row_key="id",
+            )
 
-        button_sync = ui.button("sync usage", on_click=sync_usage)
-        ui.button(text="reload config", on_click=reload_config)
+        ui.label("Dashboard").classes("text-2xl font-bold")
+
+        if config_manager.config is None or not config_manager.config.stacks:
+            ui.label("No stacks found, define in Settings")
+
+        with ui.row().classes("items-center gap-4"):
+            stack_select = create_stack_select(config_manager.config)
+            button_sync = ui.button("sync usage", on_click=sync_usage).classes(
+                "self-end"
+            )
+            ui.button(text="reload config", on_click=reload_config).classes("self-end")
+
+        stack_select.on_value_change(lambda _: content.refresh())
+
         await content()
