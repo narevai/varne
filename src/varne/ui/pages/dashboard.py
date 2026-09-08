@@ -27,11 +27,10 @@ async def page_dashboard() -> None:
         ui.label("Dashboard").classes("text-2xl font-bold")
         if config_manager.config is not None:
             stack_names = [stack.name for stack in config_manager.config.stacks]
-            stack_select = ui.select(
-                options=stack_names, label="stack", value=stack_names[0]
-            )
+            ui.select(options=stack_names, label="stack", value=stack_names[0])
         else:
             ui.label("no stacks found, define in Settings")
+
         columns = [
             {
                 "name": "id",
