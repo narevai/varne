@@ -2,6 +2,7 @@ from functools import lru_cache
 
 import httpx2 as httpx
 
+from varne.config import ConfigManager
 from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.db.types import DatabaseBackend
@@ -25,6 +26,16 @@ def get_db() -> DatabaseBackend:
 @lru_cache
 def get_http() -> httpx.Client:
     return create_http_client()
+
+
+@lru_cache
+def get_config_manager() -> ConfigManager:
+    settings = get_settings()
+
+    manager = ConfigManager(path=settings.config_path)
+    manager.load()
+
+    return manager
 
 
 def get_json_placeholder_service() -> ProviderService:

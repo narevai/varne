@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     api_version: str = "1.0.0-alpha.0"
 
     database_path: str = "./data/app.duckdb"
+    config_path: str = "./config/varne.yaml"
 
 
 @lru_cache
