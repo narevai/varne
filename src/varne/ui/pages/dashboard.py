@@ -19,14 +19,13 @@ def get_usage_rows(db: DatabaseBackend, stack_id: StackId) -> list[dict[str, obj
     return cast(list[dict[str, object]], rows)
 
 
-def create_stack_select(config: ConfigVarne) -> Select:
+def create_stack_select(config: ConfigVarne | None) -> Select:
+    if config is None or not config.stacks:
+        return ui.select(options={}, label="stack", value=None)
+
     stack_options = {stack.id: stack.name for stack in config.stacks}
 
-    stack_select = ui.select(
-        options=stack_options, label="stack", value=config.stacks[0].id
-    )
-
-    return stack_select
+    return ui.select(options=stack_options, label="stack", value=config.stacks[0].id)
 
 
 def refresh_stack_select(select: Select, config: ConfigVarne):
@@ -43,40 +42,38 @@ async def page_dashboard() -> None:
 
     with layout:
         ui.label("Dashboard").classes("text-2xl font-bold")
-        stack_select = None
 
         if config_manager.config is None or not config_manager.config.stacks:
             ui.label("No stacks found, define in Settings")
-        else:
-            stack_select = create_stack_select(config_manager.config)
 
-        columns = [
-            {
-                "name": "id",
-                "label": "ID",
-                "field": "id",
-                "align": "left",
-            },
-            {
-                "name": "total_amount",
-                "label": "Total Amount",
-                "field": "total_amount",
-                "align": "right",
-            },
-        ]
-        table = ui.table(
-            columns=columns,
-            rows=[],
-            row_key="id",
-        )
+        stack_select = create_stack_select(config_manager.config)
 
-        async def refresh_table() -> None:
-            if stack_select is None:
-                return
-            rows = await run.io_bound(
-                get_usage_rows, db, cast(StackId, stack_select.value)
+        @ui.refreshable
+        async def content():
+            stack_id = cast(StackId, stack_select.value)
+
+            rows = await run.io_bound(get_usage_rows, db, stack_id)
+
+            ui.table(
+                columns=[
+                    {
+                        "name": "id",
+                        "label": "ID",
+                        "field": "id",
+                        "align": "left",
+                    },
+                    {
+                        "name": "total_amount",
+                        "label": "Total Amount",
+                        "field": "total_amount",
+                        "align": "right",
+                    },
+                ],
+                rows=rows or [],
+                row_key="id",
             )
-            table.rows = rows or []
+
+        stack_select.on_value_change(lambda _: content.refresh())
 
         async def sync_usage() -> None:
             if config_manager.config is None:
@@ -92,7 +89,7 @@ async def page_dashboard() -> None:
 
                         try:
                             _ = await run.io_bound(service.fetch_and_store)
-                            await refresh_table()
+                            await content.refresh()
                             message = f"Synced rows for stack {stack.name} and source {source.name}"
                             ui.notify(message)
 
@@ -112,8 +109,7 @@ async def page_dashboard() -> None:
             config_manager.load()
 
             if config_manager.config is not None:
-                if stack_select is not None:
-                    refresh_stack_select(stack_select, config_manager.config)
+                refresh_stack_select(stack_select, config_manager.config)
                 message = f"Configuration loaded {config_manager.path.resolve()}"
                 ui.notify(message=message)
                 logger.info(message)
@@ -132,4 +128,4 @@ async def page_dashboard() -> None:
 
         button_sync = ui.button("sync usage", on_click=sync_usage)
         ui.button(text="reload config", on_click=reload_config)
-        await refresh_table()
+        await content()
