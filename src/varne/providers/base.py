@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 import httpx2 as httpx
 from loguru import logger
 
+from varne.config import SourceId, StackId
 from varne.db.schema import TableRaw, TableStaging
 from varne.db.types import DatabaseBackend
 from varne.providers.types import RowRaw, RowStaging
@@ -25,13 +26,24 @@ class ProviderClient(ABC):
 
 class ProviderService(ABC):
     db: DatabaseBackend
+    stack_id: StackId
+    source_id: SourceId
     raw_table: TableRaw
     staging_table: TableStaging
 
-    def __init__(self, db: DatabaseBackend) -> None:
+    def __init__(
+        self, db: DatabaseBackend, stack_id: StackId, source_id: SourceId
+    ) -> None:
         self.db = db
         self.raw_table = TableRaw()
         self.staging_table = TableStaging()
+        self.stack_id = stack_id
+        self.source_id = source_id
+
+    @property
+    @abstractmethod
+    def provider(self) -> str:
+        raise NotImplementedError
 
     @abstractmethod
     def fetch_and_store(self) -> None:

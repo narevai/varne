@@ -1,29 +1,66 @@
-from functools import lru_cache
-from typing import ClassVar
+from pathlib import Path
+from typing import Annotated, Literal
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+import yaml
+from pydantic import BaseModel, Field, ValidationError
 
-
-class Settings(BaseSettings):
-    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
-        env_file=".env", extra="ignore"
-    )
-
-    environment: str = "development"
-    debug: bool = False
-
-    host: str = "0.0.0.0"
-    port: int = 8000
-
-    log_level: str = "INFO"
-
-    api_title: str = "Varne"
-    api_description: str = "Varne API"
-    api_version: str = "1.0.0-alpha.0"
-
-    database_path: str = "./data/app.duckdb"
+type SourceId = str
 
 
-@lru_cache
-def get_settings() -> Settings:
-    return Settings()
+class ConfigSourceBase(BaseModel):
+    id: SourceId
+    name: str
+
+
+class ConfigJsonPlaceholder(ConfigSourceBase):
+    type: Literal["jsonplaceholder"] = "jsonplaceholder"
+
+
+ConfigSource = Annotated[ConfigJsonPlaceholder, Field(discriminator="type")]
+
+type StackId = str
+
+
+class ConfigStack(BaseModel):
+    id: StackId
+    name: str
+    sources: list[ConfigSource] = Field(default_factory=list)
+
+
+class ConfigVarne(BaseModel):
+    stacks: list[ConfigStack]
+
+
+class ConfigManager:
+    def __init__(self, path: Path | str):
+        self.path: Path = Path(path)
+        self.config: ConfigVarne | None = None
+        self.error: str | None = None
+
+    def load(self) -> ConfigVarne:
+        try:
+            raw = yaml.safe_load(self.path.read_text())  # pyright: ignore[reportAny]
+            self.config = ConfigVarne.model_validate(raw or {})
+        except yaml.YAMLError as exc:
+            self.error = str(exc)
+            self.config = ConfigVarne(stacks=[])
+        except ValidationError as exc:
+            error = exc.errors()[0]
+            self.error = f"{'.'.join(map(str, error['loc']))}: {error['msg']}"
+            self.config = ConfigVarne(stacks=[])
+        return self.config
+
+    def save(self):
+
+        if self.config is None:
+            config_current = ConfigVarne(stacks=[]).model_dump(
+                mode="json", exclude_none=True
+            )
+        else:
+            config_current = self.config.model_dump(mode="json", exclude_none=True)
+
+        config_tmp_path = self.path.with_suffix(".tmp")
+        config_tmp = yaml.safe_dump(config_current, sort_keys=False)
+        config_tmp_path.write_text(config_tmp)
+
+        config_tmp_path.replace(self.path)

@@ -29,7 +29,13 @@ class TableRaw(Table):
     @override
     def schema(self) -> ibis.Schema:
         return ibis.schema(
-            {"provider": dt.string, "event_time": dt.timestamp, "payload": dt.string}
+            {
+                "stack_id": dt.string,
+                "source_id": dt.string,
+                "provider": dt.string,
+                "event_time": dt.timestamp,
+                "payload": dt.string,
+            }
         )
 
 
@@ -43,7 +49,14 @@ class TableStaging(Table):
     @override
     def schema(self) -> ibis.Schema:
         return ibis.schema(
-            {"id": dt.string, "event_time": dt.timestamp, "amount": dt.float}
+            {
+                "stack_id": dt.string,
+                "source_id": dt.string,
+                "provider": dt.string,
+                "id": dt.string,
+                "event_time": dt.timestamp,
+                "amount": dt.float,
+            }
         )
 
 

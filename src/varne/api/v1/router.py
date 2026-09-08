@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from loguru import logger
 from pydantic import BaseModel
 
-from varne.config import get_settings
+from varne.settings import get_settings
 
 router = APIRouter()
 

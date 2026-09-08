@@ -36,3 +36,22 @@ def http_client():
     yield client
 
     client.close()
+
+
+@pytest.fixture
+def config_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    monkeypatch.chdir(tmp_path)
+    path = tmp_path / "config" / "varne.yaml"
+    path.parent.mkdir(exist_ok=True)
+    path.write_text(
+        """
+stacks:
+  - id: stack_test
+    name: Test Stack
+    sources:
+      - id: source_test
+        name: Test Source
+"""
+    )
+
+    return path

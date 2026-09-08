@@ -1,10 +1,25 @@
+from loguru import logger
 from nicegui import ui
 from nicegui.elements.column import Column
 
+from varne.dependencies import get_config_manager
 from varne.ui.components.nav_item import nav_item
 
 
 def create_layout() -> Column:
+    config_manager = get_config_manager()
+    if config_manager.error is not None:
+        message = (
+            f"Configuration failed to load {config_manager.error} from file {config_manager.path.resolve()}",
+        )
+        ui.notify(
+            message=message,
+            type="negative",
+            timeout=0,
+            close_button=True,
+        )
+        logger.error(message)
+
     with ui.left_drawer(top_corner=True, bottom_corner=True, value=True).props(
         "breakpoint=768"
     ) as drawer:
