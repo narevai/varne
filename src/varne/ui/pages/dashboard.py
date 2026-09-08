@@ -1,14 +1,20 @@
+from typing import cast
+
+import pandas as pd
 from loguru import logger
 from nicegui import run, ui
 
 from varne.analytics.usage import get_usage_by_id
+from varne.db.types import DatabaseBackend
 from varne.dependencies import get_db, get_json_placeholder_service
 from varne.ui.layout import create_layout
 
 
-def get_usage_rows(db) -> list[dict]:
-    result = get_usage_by_id(db).execute()
-    return result.to_dict("records")
+def get_usage_rows(db: DatabaseBackend) -> list[dict[str, object]]:
+    result = cast(pd.DataFrame, get_usage_by_id(db).execute())
+    rows = result.to_dict(orient="records")  # pyright: ignore[reportUnknownVariableType]
+
+    return cast(list[dict[str, object]], rows)
 
 
 @ui.page("/")
@@ -38,7 +44,8 @@ async def page_dashboard() -> None:
         )
 
         async def refresh_table() -> None:
-            table.rows = await run.io_bound(get_usage_rows, db)
+            rows = await run.io_bound(get_usage_rows, db)
+            table.rows = rows or []
 
         async def sync_usage() -> None:
             service = get_json_placeholder_service()

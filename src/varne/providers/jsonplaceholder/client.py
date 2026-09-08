@@ -1,8 +1,11 @@
+from typing import override
+
 from varne.providers.base import ProviderClient
 
 
 class JsonPlaceholderClient(ProviderClient):
     @property
+    @override
     def base_url(self) -> str:
         return "https://jsonplaceholder.typicode.com"
 

@@ -1,3 +1,4 @@
+import httpx2 as httpx
 import pytest
 
 from varne.http import create_http_client
@@ -12,6 +13,6 @@ def test_create_http_client():
 
 
 @pytest.mark.vcr
-def test_connect_http_client(http_client):
+def test_connect_http_client(http_client: httpx.Client):
     response = http_client.get("https://jsonplaceholder.typicode.com/todos/1")
     assert response.status_code == 200

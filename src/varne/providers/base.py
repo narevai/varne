@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
 
 import httpx2 as httpx
-import ibis
 from loguru import logger
 
 from varne.db.schema import TableRaw, TableStaging
+from varne.db.types import DatabaseBackend
 from varne.providers.types import RowRaw, RowStaging
 
 
 class ProviderClient(ABC):
+    http: httpx.Client
+
     def __init__(
         self,
         http: httpx.Client,
@@ -22,7 +24,11 @@ class ProviderClient(ABC):
 
 
 class ProviderService(ABC):
-    def __init__(self, db: ibis.BaseBackend) -> None:
+    db: DatabaseBackend
+    raw_table: TableRaw
+    staging_table: TableStaging
+
+    def __init__(self, db: DatabaseBackend) -> None:
         self.db = db
         self.raw_table = TableRaw()
         self.staging_table = TableStaging()

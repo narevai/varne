@@ -1,14 +1,16 @@
-import os
 from functools import lru_cache
+from typing import ClassVar
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+        env_file=".env", extra="ignore"
+    )
 
     environment: str = "development"
-    debug: bool = os.getenv("DEBUG", False)
+    debug: bool = False
 
     host: str = "0.0.0.0"
     port: int = 8000

@@ -10,6 +10,7 @@ format:
 check:
 	ruff format --check src tests
 	ruff check src tests
+	basedpyright src tests
 
 test:
 	pytest --record-mode=none --block-network

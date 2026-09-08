@@ -1,9 +1,10 @@
 from datetime import UTC, datetime
 
 from varne.analytics.usage import get_usage_by_id
+from varne.db.types import DatabaseBackend
 
 
-def test_get_usage_by_id(db):
+def test_get_usage_by_id(db: DatabaseBackend):
     now = datetime.now(UTC)
 
     db.insert(
