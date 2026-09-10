@@ -14,6 +14,7 @@ class FieldPolicy:
 @dataclass(frozen=True)
 class SanitizePolicy:
     fields: tuple[FieldPolicy, ...] = ()
+    keep_all: bool = False
 
 
 def get_field_policy(

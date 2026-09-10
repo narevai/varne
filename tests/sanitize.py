@@ -21,6 +21,9 @@ def sanitize(
     policy: SanitizePolicy,
     key: str | None = None,
 ) -> JsonValue:
+    if policy.keep_all:
+        return value
+
     field_policy = get_field_policy(key, policy)
 
     if isinstance(value, dict):
