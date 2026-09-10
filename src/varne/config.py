@@ -16,7 +16,17 @@ class ConfigJsonPlaceholder(ConfigSourceBase):
     type: Literal["jsonplaceholder"] = "jsonplaceholder"
 
 
-ConfigSource = Annotated[ConfigJsonPlaceholder, Field(discriminator="type")]
+type VercelToken = str
+
+
+class ConfigVercel(ConfigSourceBase):
+    type: Literal["vercel"] = "vercel"
+    api_token: VercelToken
+
+
+ConfigSource = Annotated[
+    ConfigJsonPlaceholder, ConfigVercel, Field(discriminator="type")
+]
 
 type StackId = str
 
