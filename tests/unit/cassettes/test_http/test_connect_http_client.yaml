@@ -5,7 +5,7 @@ interactions:
       accept:
       - application/json
       accept-encoding:
-      - gzip, deflate, zstd
+      - identity
       connection:
       - keep-alive
       host:
@@ -16,14 +16,15 @@ interactions:
     uri: https://jsonplaceholder.typicode.com/todos/1
   response:
     body:
-      string: !!binary |
-        KLUv/QBYJQIAQkQOFKC1OUcguaszR9dJ8Pa93RQSVcJgAeJlhmAp8m2GKk6Vf4Y/w3U/NqOy1Pb0
-        VJIEAkvRcHhdSQIIAgA8JVxvhQk=
+      string: "{\n  \"userId\": 1,\n  \"id\": 1,\n  \"title\": \"delectus aut autem\",\n
+        \ \"completed\": false\n}"
     headers:
+      accept-ranges:
+      - bytes
       access-control-allow-credentials:
       - 'true'
       age:
-      - '5'
+      - '3'
       alt-svc:
       - h3=":443"; ma=86400
       cache-control:
@@ -31,15 +32,15 @@ interactions:
       cf-cache-status:
       - HIT
       cf-ray:
-      - a38da156b9d3ce72-SIN
+      - a38e92ae2f2c577a-SIN
       connection:
       - keep-alive
-      content-encoding:
-      - zstd
+      content-length:
+      - '83'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 10 Sep 2026 10:08:13 GMT
+      - Thu, 10 Sep 2026 12:52:59 GMT
       etag:
       - W/"53-hfEnumeNh6YirfjyjaujcOPPT+s"
       expires:
@@ -54,8 +55,6 @@ interactions:
       - heroku-nel="https://nel.heroku.com/reports?s=m9WS5pjTnS9MetmTkTg7DGmaeazdeGuTuxeu8z1Rg8Y%3D&sid=e11707d5-02a7-43ef-b45e-2cf4d2036f7d&ts=1786063400"
       server:
       - cloudflare
-      transfer-encoding:
-      - chunked
       vary:
       - Origin, Accept-Encoding
       via:

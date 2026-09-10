@@ -1,8 +1,11 @@
+import os
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from tests.sanitize import sanitize_response
 
+from varne.config import VercelToken
 from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.http import create_http_client
@@ -13,6 +16,7 @@ def vcr_config():
     return {
         "decode_compressed_response": True,
         "filter_headers": ["authorization"],
+        "before_record_response": sanitize_response,
     }
 
 
@@ -35,7 +39,7 @@ def db(tmp_path: Path):
 @pytest.fixture
 def http_client():
     client = create_http_client()
-
+    client.headers["Accept-Encoding"] = "identity"
     yield client
 
     client.close()
@@ -58,3 +62,8 @@ stacks:
     )
 
     return path
+
+
+@pytest.fixture
+def vercel_token() -> VercelToken:
+    return os.environ.get("VERCEL_TOKEN", "test-token")

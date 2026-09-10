@@ -17,3 +17,11 @@ test:
 
 dev:
 	DEBUG=true LOG_LEVEL=DEBUG python -m varne.app
+
+cassettes-record:
+	infisical run -- pytest --record-mode=once
+
+cassettes-format:
+	./scripts/cassettes-format.sh
+
+cassettes: cassettes-record cassettes-format
