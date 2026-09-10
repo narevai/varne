@@ -1,7 +1,9 @@
 from functools import lru_cache
+from pathlib import Path
 
 import httpx2 as httpx
 
+from varne.cassettes import CassetteManager
 from varne.config import ConfigManager, SourceId, StackId
 from varne.db.connection import create_connection
 from varne.db.schema import create_tables
@@ -36,6 +38,17 @@ def get_config_manager() -> ConfigManager:
     manager.load()
 
     return manager
+
+
+@lru_cache
+def get_cassette_manager() -> CassetteManager:
+    return CassetteManager(
+        cassette_paths=[
+            Path(
+                "tests/unit/providers/jsonplaceholder/cassettes/test_client/test_fetch.yaml"
+            ),
+        ]
+    )
 
 
 def get_json_placeholder_service(
