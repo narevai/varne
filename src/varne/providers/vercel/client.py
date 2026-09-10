@@ -26,7 +26,7 @@ class VercelClient(ProviderClient):
 
     def fetch_projects(self) -> str:
         response = self.http.get(
-            url=f"{self.base_url}/v9/projects", headers=self.headers
+            url=f"{self.base_url}/v10/projects", headers=self.headers
         )
         response.raise_for_status()
 

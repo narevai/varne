@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - varne/0.1
     method: GET
-    uri: https://api.vercel.com/v9/projects
+    uri: https://api.vercel.com/v10/projects
   response:
     body:
       string: '{"projects": [{"accountId": "<accountId>", "alias": [], "speedInsights":
@@ -37,21 +37,20 @@ interactions:
         0, "functionDefaultMemoryType": "<functionDefaultMemoryType>", "functionZeroConfigFailover":
         false, "elasticConcurrencyEnabled": false}, "resourceConfig": {"fluid": false,
         "functionDefaultRegions": ["<functionDefaultRegions>"], "elasticConcurrencyEnabled":
-        false}, "rootDirectory": null, "serverlessFunctionRegion": "<serverlessFunctionRegion>",
-        "skewProtectionMaxAge": 0, "sourceFilesOutsideRootDirectory": false, "enableAffectedProjectsDeployments":
-        false, "ssoProtection": {"deploymentType": "<deploymentType>"}, "updatedAt":
-        0, "live": false, "enableExternalRewriteCaching": false, "gitComments": {"onCommit":
-        false, "onPullRequest": false}, "gitProviderOptions": {"createDeployments":
-        "<createDeployments>"}, "webAnalytics": {"id": "<id>", "enabledAt": 0, "hasData":
-        false}, "oidcTokenConfig": {"enabled": false, "issuerMode": "<issuerMode>"},
-        "hasDeployments": false, "link": {"type": "<type>", "repo": "<repo>", "repoId":
-        0, "org": "<org>", "repoOwnerId": 0, "gitCredentialId": "<gitCredentialId>",
-        "productionBranch": "<productionBranch>", "sourceless": false, "createdAt":
-        0, "updatedAt": 0, "deployHooks": []}, "latestDeployments": [{"alias": ["<alias>",
-        "<alias>", "<alias>", "<alias>", "<alias>"], "aliasAssigned": 0, "aliasError":
-        null, "automaticAliases": ["<automaticAliases>", "<automaticAliases>"], "builds":
-        [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid": "<uid>",
-        "email": "<email>", "username": "<username>", "githubLogin": "<githubLogin>"},
+        false}, "rootDirectory": null, "skewProtectionMaxAge": 0, "sourceFilesOutsideRootDirectory":
+        false, "enableAffectedProjectsDeployments": false, "ssoProtection": {"deploymentType":
+        "<deploymentType>"}, "updatedAt": 0, "live": false, "enableExternalRewriteCaching":
+        false, "gitComments": {"onCommit": false, "onPullRequest": false}, "gitProviderOptions":
+        {"createDeployments": "<createDeployments>"}, "webAnalytics": {"id": "<id>",
+        "enabledAt": 0, "hasData": false}, "oidcTokenConfig": {"enabled": false, "issuerMode":
+        "<issuerMode>"}, "hasDeployments": false, "link": {"type": "<type>", "repo":
+        "<repo>", "repoId": 0, "org": "<org>", "repoOwnerId": 0, "gitCredentialId":
+        "<gitCredentialId>", "productionBranch": "<productionBranch>", "sourceless":
+        false, "createdAt": 0, "updatedAt": 0, "deployHooks": []}, "latestDeployments":
+        [{"alias": ["<alias>", "<alias>", "<alias>", "<alias>", "<alias>"], "aliasAssigned":
+        0, "aliasError": null, "automaticAliases": ["<automaticAliases>", "<automaticAliases>"],
+        "builds": [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid":
+        "<uid>", "email": "<email>", "username": "<username>", "githubLogin": "<githubLogin>"},
         "deploymentHostname": "<deploymentHostname>", "forced": false, "id": "<id>",
         "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>", "githubCommitAuthorEmail":
         "<githubCommitAuthorEmail>", "githubCommitMessage": "<githubCommitMessage>",
@@ -155,9 +154,9 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 10 Sep 2026 15:05:02 GMT
+      - Thu, 10 Sep 2026 23:44:25 GMT
       etag:
-      - '"0AKAJ9h0Z79w94i2DjUwvg=="'
+      - '"VV4tCpVBwHPHDD4FwTKcyw=="'
       server:
       - Vercel
       strict-transport-security:
@@ -167,9 +166,9 @@ interactions:
       x-ratelimit-remaining:
       - '399'
       x-ratelimit-reset:
-      - '1789052763'
+      - '1789083926'
       x-vercel-id:
-      - sfo1::mx8zh-1789052702101-e262eed10636
+      - sfo1::gzj6m-1789083865222-394ad70371e7
     status:
       code: 200
       message: OK
