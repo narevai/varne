@@ -10,7 +10,10 @@ from varne.http import create_http_client
 
 @pytest.fixture
 def vcr_config():
-    return {"decode_compressed_response": True}
+    return {
+        "decode_compressed_response": True,
+        "filter_headers": ["authorization"],
+    }
 
 
 @pytest.fixture
