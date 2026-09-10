@@ -1,20 +1,5 @@
 from dataclasses import dataclass
 
-# @dataclass(frozen=True)
-# class Keep:
-#     fields: tuple[str, ...]
-
-
-# @dataclass(frozen=True)
-# class Limit:
-#     count: int = 1
-
-
-# @dataclass(frozen=True)
-# class ObjectPolicy:
-#     keep: Keep | None = None
-#     limit: Limit | None = None
-
 
 @dataclass(frozen=True)
 class FieldPolicy:
@@ -22,6 +7,8 @@ class FieldPolicy:
     keep: tuple[str, ...] = ()
     limit: int | None = None
     redact_keys: bool = False
+    match_field: str | None = None
+    match_value: str | None = None
 
 
 @dataclass(frozen=True)

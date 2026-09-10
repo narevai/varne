@@ -42,6 +42,18 @@ def sanitize(
     if isinstance(value, list):
         items = value
 
+        if (
+            field_policy
+            and field_policy.match_field is not None
+            and field_policy.match_value is not None
+        ):
+            items = [
+                item
+                for item in items
+                if isinstance(item, dict)
+                and item.get(field_policy.match_field) == field_policy.match_value
+            ]
+
         if field_policy and field_policy.limit is not None:
             items = items[: field_policy.limit]
 

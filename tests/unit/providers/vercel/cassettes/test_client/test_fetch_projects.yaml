@@ -17,724 +17,37 @@ interactions:
   response:
     body:
       string: '{"projects": [{"accountId": "<accountId>", "alias": [], "speedInsights":
-        {"id": "<id>", "hasData": false}, "autoExposeSystemEnvs": false, "autoAssignCustomDomains":
-        false, "autoAssignCustomDomainsUpdatedBy": "<autoAssignCustomDomainsUpdatedBy>",
-        "buildCommand": null, "createdAt": 0, "crons": {"enabledAt": 0, "disabledAt":
-        null, "updatedAt": 0, "deploymentId": "<deploymentId>", "definitions": []},
-        "deploymentExpiration": {"expirationDays": 0, "expirationDaysProduction":
-        0, "expirationDaysCanceled": 0, "expirationDaysErrored": 0, "deploymentsToKeep":
-        0}, "devCommand": null, "directoryListing": false, "env": [], "framework":
-        "<framework>", "gitForkProtection": false, "gitLFS": false, "id": "prj_mFBAGJdbzPtycLefzCiD6L9Dx5O4",
-        "installCommand": null, "jobs": {}, "lastRollbackTarget": null, "lastAliasRequest":
+        {"id": "<id>", "hasData": false, "enabledAt": 0}, "autoExposeSystemEnvs":
+        false, "autoAssignCustomDomains": false, "autoAssignCustomDomainsUpdatedBy":
+        "<autoAssignCustomDomainsUpdatedBy>", "buildCommand": null, "createdAt": 0,
+        "crons": {"enabledAt": 0, "disabledAt": null, "updatedAt": 0, "deploymentId":
+        "<deploymentId>", "definitions": []}, "deploymentExpiration": {"expirationDays":
+        0, "expirationDaysProduction": 0, "expirationDaysCanceled": 0, "expirationDaysErrored":
+        0, "deploymentsToKeep": 0}, "devCommand": null, "directoryListing": false,
+        "env": [{"type": "<type>", "value": "<value>", "target": ["<target>", "<target>",
+        "<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
+        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
+        "<createdBy>", "updatedBy": null}], "framework": "<framework>", "gitForkProtection":
+        false, "gitLFS": false, "id": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78", "installCommand":
+        null, "jobs": {"lint": {"targets": ["<targets>", "<targets>"]}, "typecheck":
+        {"targets": ["<targets>", "<targets>"]}}, "lastRollbackTarget": null, "lastAliasRequest":
         null, "name": "<name>", "nodeVersion": "<nodeVersion>", "outputDirectory":
         null, "productionDeploymentsFastLane": false, "defaultResourceConfig": {"fluid":
         false, "functionDefaultRegions": ["<functionDefaultRegions>"], "functionDefaultTimeout":
         0, "functionDefaultMemoryType": "<functionDefaultMemoryType>", "functionZeroConfigFailover":
         false, "elasticConcurrencyEnabled": false}, "resourceConfig": {"fluid": false,
         "functionDefaultRegions": ["<functionDefaultRegions>"], "elasticConcurrencyEnabled":
-        false}, "rootDirectory": "<rootDirectory>", "serverlessFunctionRegion": "<serverlessFunctionRegion>",
+        false}, "rootDirectory": null, "serverlessFunctionRegion": "<serverlessFunctionRegion>",
         "skewProtectionMaxAge": 0, "sourceFilesOutsideRootDirectory": false, "enableAffectedProjectsDeployments":
         false, "ssoProtection": {"deploymentType": "<deploymentType>"}, "updatedAt":
         0, "live": false, "enableExternalRewriteCaching": false, "gitComments": {"onCommit":
         false, "onPullRequest": false}, "gitProviderOptions": {"createDeployments":
-        "<createDeployments>"}, "webAnalytics": {"id": "<id>"}, "oidcTokenConfig":
-        {"enabled": false, "issuerMode": "<issuerMode>"}, "hasDeployments": false,
-        "link": {"type": "<type>", "repo": "<repo>", "repoId": 0, "org": "<org>",
-        "repoOwnerId": 0, "gitCredentialId": "<gitCredentialId>", "productionBranch":
-        "<productionBranch>", "sourceless": false, "createdAt": 0, "updatedAt": 0,
-        "deployHooks": []}, "latestDeployments": [{"alias": ["<alias>", "<alias>",
-        "<alias>"], "aliasAssigned": 0, "aliasError": null, "automaticAliases": ["<automaticAliases>",
-        "<automaticAliases>"], "builds": [], "createdAt": 0, "createdIn": "<createdIn>",
-        "creator": {"uid": "<uid>", "email": "<email>", "username": "<username>",
-        "githubLogin": "<githubLogin>"}, "deploymentHostname": "<deploymentHostname>",
-        "forced": false, "id": "<id>", "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>",
-        "githubCommitAuthorEmail": "<githubCommitAuthorEmail>", "githubCommitMessage":
-        "<githubCommitMessage>", "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef":
-        "<githubCommitRef>", "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha":
-        "<githubCommitSha>", "githubDeployment": "<githubDeployment>", "githubOrg":
-        "<githubOrg>", "githubRepo": "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>",
-        "githubCommitRepoId": "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>",
-        "githubRepoVisibility": "<githubRepoVisibility>", "githubHost": "<githubHost>",
-        "githubCommitAuthorLogin": "<githubCommitAuthorLogin>", "githubCommitVerification":
-        "<githubCommitVerification>", "repoPushedAt": "<repoPushedAt>", "branchAlias":
-        "<branchAlias>"}, "monorepoManager": "<monorepoManager>", "name": "<name>",
-        "plan": "<plan>", "private": false, "readyState": "<readyState>", "readySubstate":
-        "<readySubstate>", "target": "<target>", "teamId": "<teamId>", "type": "<type>",
-        "url": "<url>", "userId": "<userId>", "withCache": false, "buildingAt": 0,
-        "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims": {"sub":
-        "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner": "<owner>",
-        "owner_id": "<owner_id>", "project": "<project>", "project_id": "<project_id>",
-        "environment": "<environment>", "plan": "<plan>"}}, {"alias": ["<alias>"],
-        "aliasAssigned": 0, "aliasError": null, "automaticAliases": ["<automaticAliases>"],
-        "builds": [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid":
-        "<uid>", "email": "<email>", "username": "<username>", "githubLogin": "<githubLogin>"},
-        "deploymentHostname": "<deploymentHostname>", "forced": false, "id": "<id>",
-        "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>", "githubCommitAuthorEmail":
-        "<githubCommitAuthorEmail>", "githubCommitMessage": "<githubCommitMessage>",
-        "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef": "<githubCommitRef>",
-        "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha": "<githubCommitSha>",
-        "githubDeployment": "<githubDeployment>", "githubOrg": "<githubOrg>", "githubRepo":
-        "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>", "githubCommitRepoId":
-        "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>", "githubRepoVisibility":
-        "<githubRepoVisibility>", "githubHost": "<githubHost>", "githubCommitAuthorLogin":
-        "<githubCommitAuthorLogin>", "githubPrId": "<githubPrId>", "githubCommitVerification":
-        "<githubCommitVerification>", "repoPushedAt": "<repoPushedAt>", "branchAlias":
-        "<branchAlias>"}, "monorepoManager": "<monorepoManager>", "name": "<name>",
-        "plan": "<plan>", "private": false, "readyState": "<readyState>", "readySubstate":
-        "<readySubstate>", "target": null, "teamId": "<teamId>", "type": "<type>",
-        "url": "<url>", "userId": "<userId>", "withCache": false, "buildingAt": 0,
-        "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims": {"sub":
-        "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner": "<owner>",
-        "owner_id": "<owner_id>", "project": "<project>", "project_id": "<project_id>",
-        "environment": "<environment>", "plan": "<plan>"}}], "targets": {"production":
-        {"alias": ["<alias>", "<alias>", "<alias>"], "aliasAssigned": 0, "aliasError":
-        null, "automaticAliases": ["<automaticAliases>", "<automaticAliases>"], "builds":
-        [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid": "<uid>",
-        "email": "<email>", "username": "<username>", "githubLogin": "<githubLogin>"},
-        "deploymentHostname": "<deploymentHostname>", "forced": false, "id": "<id>",
-        "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>", "githubCommitAuthorEmail":
-        "<githubCommitAuthorEmail>", "githubCommitMessage": "<githubCommitMessage>",
-        "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef": "<githubCommitRef>",
-        "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha": "<githubCommitSha>",
-        "githubDeployment": "<githubDeployment>", "githubOrg": "<githubOrg>", "githubRepo":
-        "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>", "githubCommitRepoId":
-        "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>", "githubRepoVisibility":
-        "<githubRepoVisibility>", "githubHost": "<githubHost>", "githubCommitAuthorLogin":
-        "<githubCommitAuthorLogin>", "githubCommitVerification": "<githubCommitVerification>",
-        "repoPushedAt": "<repoPushedAt>", "branchAlias": "<branchAlias>"}, "monorepoManager":
-        "<monorepoManager>", "name": "<name>", "plan": "<plan>", "private": false,
-        "readyState": "<readyState>", "readySubstate": "<readySubstate>", "target":
-        "<target>", "teamId": "<teamId>", "type": "<type>", "url": "<url>", "userId":
-        "<userId>", "withCache": false, "buildingAt": 0, "readyAt": 0, "previewCommentsEnabled":
-        false, "oidcTokenClaims": {"sub": "<sub>", "iss": "<iss>", "scope": "<scope>",
-        "aud": "<aud>", "owner": "<owner>", "owner_id": "<owner_id>", "project": "<project>",
-        "project_id": "<project_id>", "environment": "<environment>", "plan": "<plan>"}},
-        "preview": {"alias": ["<alias>"], "aliasAssigned": 0, "aliasError": null,
-        "automaticAliases": ["<automaticAliases>"], "builds": [], "createdAt": 0,
-        "createdIn": "<createdIn>", "creator": {"uid": "<uid>", "email": "<email>",
-        "username": "<username>", "githubLogin": "<githubLogin>"}, "deploymentHostname":
-        "<deploymentHostname>", "forced": false, "id": "<id>", "meta": {"githubCommitAuthorName":
-        "<githubCommitAuthorName>", "githubCommitAuthorEmail": "<githubCommitAuthorEmail>",
-        "githubCommitMessage": "<githubCommitMessage>", "githubCommitOrg": "<githubCommitOrg>",
-        "githubCommitRef": "<githubCommitRef>", "githubCommitRepo": "<githubCommitRepo>",
-        "githubCommitSha": "<githubCommitSha>", "githubDeployment": "<githubDeployment>",
-        "githubOrg": "<githubOrg>", "githubRepo": "<githubRepo>", "githubRepoOwnerType":
-        "<githubRepoOwnerType>", "githubCommitRepoId": "<githubCommitRepoId>", "githubRepoId":
-        "<githubRepoId>", "githubRepoVisibility": "<githubRepoVisibility>", "githubHost":
-        "<githubHost>", "githubCommitAuthorLogin": "<githubCommitAuthorLogin>", "githubPrId":
-        "<githubPrId>", "githubCommitVerification": "<githubCommitVerification>",
-        "repoPushedAt": "<repoPushedAt>", "branchAlias": "<branchAlias>"}, "monorepoManager":
-        "<monorepoManager>", "name": "<name>", "plan": "<plan>", "private": false,
-        "readyState": "<readyState>", "readySubstate": "<readySubstate>", "target":
-        null, "teamId": "<teamId>", "type": "<type>", "url": "<url>", "userId": "<userId>",
-        "withCache": false, "buildingAt": 0, "readyAt": 0, "previewCommentsEnabled":
-        false, "oidcTokenClaims": {"sub": "<sub>", "iss": "<iss>", "scope": "<scope>",
-        "aud": "<aud>", "owner": "<owner>", "owner_id": "<owner_id>", "project": "<project>",
-        "project_id": "<project_id>", "environment": "<environment>", "plan": "<plan>"}}},
-        "features": {"webAnalytics": false}, "protectedSourcemaps": false, "avatar":
-        "<avatar>"}, {"accountId": "<accountId>", "alias": [], "speedInsights": {"id":
-        "<id>", "hasData": false, "enabledAt": 0, "disabledAt": 0}, "autoExposeSystemEnvs":
-        false, "autoAssignCustomDomains": false, "autoAssignCustomDomainsUpdatedBy":
-        "<autoAssignCustomDomainsUpdatedBy>", "buildCommand": "<buildCommand>", "commandForIgnoringBuildStep":
-        "<commandForIgnoringBuildStep>", "createdAt": 0, "crons": {"enabledAt": 0,
-        "disabledAt": null, "updatedAt": 0, "deploymentId": "<deploymentId>", "definitions":
-        []}, "deploymentExpiration": {"expirationDays": 0, "expirationDaysProduction":
-        0, "expirationDaysCanceled": 0, "expirationDaysErrored": 0, "deploymentsToKeep":
-        0}, "devCommand": null, "directoryListing": false, "env": [{"type": "<type>",
-        "value": "<value>", "target": ["<target>", "<target>", "<target>"], "configurationId":
-        null, "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": "<updatedBy>"},
-        {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target":
-        ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "comment":
-        "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": "<updatedBy>"},
-        {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target":
-        ["<target>"], "configurationId": "<configurationId>", "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        null}, {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt":
-        0, "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": "<configurationId>", "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": "<configurationId>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": "<updatedBy>", "customEnvironmentIds":
-        []}, {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        null, "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        null}, {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>"],
-        "configurationId": null, "comment": "<comment>", "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "comment": "<comment>",
-        "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt": 0,
-        "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>",
-        "value": "<value>", "target": ["<target>", "<target>", "<target>"], "configurationId":
-        null, "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>", "<target>"], "configurationId": null, "comment": "<comment>",
-        "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt": 0,
-        "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": "<updatedBy>"}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>"], "configurationId": null,
-        "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        null, "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>", "<target>"], "configurationId":
-        null, "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target":
-        ["<target>", "<target>", "<target>"], "configurationId": null, "comment":
-        "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>", "<target>"], "configurationId":
-        null, "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": "<updatedBy>"},
-        {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>"],
-        "configurationId": null, "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target":
-        ["<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "comment": "<comment>",
-        "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt": 0,
-        "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": "<updatedBy>"}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>"], "configurationId": null,
-        "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>",
-        "<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": "<configurationId>",
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": "<configurationId>",
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": "<configurationId>",
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": "<configurationId>",
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": "<configurationId>",
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "comment":
-        "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>", "<target>", "<target>"],
-        "configurationId": null, "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        null}, {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target":
-        ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "comment":
-        "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>"], "configurationId": null,
-        "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": "<updatedBy>"},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        null, "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": "<updatedBy>"},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        null, "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>", "<target>"], "configurationId": null, "comment": "<comment>",
-        "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt": 0,
-        "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>",
-        "value": "<value>", "target": ["<target>", "<target>"], "configurationId":
-        null, "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        null}, {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>"],
-        "configurationId": null, "comment": "<comment>", "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "comment": "<comment>",
-        "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt": 0,
-        "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>",
-        "value": "<value>", "target": ["<target>", "<target>", "<target>"], "configurationId":
-        null, "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        null}, {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>",
-        "<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": "<configurationId>", "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": "<updatedBy>", "customEnvironmentIds": []}, {"type": "<type>",
-        "value": "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>", "customEnvironmentIds": []}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>", "customEnvironmentIds": []}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>", "<target>"], "configurationId":
-        null, "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": "<updatedBy>"},
-        {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>"],
-        "configurationId": null, "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>", "<target>"], "configurationId": null, "comment": "<comment>",
-        "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt": 0,
-        "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>",
-        "value": "<value>", "target": ["<target>", "<target>"], "configurationId":
-        null, "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>"], "configurationId": null,
-        "comment": "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>"],
-        "configurationId": null, "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        "<updatedBy>"}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "comment":
-        "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>", "<target>", "<target>"],
-        "configurationId": null, "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        null}, {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null, "edgeConfigId": "<edgeConfigId>", "edgeConfigTokenId":
-        "<edgeConfigTokenId>"}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": null, "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        null, "edgeConfigId": "<edgeConfigId>", "edgeConfigTokenId": "<edgeConfigTokenId>"},
-        {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>"], "configurationId": null, "customEnvironmentIds": [], "id": "<id>",
-        "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>",
-        "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "comment": "<comment>",
-        "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt": 0,
-        "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>",
-        "value": "<value>", "target": ["<target>"], "configurationId": null, "comment":
-        "<comment>", "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>", "<target>"], "configurationId":
-        null, "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>"], "configurationId": null,
-        "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt": 0,
-        "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>",
-        "value": "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": null, "comment": "<comment>", "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": "<updatedBy>"}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": "<configurationId>", "gitBranch":
-        "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>", "<target>"],
-        "configurationId": null, "customEnvironmentIds": [], "id": "<id>", "key":
-        "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy":
-        null}, {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>", "<target>"], "configurationId": null, "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "customEnvironmentIds": [],
-        "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>"], "configurationId": null, "comment": "<comment>", "customEnvironmentIds":
-        [], "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy":
-        "<createdBy>", "updatedBy": null}, {"type": "<type>", "value": "<value>",
-        "target": ["<target>", "<target>"], "configurationId": null, "comment": "<comment>",
-        "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt": 0,
-        "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>",
-        "value": "<value>", "target": ["<target>", "<target>"], "configurationId":
-        null, "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}, {"type":
-        "<type>", "value": "<value>", "target": ["<target>", "<target>"], "configurationId":
-        null, "customEnvironmentIds": [], "id": "<id>", "key": "<key>", "createdAt":
-        0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": "<updatedBy>",
-        "visibility": "<visibility>"}, {"type": "<type>", "value": "<value>", "target":
-        ["<target>"], "configurationId": "<configurationId>", "gitBranch": "<gitBranch>",
-        "comment": "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt":
-        0, "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null},
-        {"type": "<type>", "value": "<value>", "target": ["<target>"], "configurationId":
-        "<configurationId>", "gitBranch": "<gitBranch>", "comment": "<comment>", "id":
-        "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>",
-        "updatedBy": null}, {"type": "<type>", "value": "<value>", "target": ["<target>"],
-        "configurationId": "<configurationId>", "gitBranch": "<gitBranch>", "comment":
-        "<comment>", "id": "<id>", "key": "<key>", "createdAt": 0, "updatedAt": 0,
-        "createdBy": "<createdBy>", "updatedBy": null}, {"type": "<type>", "value":
-        "<value>", "target": ["<target>"], "configurationId": "<configurationId>",
-        "gitBranch": "<gitBranch>", "comment": "<comment>", "id": "<id>", "key": "<key>",
-        "createdAt": 0, "updatedAt": 0, "createdBy": "<createdBy>", "updatedBy": null}],
-        "framework": "<framework>", "gitForkProtection": false, "gitLFS": false, "id":
-        "prj_hWezpegOoQEP8GoMeW74Posq6asu", "installCommand": "<installCommand>",
-        "lastRollbackTarget": null, "lastAliasRequest": null, "name": "<name>", "nodeVersion":
-        "<nodeVersion>", "outputDirectory": null, "passwordProtection": null, "productionDeploymentsFastLane":
-        false, "defaultResourceConfig": {"fluid": false, "functionDefaultRegions":
-        ["<functionDefaultRegions>", "<functionDefaultRegions>", "<functionDefaultRegions>"],
-        "functionDefaultTimeout": 0, "functionDefaultMemoryType": "<functionDefaultMemoryType>",
-        "functionZeroConfigFailover": false, "elasticConcurrencyEnabled": false},
-        "resourceConfig": {"fluid": false, "functionDefaultRegions": ["<functionDefaultRegions>",
-        "<functionDefaultRegions>", "<functionDefaultRegions>"], "elasticConcurrencyEnabled":
-        false}, "rootDirectory": null, "serverlessFunctionRegion": "<serverlessFunctionRegion>",
-        "skewProtectionMaxAge": 0, "sourceFilesOutsideRootDirectory": false, "ssoProtection":
-        {"deploymentType": "<deploymentType>"}, "updatedAt": 0, "live": false, "gitComments":
-        {"onPullRequest": false, "onCommit": false}, "gitProviderOptions": {"createDeployments":
-        "<createDeployments>"}, "webAnalytics": {"id": "<id>"}, "security": {"firewallUpdatedAt":
-        0, "firewallConfigVersion": 0, "botIdEnabled": false, "firewallEnabled": false,
-        "ja3Enabled": false, "ja4Enabled": false, "firewallSeawallEnabled": false,
-        "managedRules": {"vercel_ruleset": {"active": false}, "bot_filter": {"active":
-        false, "action": "<action>"}, "ai_bots": {"active": false, "action": "<action>"},
-        "owasp": {"active": false}}}, "oidcTokenConfig": {"enabled": false, "issuerMode":
-        "<issuerMode>"}, "v0": false, "hasDeployments": false, "dismissedToasts":
-        [{"key": "<key>", "action": "<action>", "value": false, "dismissedAt": 0}],
-        "link": {"type": "<type>", "repo": "<repo>", "repoId": 0, "org": "<org>",
-        "repoOwnerId": 0, "gitCredentialId": "<gitCredentialId>", "productionBranch":
-        "<productionBranch>", "sourceless": false, "createdAt": 0, "updatedAt": 0,
-        "deployHooks": []}, "latestDeployments": [{"alias": ["<alias>"], "aliasAssigned":
-        0, "aliasError": null, "automaticAliases": ["<automaticAliases>"], "builds":
-        [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid": "<uid>",
-        "email": "<email>", "username": "<username>", "githubLogin": "<githubLogin>"},
-        "deploymentHostname": "<deploymentHostname>", "forced": false, "id": "<id>",
-        "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>", "githubCommitAuthorEmail":
-        "<githubCommitAuthorEmail>", "githubCommitMessage": "<githubCommitMessage>",
-        "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef": "<githubCommitRef>",
-        "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha": "<githubCommitSha>",
-        "githubDeployment": "<githubDeployment>", "githubOrg": "<githubOrg>", "githubRepo":
-        "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>", "githubCommitRepoId":
-        "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>", "githubRepoVisibility":
-        "<githubRepoVisibility>", "githubHost": "<githubHost>", "githubCommitAuthorLogin":
-        "<githubCommitAuthorLogin>", "githubPrId": "<githubPrId>", "githubCommitVerification":
-        "<githubCommitVerification>", "repoPushedAt": "<repoPushedAt>", "branchAlias":
-        "<branchAlias>", "lambdaRuntimeStats": "<lambdaRuntimeStats>", "bundler":
-        "<bundler>"}, "name": "<name>", "plan": "<plan>", "private": false, "readyState":
-        "<readyState>", "readySubstate": "<readySubstate>", "target": null, "teamId":
-        "<teamId>", "type": "<type>", "url": "<url>", "userId": "<userId>", "withCache":
-        false, "buildingAt": 0, "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims":
-        {"sub": "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner":
-        "<owner>", "owner_id": "<owner_id>", "project": "<project>", "project_id":
-        "<project_id>", "environment": "<environment>", "plan": "<plan>"}}, {"alias":
-        ["<alias>"], "aliasAssigned": 0, "aliasError": null, "automaticAliases": ["<automaticAliases>"],
-        "builds": [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid":
-        "<uid>", "email": "<email>", "username": "<username>", "githubLogin": "<githubLogin>"},
-        "deploymentHostname": "<deploymentHostname>", "forced": false, "id": "<id>",
-        "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>", "githubCommitAuthorEmail":
-        "<githubCommitAuthorEmail>", "githubCommitMessage": "<githubCommitMessage>",
-        "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef": "<githubCommitRef>",
-        "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha": "<githubCommitSha>",
-        "githubDeployment": "<githubDeployment>", "githubOrg": "<githubOrg>", "githubRepo":
-        "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>", "githubCommitRepoId":
-        "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>", "githubRepoVisibility":
-        "<githubRepoVisibility>", "githubHost": "<githubHost>", "githubCommitAuthorLogin":
-        "<githubCommitAuthorLogin>", "githubPrId": "<githubPrId>", "githubCommitVerification":
-        "<githubCommitVerification>", "repoPushedAt": "<repoPushedAt>", "branchAlias":
-        "<branchAlias>", "lambdaRuntimeStats": "<lambdaRuntimeStats>", "bundler":
-        "<bundler>"}, "name": "<name>", "plan": "<plan>", "private": false, "readyState":
-        "<readyState>", "readySubstate": "<readySubstate>", "target": null, "teamId":
-        "<teamId>", "type": "<type>", "url": "<url>", "userId": "<userId>", "withCache":
-        false, "buildingAt": 0, "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims":
-        {"sub": "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner":
-        "<owner>", "owner_id": "<owner_id>", "project": "<project>", "project_id":
-        "<project_id>", "environment": "<environment>", "plan": "<plan>"}}], "targets":
-        {"production": {"alias": ["<alias>", "<alias>", "<alias>", "<alias>", "<alias>",
+        "<createDeployments>"}, "webAnalytics": {"id": "<id>", "enabledAt": 0, "hasData":
+        false}, "oidcTokenConfig": {"enabled": false, "issuerMode": "<issuerMode>"},
+        "hasDeployments": false, "link": {"type": "<type>", "repo": "<repo>", "repoId":
+        0, "org": "<org>", "repoOwnerId": 0, "gitCredentialId": "<gitCredentialId>",
+        "productionBranch": "<productionBranch>", "sourceless": false, "createdAt":
+        0, "updatedAt": 0, "deployHooks": []}, "latestDeployments": [{"alias": ["<alias>",
         "<alias>", "<alias>", "<alias>", "<alias>"], "aliasAssigned": 0, "aliasError":
         null, "automaticAliases": ["<automaticAliases>", "<automaticAliases>"], "builds":
         [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid": "<uid>",
@@ -757,7 +70,7 @@ interactions:
         "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims": {"sub":
         "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner": "<owner>",
         "owner_id": "<owner_id>", "project": "<project>", "project_id": "<project_id>",
-        "environment": "<environment>", "plan": "<plan>"}}, "preview": {"alias": ["<alias>"],
+        "environment": "<environment>", "plan": "<plan>"}}, {"alias": ["<alias>"],
         "aliasAssigned": 0, "aliasError": null, "automaticAliases": ["<automaticAliases>"],
         "builds": [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid":
         "<uid>", "email": "<email>", "username": "<username>", "githubLogin": "<githubLogin>"},
@@ -779,11 +92,57 @@ interactions:
         false, "buildingAt": 0, "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims":
         {"sub": "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner":
         "<owner>", "owner_id": "<owner_id>", "project": "<project>", "project_id":
-        "<project_id>", "environment": "<environment>", "plan": "<plan>"}}}, "transferStartedAt":
-        0, "transferCompletedAt": 0, "transferredFromAccountId": "<transferredFromAccountId>",
-        "protectionBypass": {"<key_0>": {"createdAt": 0, "createdBy": "<createdBy>",
-        "scope": "<scope>"}}, "features": {"webAnalytics": false}, "avatar": "<avatar>"}],
-        "pagination": {"count": 0, "next": null, "prev": 0}}'
+        "<project_id>", "environment": "<environment>", "plan": "<plan>"}}], "targets":
+        {"production": {"alias": ["<alias>", "<alias>", "<alias>", "<alias>", "<alias>"],
+        "aliasAssigned": 0, "aliasError": null, "automaticAliases": ["<automaticAliases>",
+        "<automaticAliases>"], "builds": [], "createdAt": 0, "createdIn": "<createdIn>",
+        "creator": {"uid": "<uid>", "email": "<email>", "username": "<username>",
+        "githubLogin": "<githubLogin>"}, "deploymentHostname": "<deploymentHostname>",
+        "forced": false, "id": "<id>", "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>",
+        "githubCommitAuthorEmail": "<githubCommitAuthorEmail>", "githubCommitMessage":
+        "<githubCommitMessage>", "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef":
+        "<githubCommitRef>", "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha":
+        "<githubCommitSha>", "githubDeployment": "<githubDeployment>", "githubOrg":
+        "<githubOrg>", "githubRepo": "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>",
+        "githubCommitRepoId": "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>",
+        "githubRepoVisibility": "<githubRepoVisibility>", "githubHost": "<githubHost>",
+        "githubCommitAuthorLogin": "<githubCommitAuthorLogin>", "githubCommitVerification":
+        "<githubCommitVerification>", "repoPushedAt": "<repoPushedAt>", "branchAlias":
+        "<branchAlias>", "lambdaRuntimeStats": "<lambdaRuntimeStats>", "bundler":
+        "<bundler>"}, "name": "<name>", "plan": "<plan>", "private": false, "readyState":
+        "<readyState>", "readySubstate": "<readySubstate>", "target": "<target>",
+        "teamId": "<teamId>", "type": "<type>", "url": "<url>", "userId": "<userId>",
+        "withCache": false, "buildingAt": 0, "readyAt": 0, "previewCommentsEnabled":
+        false, "oidcTokenClaims": {"sub": "<sub>", "iss": "<iss>", "scope": "<scope>",
+        "aud": "<aud>", "owner": "<owner>", "owner_id": "<owner_id>", "project": "<project>",
+        "project_id": "<project_id>", "environment": "<environment>", "plan": "<plan>"}},
+        "preview": {"alias": ["<alias>"], "aliasAssigned": 0, "aliasError": null,
+        "automaticAliases": ["<automaticAliases>"], "builds": [], "createdAt": 0,
+        "createdIn": "<createdIn>", "creator": {"uid": "<uid>", "email": "<email>",
+        "username": "<username>", "githubLogin": "<githubLogin>"}, "deploymentHostname":
+        "<deploymentHostname>", "forced": false, "id": "<id>", "meta": {"githubCommitAuthorName":
+        "<githubCommitAuthorName>", "githubCommitAuthorEmail": "<githubCommitAuthorEmail>",
+        "githubCommitMessage": "<githubCommitMessage>", "githubCommitOrg": "<githubCommitOrg>",
+        "githubCommitRef": "<githubCommitRef>", "githubCommitRepo": "<githubCommitRepo>",
+        "githubCommitSha": "<githubCommitSha>", "githubDeployment": "<githubDeployment>",
+        "githubOrg": "<githubOrg>", "githubRepo": "<githubRepo>", "githubRepoOwnerType":
+        "<githubRepoOwnerType>", "githubCommitRepoId": "<githubCommitRepoId>", "githubRepoId":
+        "<githubRepoId>", "githubRepoVisibility": "<githubRepoVisibility>", "githubHost":
+        "<githubHost>", "githubCommitAuthorLogin": "<githubCommitAuthorLogin>", "githubPrId":
+        "<githubPrId>", "githubCommitVerification": "<githubCommitVerification>",
+        "repoPushedAt": "<repoPushedAt>", "branchAlias": "<branchAlias>", "lambdaRuntimeStats":
+        "<lambdaRuntimeStats>", "bundler": "<bundler>"}, "name": "<name>", "plan":
+        "<plan>", "private": false, "readyState": "<readyState>", "readySubstate":
+        "<readySubstate>", "target": null, "teamId": "<teamId>", "type": "<type>",
+        "url": "<url>", "userId": "<userId>", "withCache": false, "buildingAt": 0,
+        "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims": {"sub":
+        "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner": "<owner>",
+        "owner_id": "<owner_id>", "project": "<project>", "project_id": "<project_id>",
+        "environment": "<environment>", "plan": "<plan>"}}}, "protectionBypass": {"<key_0>":
+        {"scope": "<scope>", "isEnvVar": false, "note": "<note>", "createdAt": 0,
+        "createdBy": "<createdBy>"}}, "features": {"webAnalytics": false}, "protectedSourcemaps":
+        false, "avatar": "<avatar>"}], "pagination": {"count": 0, "next": null, "prev":
+        0}}'
     headers:
       access-control-allow-headers:
       - Authorization, Accept, Content-Type
@@ -796,9 +155,9 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 10 Sep 2026 13:31:42 GMT
+      - Thu, 10 Sep 2026 13:41:17 GMT
       etag:
-      - '"m+P28EMARC+/jqM3UaztKQ=="'
+      - '"LqUzjixOoYeWKdvhkiQ1+g=="'
       server:
       - Vercel
       strict-transport-security:
@@ -808,9 +167,9 @@ interactions:
       x-ratelimit-remaining:
       - '399'
       x-ratelimit-reset:
-      - '1789047163'
+      - '1789047738'
       x-vercel-id:
-      - sfo1::gm5n8-1789047102434-aac71d2c48fa
+      - sfo1::w24fd-1789047677254-4883cfdfabc9
     status:
       code: 200
       message: OK

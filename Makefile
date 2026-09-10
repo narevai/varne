@@ -19,7 +19,7 @@ dev:
 	DEBUG=true LOG_LEVEL=DEBUG python -m varne.app
 
 cassettes-record:
-	infisical run -- pytest --record-mode=once
+	infisical run -- pytest --record-mode=rewrite
 
 cassettes-format:
 	./scripts/cassettes-format.sh

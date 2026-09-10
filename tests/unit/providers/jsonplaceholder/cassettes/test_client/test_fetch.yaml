@@ -398,7 +398,7 @@ interactions:
       access-control-allow-credentials:
       - 'true'
       age:
-      - '11680'
+      - '12367'
       alt-svc:
       - h3=":443"; ma=86400
       cache-control:
@@ -406,13 +406,13 @@ interactions:
       cf-cache-status:
       - HIT
       cf-ray:
-      - a38ecb5e4adac630-MXP
+      - a38ed9647cf41355-ATL
       connection:
       - keep-alive
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 10 Sep 2026 13:31:41 GMT
+      - Thu, 10 Sep 2026 13:41:15 GMT
       etag:
       - W/"6b80-Ybsq/K6GwwqrYkAsFxqDXGC7DoM"
       expires:
@@ -422,9 +422,9 @@ interactions:
       pragma:
       - no-cache
       report-to:
-      - '{"group":"heroku-nel","endpoints":[{"url":"https://nel.heroku.com/reports?s=WZiNahTRhuln8RsbphhXIgYqDsIDScLE7CCWDQvIriY%3D\u0026sid=e11707d5-02a7-43ef-b45e-2cf4d2036f7d\u0026ts=1775458207"}],"max_age":3600}'
+      - '{"group":"heroku-nel","endpoints":[{"url":"https://nel.heroku.com/reports?s=EevdKnviAWHZACIxOoNl4V7wfnljEOO7kiXj3zXTpMc%3D\u0026sid=e11707d5-02a7-43ef-b45e-2cf4d2036f7d\u0026ts=1781298542"}],"max_age":3600}'
       reporting-endpoints:
-      - heroku-nel="https://nel.heroku.com/reports?s=WZiNahTRhuln8RsbphhXIgYqDsIDScLE7CCWDQvIriY%3D&sid=e11707d5-02a7-43ef-b45e-2cf4d2036f7d&ts=1775458207"
+      - heroku-nel="https://nel.heroku.com/reports?s=EevdKnviAWHZACIxOoNl4V7wfnljEOO7kiXj3zXTpMc%3D&sid=e11707d5-02a7-43ef-b45e-2cf4d2036f7d&ts=1781298542"
       server:
       - cloudflare
       transfer-encoding:
@@ -442,7 +442,7 @@ interactions:
       x-ratelimit-remaining:
       - '999'
       x-ratelimit-reset:
-      - '1775458241'
+      - '1781298584'
     status:
       code: 200
       message: OK
