@@ -17,3 +17,11 @@ test:
 
 dev:
 	DEBUG=true LOG_LEVEL=DEBUG python -m varne.app
+
+vcr-record:
+	infisical run -- pytest --record-mode=rewrite
+
+vcr-format:
+	./scripts/vcr-format.sh
+
+vcr: vcr-record vcr-format

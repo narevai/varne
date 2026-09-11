@@ -1,4 +1,7 @@
 *.local.code-workspace
+
+# ignore reformatted cassettes
+tests/**/*.json
 .infisical.json
 
 .pnpm-store

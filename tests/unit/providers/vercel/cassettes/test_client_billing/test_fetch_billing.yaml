@@ -1,0 +1,131 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - identity
+      connection:
+      - keep-alive
+      host:
+      - api.vercel.com
+      user-agent:
+      - varne/0.1
+    method: GET
+    uri: https://api.vercel.com/v1/billing/charges?teamId=team_4lN90TlRlQzpFGhMLIoTTS9D&from=2026-09-01T00%3A00%3A00%2B00%3A00&to=2026-09-10T00%3A00%3A00%2B00%3A00
+  response:
+    body:
+      string: '{"ChargePeriodStart": "2026-08-31T07:00:00.000Z", "ChargePeriodEnd":
+        "2026-09-01T07:00:00.000Z", "ChargeCategory": "Usage", "BilledCost": 0.007441139270841694,
+        "BillingCurrency": "USD", "EffectiveCost": 0.007441139270841694, "ServiceName":
+        "Function Invocations", "ServiceCategory": "Vercel Functions", "ServiceProviderName":
+        "Vercel", "ConsumedQuantity": 12401.898784736159, "ConsumedUnit": "Invocations",
+        "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78", "ProjectName": "<ProjectName>"},
+        "PricingCategory": "Other", "PricingCurrency": "USD", "PricingQuantity": 0.007441139270841694,
+        "PricingUnit": "USD"}
+
+        {"ChargePeriodStart": "2026-09-01T07:00:00.000Z", "ChargePeriodEnd": "2026-09-02T07:00:00.000Z",
+        "ChargeCategory": "Usage", "BilledCost": 0.001437, "BillingCurrency": "USD",
+        "EffectiveCost": 0.001437, "ServiceName": "Function Invocations", "ServiceCategory":
+        "Vercel Functions", "ServiceProviderName": "Vercel", "ConsumedQuantity": 2395,
+        "ConsumedUnit": "Invocations", "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
+        "ProjectName": "<ProjectName>"}, "PricingCategory": "Other", "PricingCurrency":
+        "USD", "PricingQuantity": 0.001437, "PricingUnit": "USD"}
+
+        {"ChargePeriodStart": "2026-09-02T07:00:00.000Z", "ChargePeriodEnd": "2026-09-03T07:00:00.000Z",
+        "ChargeCategory": "Usage", "BilledCost": 0.0024204, "BillingCurrency": "USD",
+        "EffectiveCost": 0.0024204, "ServiceName": "Function Invocations", "ServiceCategory":
+        "Vercel Functions", "ServiceProviderName": "Vercel", "ConsumedQuantity": 4034,
+        "ConsumedUnit": "Invocations", "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
+        "ProjectName": "<ProjectName>"}, "PricingCategory": "Other", "PricingCurrency":
+        "USD", "PricingQuantity": 0.0024204, "PricingUnit": "USD"}
+
+        {"ChargePeriodStart": "2026-09-03T07:00:00.000Z", "ChargePeriodEnd": "2026-09-04T07:00:00.000Z",
+        "ChargeCategory": "Usage", "BilledCost": 0.003988800000000001, "BillingCurrency":
+        "USD", "EffectiveCost": 0.003988800000000001, "ServiceName": "Function Invocations",
+        "ServiceCategory": "Vercel Functions", "ServiceProviderName": "Vercel", "ConsumedQuantity":
+        6648, "ConsumedUnit": "Invocations", "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
+        "ProjectName": "<ProjectName>"}, "PricingCategory": "Other", "PricingCurrency":
+        "USD", "PricingQuantity": 0.003988800000000001, "PricingUnit": "USD"}
+
+        {"ChargePeriodStart": "2026-09-04T07:00:00.000Z", "ChargePeriodEnd": "2026-09-05T07:00:00.000Z",
+        "ChargeCategory": "Usage", "BilledCost": 0.0011628, "BillingCurrency": "USD",
+        "EffectiveCost": 0.0011628, "ServiceName": "Function Invocations", "ServiceCategory":
+        "Vercel Functions", "ServiceProviderName": "Vercel", "ConsumedQuantity": 1938,
+        "ConsumedUnit": "Invocations", "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
+        "ProjectName": "<ProjectName>"}, "PricingCategory": "Other", "PricingCurrency":
+        "USD", "PricingQuantity": 0.0011628, "PricingUnit": "USD"}
+
+        {"ChargePeriodStart": "2026-09-05T07:00:00.000Z", "ChargePeriodEnd": "2026-09-06T07:00:00.000Z",
+        "ChargeCategory": "Usage", "BilledCost": 0.0013452, "BillingCurrency": "USD",
+        "EffectiveCost": 0.0013452, "ServiceName": "Function Invocations", "ServiceCategory":
+        "Vercel Functions", "ServiceProviderName": "Vercel", "ConsumedQuantity": 2242,
+        "ConsumedUnit": "Invocations", "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
+        "ProjectName": "<ProjectName>"}, "PricingCategory": "Other", "PricingCurrency":
+        "USD", "PricingQuantity": 0.0013452, "PricingUnit": "USD"}
+
+        {"ChargePeriodStart": "2026-09-06T07:00:00.000Z", "ChargePeriodEnd": "2026-09-07T07:00:00.000Z",
+        "ChargeCategory": "Usage", "BilledCost": 0.0030528, "BillingCurrency": "USD",
+        "EffectiveCost": 0.0030528, "ServiceName": "Function Invocations", "ServiceCategory":
+        "Vercel Functions", "ServiceProviderName": "Vercel", "ConsumedQuantity": 5088,
+        "ConsumedUnit": "Invocations", "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
+        "ProjectName": "<ProjectName>"}, "PricingCategory": "Other", "PricingCurrency":
+        "USD", "PricingQuantity": 0.0030528, "PricingUnit": "USD"}
+
+        {"ChargePeriodStart": "2026-09-07T07:00:00.000Z", "ChargePeriodEnd": "2026-09-08T07:00:00.000Z",
+        "ChargeCategory": "Usage", "BilledCost": 0.0014982, "BillingCurrency": "USD",
+        "EffectiveCost": 0.0014982, "ServiceName": "Function Invocations", "ServiceCategory":
+        "Vercel Functions", "ServiceProviderName": "Vercel", "ConsumedQuantity": 2497,
+        "ConsumedUnit": "Invocations", "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
+        "ProjectName": "<ProjectName>"}, "PricingCategory": "Other", "PricingCurrency":
+        "USD", "PricingQuantity": 0.0014982, "PricingUnit": "USD"}
+
+        {"ChargePeriodStart": "2026-09-08T07:00:00.000Z", "ChargePeriodEnd": "2026-09-09T07:00:00.000Z",
+        "ChargeCategory": "Usage", "BilledCost": 0.0017435999999999999, "BillingCurrency":
+        "USD", "EffectiveCost": 0.0017435999999999999, "ServiceName": "Function Invocations",
+        "ServiceCategory": "Vercel Functions", "ServiceProviderName": "Vercel", "ConsumedQuantity":
+        2906, "ConsumedUnit": "Invocations", "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
+        "ProjectName": "<ProjectName>"}, "PricingCategory": "Other", "PricingCurrency":
+        "USD", "PricingQuantity": 0.0017435999999999999, "PricingUnit": "USD"}
+
+        {"ChargePeriodStart": "2026-08-31T07:00:00.000Z", "ChargePeriodEnd": "2026-09-01T07:00:00.000Z",
+        "ChargeCategory": "Usage", "BilledCost": 0.0010548803377058331, "BillingCurrency":
+        "USD", "EffectiveCost": 0.0010548803377058331, "ServiceName": "Edge Requests
+        - Additional CPU Duration", "ServiceCategory": "Vercel Delivery Network",
+        "ServiceProviderName": "Vercel", "ConsumedQuantity": 0.0027048213787329058,
+        "ConsumedUnit": "hour", "RegionId": "<RegionId>", "RegionName": "<RegionName>",
+        "Tags": {"ProjectId": "prj_5LAip7eW0S0iDBoLNDwa9gMTye78", "ProjectName": "<ProjectName>"},
+        "PricingCategory": "Other", "PricingCurrency": "USD", "PricingQuantity": 0.0010548803377058331,
+        "PricingUnit": "USD"}'
+    headers:
+      access-control-allow-headers:
+      - Authorization, Accept, Content-Type
+      access-control-allow-methods:
+      - OPTIONS, GET, POST, PUT, PATCH, DELETE
+      access-control-allow-origin:
+      - '*'
+      cache-control:
+      - private, max-age=60, stale-while-revalidate=900
+      content-type:
+      - application/jsonl
+      date:
+      - Fri, 11 Sep 2026 05:08:47 GMT
+      server:
+      - Vercel
+      strict-transport-security:
+      - max-age=63072000; includeSubDomains; preload
+      transfer-encoding:
+      - chunked
+      x-ratelimit-limit:
+      - '60'
+      x-ratelimit-remaining:
+      - '59'
+      x-ratelimit-reset:
+      - '1789103378'
+      x-vercel-id:
+      - sfo1::6vptm-1789103317291-54bebb8dd5ab
+    status:
+      code: 200
+      message: OK
+version: 1
