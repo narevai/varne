@@ -18,10 +18,10 @@ test:
 dev:
 	DEBUG=true LOG_LEVEL=DEBUG python -m varne.app
 
-cassettes-record:
+vcr-record:
 	infisical run -- pytest --record-mode=rewrite
 
-cassettes-format:
-	./scripts/cassettes-format.sh
+vcr-format:
+	./scripts/vcr-format.sh
 
-cassettes: cassettes-record cassettes-format
+vcr: vcr-record vcr-format
