@@ -2,11 +2,27 @@ from functools import partial
 
 import httpx2 as httpx
 import pytest
+from tests.policy import FieldPolicy, SanitizePolicy
 from tests.sanitize import sanitize_response
-from tests.unit.providers.vercel.policy import policy_vercel_projects
 
 from varne.config import VercelToken
 from varne.providers.vercel.client import VercelClient
+
+policy_vercel_projects = SanitizePolicy(
+    fields=(
+        FieldPolicy(
+            field="projects",
+            keep=("id", "accountId"),
+            limit=2,
+            match_field="id",
+            match_value="prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
+        ),
+        FieldPolicy(
+            field="protectionBypass",
+            redact_keys=True,
+        ),
+    )
+)
 
 
 @pytest.fixture
