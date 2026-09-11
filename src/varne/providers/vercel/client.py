@@ -16,8 +16,8 @@ class VercelClient(ProviderClient):
 
     @property
     @override
-    def base_url(self) -> str:
-        return "https://api.vercel.com"
+    def base_url(self) -> httpx.URL:
+        return httpx.URL("https://api.vercel.com")
 
     @property
     def headers(self) -> dict[str, str]:
@@ -27,7 +27,7 @@ class VercelClient(ProviderClient):
 
     def fetch_projects(self) -> str:
         response = self.http.get(
-            url=f"{self.base_url}/v10/projects", headers=self.headers
+            url=self.base_url.join("/v10/projects"), headers=self.headers
         )
         response.raise_for_status()
 
@@ -40,7 +40,7 @@ class VercelClient(ProviderClient):
         date_to: datetime,
     ) -> str:
         response = self.http.get(
-            url=f"{self.base_url}/v1/billing/charges",
+            url=self.base_url.join("/v1/billing/charges"),
             headers=self.headers,
             params={
                 "teamId": team_id,
@@ -59,7 +59,7 @@ class VercelClient(ProviderClient):
         date_to: datetime,
     ) -> str:
         response = self.http.get(
-            url=f"{self.base_url}/v1/query/web-analytics/visits/count",
+            url=self.base_url.join("/v1/query/web-analytics/visits/count"),
             headers=self.headers,
             params={
                 "teamId": team_id,
@@ -79,7 +79,7 @@ class VercelClient(ProviderClient):
         date_to: datetime,
     ) -> str:
         response = self.http.get(
-            url=f"{self.base_url}/v1/query/web-analytics/visits/aggregate",
+            url=self.base_url.join("/v1/query/web-analytics/visits/aggregate"),
             headers=self.headers,
             params={
                 "teamId": team_id,
