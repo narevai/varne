@@ -11,5 +11,10 @@ def vercel_team_id() -> str:
 
 
 @pytest.fixture
+def vercel_project_id() -> str:
+    return "prj_5LAip7eW0S0iDBoLNDwa9gMTye78"
+
+
+@pytest.fixture
 def vercel_token() -> VercelToken:
     return os.getenv("VERCEL_TOKEN", "test-token")

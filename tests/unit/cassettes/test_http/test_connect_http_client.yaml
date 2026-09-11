@@ -24,7 +24,7 @@ interactions:
       access-control-allow-credentials:
       - 'true'
       age:
-      - '1'
+      - '3'
       alt-svc:
       - h3=":443"; ma=86400
       cache-control:
@@ -32,7 +32,7 @@ interactions:
       cf-cache-status:
       - HIT
       cf-ray:
-      - a393da41bf719d12-SIN
+      - a393f616de2ff8fc-SIN
       connection:
       - keep-alive
       content-length:
@@ -40,7 +40,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Fri, 11 Sep 2026 04:15:39 GMT
+      - Fri, 11 Sep 2026 04:34:39 GMT
       etag:
       - W/"53-hfEnumeNh6YirfjyjaujcOPPT+s"
       expires:

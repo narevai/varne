@@ -50,3 +50,23 @@ class VercelClient(ProviderClient):
         )
 
         return response.text
+
+    def fetch_web_analytics_visits_count(
+        self,
+        team_id: str,
+        project_id: str,
+        date_from: datetime,
+        date_to: datetime,
+    ) -> str:
+        response = self.http.get(
+            url=f"{self.base_url}/v1/query/web-analytics/visits/count",
+            headers=self.headers,
+            params={
+                "teamId": team_id,
+                "projectId": project_id,
+                "from": date_from.isoformat(),
+                "to": date_to.isoformat(),
+            },
+        )
+
+        return response.text
