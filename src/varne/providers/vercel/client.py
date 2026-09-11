@@ -22,7 +22,7 @@ class VercelClient(ProviderClient):
     @property
     def headers(self) -> dict[str, str]:
         return {
-            "Authorization": f"Bearer {self.api_token}",
+            "Authorization": f"Bearer {self.api_token.get_secret_value()}",
         }
 
     def fetch_projects(self) -> str:

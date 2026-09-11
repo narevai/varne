@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, SecretStr, ValidationError
 
 type SourceId = str
 
@@ -16,7 +16,7 @@ class ConfigJsonPlaceholder(ConfigSourceBase):
     type: Literal["jsonplaceholder"] = "jsonplaceholder"
 
 
-type VercelToken = str
+type VercelToken = SecretStr
 
 
 class ConfigVercel(ConfigSourceBase):

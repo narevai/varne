@@ -1,6 +1,7 @@
 import os
 
 import pytest
+from pydantic import SecretStr
 
 from varne.config import VercelToken
 
@@ -17,4 +18,4 @@ def vercel_project_id() -> str:
 
 @pytest.fixture
 def vercel_token() -> VercelToken:
-    return os.getenv("VERCEL_TOKEN", "test-token")
+    return SecretStr(os.getenv("VERCEL_TOKEN", "test-token"))
