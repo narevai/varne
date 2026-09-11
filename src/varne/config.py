@@ -1,8 +1,9 @@
+import os
 from pathlib import Path
 from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, Field, SecretStr, ValidationError
+from pydantic import BaseModel, Field, SecretStr, ValidationError, model_validator
 
 type SourceId = str
 
@@ -21,7 +22,32 @@ type VercelToken = SecretStr
 
 class ConfigVercel(ConfigSourceBase):
     type: Literal["vercel"] = "vercel"
-    api_token: VercelToken
+    api_token: VercelToken | None = None
+    api_token_env: str | None = None
+
+    @model_validator(mode="after")
+    def validate_token_source(self) -> ConfigVercel:
+        if (self.api_token is None) == (self.api_token_env is None):
+            raise ValueError(
+                "Exactly one of api_token or api_token_env must be provided"
+            )
+
+        return self
+
+    def get_api_token(self) -> VercelToken:
+        if self.api_token is not None:
+            return self.api_token
+
+        assert self.api_token_env is not None
+
+        value = os.getenv(self.api_token_env)
+
+        if value is None:
+            raise RuntimeError(
+                f"Environment variable {self.api_token_env!r} is not set"
+            )
+
+        return SecretStr(value)
 
 
 ConfigSource = Annotated[
