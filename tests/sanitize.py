@@ -16,54 +16,94 @@ class VcrResponse(TypedDict, total=False):
     headers: dict[str, list[str]]
 
 
+def get_nested(value: dict[str, JsonValue], path: str) -> JsonValue | None:
+    current: JsonValue = value
+
+    for part in path.split("."):
+        if not isinstance(current, dict):
+            return None
+
+        current = current.get(part)
+
+        if current is None:
+            return None
+
+    return current
+
+
 def sanitize(
     value: JsonValue,
     policy: SanitizePolicy,
     key: str | None = None,
 ) -> JsonValue:
-    if policy.keep_all:
-        return value
-
-    field_policy = get_field_policy(key, policy)
+    if key is None:
+        field_policy = policy.root
+    else:
+        field_policy = get_field_policy(key, policy)
 
     if isinstance(value, dict):
-        if field_policy and field_policy.redact_keys:
-            return {
-                f"<key_{index}>": sanitize(child_value, policy, child_key)
-                for index, (child_key, child_value) in enumerate(value.items())
-            }
+        sanitized_dict: dict[str, JsonValue] = {}
 
-        return {
-            child_key: (
-                child_value
-                if field_policy and child_key in field_policy.keep
-                else sanitize(child_value, policy, child_key)
+        for child_key, child_value in value.items():
+            should_keep = field_policy is not None and child_key in field_policy.keep
+
+            if should_keep:
+                sanitized_dict[child_key] = child_value
+                continue
+
+            sanitized_dict[child_key] = sanitize(
+                child_value,
+                policy,
+                child_key,
             )
-            for child_key, child_value in value.items()
-        }
+
+        return sanitized_dict
 
     if isinstance(value, list):
         items = value
 
-        if (
-            field_policy
+        should_filter_items = (
+            field_policy is not None
             and field_policy.match_field is not None
             and field_policy.match_value is not None
-        ):
-            items = [
-                item
-                for item in items
-                if isinstance(item, dict)
-                and item.get(field_policy.match_field) == field_policy.match_value
-            ]
+        )
 
-        if field_policy and field_policy.limit is not None:
+        if should_filter_items and field_policy is not None:
+            filtered_items: list[JsonValue] = []
+            match_field = field_policy.match_field
+            match_value = field_policy.match_value
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+
+                matched_value = get_nested(
+                    item,
+                    match_field,  # pyright: ignore[reportArgumentType]
+                )
+
+                if matched_value == match_value:
+                    filtered_items.append(item)
+
+            items = filtered_items
+
+        if field_policy is not None and field_policy.limit is not None:
             items = items[: field_policy.limit]
 
-        return [sanitize(item, policy, key) for item in items]
+        sanitized_items: list[JsonValue] = []
+
+        for item in items:
+            sanitized_items.append(
+                sanitize(
+                    item,
+                    policy,
+                    key,
+                )
+            )
+
+        return sanitized_items
 
     if isinstance(value, str):
-        return f"<{key}>" if key else "<string>"
+        return f"<{key}>" if key is not None else "<string>"
 
     if isinstance(value, bool):
         return False
@@ -77,34 +117,81 @@ def sanitize(
     return None
 
 
+def parse_body(text: str) -> tuple[JsonValue, bool]:
+    try:
+        payload = cast(JsonValue, json.loads(text))
+        return payload, False
+
+    except json.JSONDecodeError:
+        rows: list[JsonValue] = []
+
+        for line in text.splitlines():
+            if not line.strip():
+                continue
+
+            row = cast(JsonValue, json.loads(line))
+            rows.append(row)
+
+        return rows, True
+
+
+def serialize_body(payload: JsonValue, is_jsonl: bool) -> str:
+    if not is_jsonl:
+        return json.dumps(payload)
+
+    if not isinstance(payload, list):
+        raise TypeError("Expected list when serializing JSONL response")
+
+    lines: list[str] = []
+
+    for row in payload:
+        line = json.dumps(row)
+        lines.append(line)
+
+    return "\n".join(lines)
+
+
 def sanitize_response(
     response: VcrResponse,
     policy: SanitizePolicy = default_policy,
 ) -> VcrResponse:
-    body = response.get("body", {}).get("string")
+    body_container = response.get("body", {})
+    body = body_container.get("string")
 
     if isinstance(body, bytes):
         try:
             text = body.decode()
         except UnicodeDecodeError:
             return response
+
     elif isinstance(body, str):
         text = body
+
     else:
         return response
 
     try:
-        payload = cast(JsonValue, json.loads(text))
+        payload, is_jsonl = parse_body(text)
     except json.JSONDecodeError:
         return response
 
-    sanitized = json.dumps(sanitize(payload, policy))
-
-    response.setdefault("body", {})["string"] = (
-        sanitized.encode() if isinstance(body, bytes) else sanitized
+    sanitized_payload = sanitize(
+        payload,
+        policy,
     )
 
+    sanitized = serialize_body(
+        sanitized_payload,
+        is_jsonl,
+    )
+
+    if isinstance(body, bytes):
+        response.setdefault("body", {})["string"] = sanitized.encode()
+    else:
+        response.setdefault("body", {})["string"] = sanitized
+
     headers = response.get("headers", {})
+
     headers.pop("content-length", None)
     headers.pop("Content-Length", None)
 

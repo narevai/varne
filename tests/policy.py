@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class FieldPolicy:
-    field: str
+    field: str | None = None
     keep: tuple[str, ...] = ()
     limit: int | None = None
     redact_keys: bool = False
@@ -15,6 +15,7 @@ class FieldPolicy:
 class SanitizePolicy:
     fields: tuple[FieldPolicy, ...] = ()
     keep_all: bool = False
+    root: FieldPolicy | None = None
 
 
 def get_field_policy(
