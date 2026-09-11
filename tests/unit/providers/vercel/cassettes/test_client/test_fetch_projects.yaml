@@ -16,8 +16,8 @@ interactions:
     uri: https://api.vercel.com/v10/projects
   response:
     body:
-      string: '{"projects": [{"accountId": "<accountId>", "alias": [], "speedInsights":
-        {"id": "<id>", "hasData": false, "enabledAt": 0}, "autoExposeSystemEnvs":
+      string: '{"projects": [{"accountId": "team_4lN90TlRlQzpFGhMLIoTTS9D", "alias":
+        [], "speedInsights": {"id": "<id>", "hasData": false, "enabledAt": 0}, "autoExposeSystemEnvs":
         false, "autoAssignCustomDomains": false, "autoAssignCustomDomainsUpdatedBy":
         "<autoAssignCustomDomainsUpdatedBy>", "buildCommand": null, "createdAt": 0,
         "crons": {"enabledAt": 0, "disabledAt": null, "updatedAt": 0, "deploymentId":
@@ -47,53 +47,52 @@ interactions:
         "<repo>", "repoId": 0, "org": "<org>", "repoOwnerId": 0, "gitCredentialId":
         "<gitCredentialId>", "productionBranch": "<productionBranch>", "sourceless":
         false, "createdAt": 0, "updatedAt": 0, "deployHooks": []}, "latestDeployments":
-        [{"alias": ["<alias>", "<alias>", "<alias>", "<alias>", "<alias>"], "aliasAssigned":
-        0, "aliasError": null, "automaticAliases": ["<automaticAliases>", "<automaticAliases>"],
-        "builds": [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid":
-        "<uid>", "email": "<email>", "username": "<username>", "githubLogin": "<githubLogin>"},
-        "deploymentHostname": "<deploymentHostname>", "forced": false, "id": "<id>",
-        "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>", "githubCommitAuthorEmail":
-        "<githubCommitAuthorEmail>", "githubCommitMessage": "<githubCommitMessage>",
-        "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef": "<githubCommitRef>",
-        "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha": "<githubCommitSha>",
-        "githubDeployment": "<githubDeployment>", "githubOrg": "<githubOrg>", "githubRepo":
-        "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>", "githubCommitRepoId":
-        "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>", "githubRepoVisibility":
-        "<githubRepoVisibility>", "githubHost": "<githubHost>", "githubCommitAuthorLogin":
-        "<githubCommitAuthorLogin>", "githubCommitVerification": "<githubCommitVerification>",
-        "repoPushedAt": "<repoPushedAt>", "branchAlias": "<branchAlias>", "lambdaRuntimeStats":
-        "<lambdaRuntimeStats>", "bundler": "<bundler>"}, "name": "<name>", "plan":
-        "<plan>", "private": false, "readyState": "<readyState>", "readySubstate":
-        "<readySubstate>", "target": "<target>", "teamId": "<teamId>", "type": "<type>",
-        "url": "<url>", "userId": "<userId>", "withCache": false, "buildingAt": 0,
-        "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims": {"sub":
-        "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner": "<owner>",
-        "owner_id": "<owner_id>", "project": "<project>", "project_id": "<project_id>",
-        "environment": "<environment>", "plan": "<plan>"}}, {"alias": ["<alias>"],
-        "aliasAssigned": 0, "aliasError": null, "automaticAliases": ["<automaticAliases>"],
-        "builds": [], "createdAt": 0, "createdIn": "<createdIn>", "creator": {"uid":
-        "<uid>", "email": "<email>", "username": "<username>", "githubLogin": "<githubLogin>"},
-        "deploymentHostname": "<deploymentHostname>", "forced": false, "id": "<id>",
-        "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>", "githubCommitAuthorEmail":
-        "<githubCommitAuthorEmail>", "githubCommitMessage": "<githubCommitMessage>",
-        "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef": "<githubCommitRef>",
-        "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha": "<githubCommitSha>",
-        "githubDeployment": "<githubDeployment>", "githubOrg": "<githubOrg>", "githubRepo":
-        "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>", "githubCommitRepoId":
-        "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>", "githubRepoVisibility":
-        "<githubRepoVisibility>", "githubHost": "<githubHost>", "githubCommitAuthorLogin":
-        "<githubCommitAuthorLogin>", "githubPrId": "<githubPrId>", "githubCommitVerification":
-        "<githubCommitVerification>", "repoPushedAt": "<repoPushedAt>", "branchAlias":
-        "<branchAlias>", "lambdaRuntimeStats": "<lambdaRuntimeStats>", "bundler":
-        "<bundler>"}, "name": "<name>", "plan": "<plan>", "private": false, "readyState":
-        "<readyState>", "readySubstate": "<readySubstate>", "target": null, "teamId":
-        "<teamId>", "type": "<type>", "url": "<url>", "userId": "<userId>", "withCache":
-        false, "buildingAt": 0, "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims":
-        {"sub": "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner":
-        "<owner>", "owner_id": "<owner_id>", "project": "<project>", "project_id":
-        "<project_id>", "environment": "<environment>", "plan": "<plan>"}}], "targets":
-        {"production": {"alias": ["<alias>", "<alias>", "<alias>", "<alias>", "<alias>"],
-        "aliasAssigned": 0, "aliasError": null, "automaticAliases": ["<automaticAliases>",
+        [{"alias": ["<alias>"], "aliasAssigned": 0, "aliasError": null, "automaticAliases":
+        ["<automaticAliases>"], "builds": [], "createdAt": 0, "createdIn": "<createdIn>",
+        "creator": {"uid": "<uid>", "email": "<email>", "username": "<username>",
+        "githubLogin": "<githubLogin>"}, "deploymentHostname": "<deploymentHostname>",
+        "forced": false, "id": "<id>", "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>",
+        "githubCommitAuthorEmail": "<githubCommitAuthorEmail>", "githubCommitMessage":
+        "<githubCommitMessage>", "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef":
+        "<githubCommitRef>", "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha":
+        "<githubCommitSha>", "githubDeployment": "<githubDeployment>", "githubOrg":
+        "<githubOrg>", "githubRepo": "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>",
+        "githubCommitRepoId": "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>",
+        "githubRepoVisibility": "<githubRepoVisibility>", "githubHost": "<githubHost>",
+        "githubCommitAuthorLogin": "<githubCommitAuthorLogin>", "githubPrId": "<githubPrId>",
+        "githubCommitVerification": "<githubCommitVerification>", "repoPushedAt":
+        "<repoPushedAt>", "branchAlias": "<branchAlias>", "lambdaRuntimeStats": "<lambdaRuntimeStats>",
+        "bundler": "<bundler>"}, "name": "<name>", "plan": "<plan>", "private": false,
+        "readyState": "<readyState>", "readySubstate": "<readySubstate>", "target":
+        null, "teamId": "<teamId>", "type": "<type>", "url": "<url>", "userId": "<userId>",
+        "withCache": false, "buildingAt": 0, "readyAt": 0, "previewCommentsEnabled":
+        false, "oidcTokenClaims": {"sub": "<sub>", "iss": "<iss>", "scope": "<scope>",
+        "aud": "<aud>", "owner": "<owner>", "owner_id": "<owner_id>", "project": "<project>",
+        "project_id": "<project_id>", "environment": "<environment>", "plan": "<plan>"}},
+        {"alias": ["<alias>"], "aliasAssigned": 0, "aliasError": null, "automaticAliases":
+        ["<automaticAliases>"], "builds": [], "createdAt": 0, "createdIn": "<createdIn>",
+        "creator": {"uid": "<uid>", "email": "<email>", "username": "<username>",
+        "githubLogin": "<githubLogin>"}, "deploymentHostname": "<deploymentHostname>",
+        "forced": false, "id": "<id>", "meta": {"githubCommitAuthorName": "<githubCommitAuthorName>",
+        "githubCommitAuthorEmail": "<githubCommitAuthorEmail>", "githubCommitMessage":
+        "<githubCommitMessage>", "githubCommitOrg": "<githubCommitOrg>", "githubCommitRef":
+        "<githubCommitRef>", "githubCommitRepo": "<githubCommitRepo>", "githubCommitSha":
+        "<githubCommitSha>", "githubDeployment": "<githubDeployment>", "githubOrg":
+        "<githubOrg>", "githubRepo": "<githubRepo>", "githubRepoOwnerType": "<githubRepoOwnerType>",
+        "githubCommitRepoId": "<githubCommitRepoId>", "githubRepoId": "<githubRepoId>",
+        "githubRepoVisibility": "<githubRepoVisibility>", "githubHost": "<githubHost>",
+        "githubCommitAuthorLogin": "<githubCommitAuthorLogin>", "githubPrId": "<githubPrId>",
+        "githubCommitVerification": "<githubCommitVerification>", "repoPushedAt":
+        "<repoPushedAt>", "branchAlias": "<branchAlias>", "lambdaRuntimeStats": "<lambdaRuntimeStats>",
+        "bundler": "<bundler>"}, "name": "<name>", "plan": "<plan>", "private": false,
+        "readyState": "<readyState>", "readySubstate": "<readySubstate>", "target":
+        null, "teamId": "<teamId>", "type": "<type>", "url": "<url>", "userId": "<userId>",
+        "withCache": false, "buildingAt": 0, "readyAt": 0, "previewCommentsEnabled":
+        false, "oidcTokenClaims": {"sub": "<sub>", "iss": "<iss>", "scope": "<scope>",
+        "aud": "<aud>", "owner": "<owner>", "owner_id": "<owner_id>", "project": "<project>",
+        "project_id": "<project_id>", "environment": "<environment>", "plan": "<plan>"}}],
+        "targets": {"production": {"alias": ["<alias>", "<alias>", "<alias>", "<alias>",
+        "<alias>"], "aliasAssigned": 0, "aliasError": null, "automaticAliases": ["<automaticAliases>",
         "<automaticAliases>"], "builds": [], "createdAt": 0, "createdIn": "<createdIn>",
         "creator": {"uid": "<uid>", "email": "<email>", "username": "<username>",
         "githubLogin": "<githubLogin>"}, "deploymentHostname": "<deploymentHostname>",
@@ -154,9 +153,9 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Thu, 10 Sep 2026 23:44:25 GMT
+      - Fri, 11 Sep 2026 00:03:18 GMT
       etag:
-      - '"VV4tCpVBwHPHDD4FwTKcyw=="'
+      - '"1DdUk3YEq2eepeSrSf5q5g=="'
       server:
       - Vercel
       strict-transport-security:
@@ -166,9 +165,9 @@ interactions:
       x-ratelimit-remaining:
       - '399'
       x-ratelimit-reset:
-      - '1789083926'
+      - '1789085059'
       x-vercel-id:
-      - sfo1::gzj6m-1789083865222-394ad70371e7
+      - sfo1::sddww-1789084998231-421be41318ab
     status:
       code: 200
       message: OK

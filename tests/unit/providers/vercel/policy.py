@@ -4,7 +4,7 @@ vercel_policy = SanitizePolicy(
     fields=(
         FieldPolicy(
             field="projects",
-            keep=("id",),
+            keep=("id","accountId"),
             limit=2,
             match_field="id",
             match_value="prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
