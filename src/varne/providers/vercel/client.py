@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import override
 
 import httpx2 as httpx
@@ -29,5 +30,23 @@ class VercelClient(ProviderClient):
             url=f"{self.base_url}/v10/projects", headers=self.headers
         )
         response.raise_for_status()
+
+        return response.text
+
+    def fetch_billing(
+        self,
+        team_id: str,
+        date_from: datetime,
+        date_to: datetime,
+    ) -> str:
+        response = self.http.get(
+            url=f"{self.base_url}/v1/billing/charges",
+            headers=self.headers,
+            params={
+                "teamId": team_id,
+                "from": date_from.isoformat(),
+                "to": date_to.isoformat(),
+            },
+        )
 
         return response.text

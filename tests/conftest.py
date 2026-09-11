@@ -1,10 +1,8 @@
-import os
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
-from varne.config import VercelToken
 from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.http import create_http_client
@@ -52,8 +50,3 @@ stacks:
     )
 
     return path
-
-
-@pytest.fixture
-def vercel_token() -> VercelToken:
-    return os.environ.get("VERCEL_TOKEN", "test-token")

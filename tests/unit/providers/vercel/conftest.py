@@ -1,14 +1,15 @@
-from functools import partial
+import os
 
 import pytest
-from tests.sanitize import sanitize_response
-from tests.unit.providers.vercel.policy import vercel_policy
+
+from varne.config import VercelToken
 
 
 @pytest.fixture
-def vcr_config():
-    return {
-        "decode_compressed_response": True,
-        "filter_headers": ["authorization"],
-        "before_record_response": partial(sanitize_response, policy=vercel_policy),
-    }
+def vercel_team_id() -> str:
+    return "team_4lN90TlRlQzpFGhMLIoTTS9D"
+
+
+@pytest.fixture
+def vercel_token() -> VercelToken:
+    return os.getenv("VERCEL_TOKEN", "test-token")

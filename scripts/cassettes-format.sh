@@ -7,7 +7,19 @@ while read -r file; do
     jq '
       [
         .interactions[].response.body.string
-        | if type == "string" then fromjson else . end
+        | if type == "string" then
+            . as $body
+            | try ($body | fromjson)
+              catch (
+                $body
+                | split("\n")
+                | .[]
+                | select(length > 0)
+                | fromjson
+              )
+          else
+            .
+          end
       ]
     ' > "${file%.yaml}.json"
 done
