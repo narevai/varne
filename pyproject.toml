@@ -77,6 +77,8 @@ main_file = "src/varne/app.py"
 addopts = "-p nicegui.testing.user_plugin --import-mode=importlib"
 filterwarnings = [
     "ignore:fetch_arrow_table\\(\\) is deprecated, use to_arrow_table\\(\\) instead.:DeprecationWarning",
+    "ignore::pydantic.warnings.PydanticDeprecatedSince211",
+    "ignore:The anyio\\.abc\\.BlockingPortal alias is deprecated:DeprecationWarning:starlette\\.testclient",
 ]
 
 [tool.basedpyright]
