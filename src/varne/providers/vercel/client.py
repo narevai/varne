@@ -70,3 +70,24 @@ class VercelClient(ProviderClient):
         )
 
         return response.text
+
+    def fetch_web_analytics_visits_aggregate(
+        self,
+        team_id: str,
+        project_id: str,
+        date_from: datetime,
+        date_to: datetime,
+    ) -> str:
+        response = self.http.get(
+            url=f"{self.base_url}/v1/query/web-analytics/visits/aggregate",
+            headers=self.headers,
+            params={
+                "teamId": team_id,
+                "projectId": project_id,
+                "since": date_from.isoformat(),
+                "until": date_to.isoformat(),
+                "by": ["day"],
+            },
+        )
+
+        return response.text

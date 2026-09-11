@@ -17,7 +17,7 @@ interactions:
   response:
     body:
       string: '{"version": 1, "query": {"since": "2026-06-19T00:00:00.000Z", "until":
-        "2026-09-12T00:00:00.000Z"}, "data": {"visitors": 1384, "pageviews": 2757}}'
+        "2026-09-12T00:00:00.000Z"}, "data": {"visitors": 1384, "pageviews": 2758}}'
     headers:
       access-control-allow-headers:
       - Authorization, Accept, Content-Type
@@ -30,7 +30,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Fri, 11 Sep 2026 04:34:39 GMT
+      - Fri, 11 Sep 2026 04:57:57 GMT
       server:
       - Vercel
       strict-transport-security:
@@ -40,9 +40,9 @@ interactions:
       x-ratelimit-remaining:
       - '399'
       x-ratelimit-reset:
-      - '1789104880'
+      - '1789106277'
       x-vercel-id:
-      - sfo1::7mjlg-1789101279134-8500966a4afd
+      - sfo1::2wcl5-1789102676751-5645341689a8
     status:
       code: 200
       message: OK
