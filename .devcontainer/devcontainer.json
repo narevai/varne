@@ -14,7 +14,8 @@
         "charliermarsh.ruff",
         "yzhang.markdown-all-in-one",
         "ms-vscode.vscode-json",
-        "ms-vscode.vscode-yaml"
+        "ms-vscode.vscode-yaml",
+        "ms-python.debugpy"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python"

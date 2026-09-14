@@ -20,7 +20,7 @@ class ProviderClient(ABC):
 
     @property
     @abstractmethod
-    def base_url(self) -> str:
+    def base_url(self) -> httpx.URL:
         raise NotImplementedError()
 
 

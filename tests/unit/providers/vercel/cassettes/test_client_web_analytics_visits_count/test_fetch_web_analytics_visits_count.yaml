@@ -1,0 +1,49 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - identity
+      connection:
+      - keep-alive
+      host:
+      - api.vercel.com
+      user-agent:
+      - varne/0.1
+    method: GET
+    uri: https://api.vercel.com/v1/query/web-analytics/visits/count?teamId=team_4lN90TlRlQzpFGhMLIoTTS9D&projectId=prj_5LAip7eW0S0iDBoLNDwa9gMTye78&from=2026-09-01T00%3A00%3A00%2B00%3A00&to=2026-09-10T00%3A00%3A00%2B00%3A00
+  response:
+    body:
+      string: '{"version": 1, "query": {"since": "2026-06-19T00:00:00.000Z", "until":
+        "2026-09-12T00:00:00.000Z"}, "data": {"visitors": 1384, "pageviews": 2758}}'
+    headers:
+      access-control-allow-headers:
+      - Authorization, Accept, Content-Type
+      access-control-allow-methods:
+      - OPTIONS, GET, POST, PUT, PATCH, DELETE
+      access-control-allow-origin:
+      - '*'
+      cache-control:
+      - private, max-age=0, must-revalidate
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Fri, 11 Sep 2026 05:08:51 GMT
+      server:
+      - Vercel
+      strict-transport-security:
+      - max-age=63072000; includeSubDomains; preload
+      x-ratelimit-limit:
+      - '400'
+      x-ratelimit-remaining:
+      - '399'
+      x-ratelimit-reset:
+      - '1789106931'
+      x-vercel-id:
+      - sfo1::crhql-1789103330954-20bfefbb89ef
+    status:
+      code: 200
+      message: OK
+version: 1

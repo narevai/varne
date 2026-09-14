@@ -9,11 +9,6 @@ from varne.http import create_http_client
 
 
 @pytest.fixture
-def vcr_config():
-    return {"decode_compressed_response": True}
-
-
-@pytest.fixture
 def client() -> TestClient:
     from varne.app import app
 
@@ -32,7 +27,7 @@ def db(tmp_path: Path):
 @pytest.fixture
 def http_client():
     client = create_http_client()
-
+    client.headers["Accept-Encoding"] = "identity"
     yield client
 
     client.close()
