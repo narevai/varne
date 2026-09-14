@@ -7,12 +7,13 @@
 ## Devlog
 | YouTube                                                          | PR                                                |
 | ---------------------------------------------------------------- | ------------------------------------------------- |
-| [Intro and plans for V1](https://youtube.com/live/obq8IIN0epY)   | N/A                                               |
-| [Basic UI 1](https://youtube.com/live/50ahIxMfuJU?feature=share) | [#207](https://github.com/narevai/varne/pull/207) |
-| [Basic UI 2](https://www.youtube.com/watch?v=ZE-k7V4Ymk8)        | [#208](https://github.com/narevai/varne/pull/208) |
-| [Data pipeline](https://youtu.be/KRvkaM2O2ho)                    | [#212](https://github.com/narevai/varne/pull/212) |
-| [Stronger typing part 1](https://youtube.com/live/Zfq7MEACyYA).  | [#217](https://github.com/narevai/varne/pull/217) |
+| [ConfigManager](https://youtu.be/qYlT9Y-A7Lg)                    | [#219](https://github.com/narevai/varne/pull/219) |
 | [Stronger typing part 2](https://youtube.com/live/uE0IJrpH270)   | [#217](https://github.com/narevai/varne/pull/217) |
+| [Stronger typing part 1](https://youtube.com/live/Zfq7MEACyYA).  | [#217](https://github.com/narevai/varne/pull/217) |
+| [Data pipeline](https://youtu.be/KRvkaM2O2ho)                    | [#212](https://github.com/narevai/varne/pull/212) |
+| [Basic UI 2](https://www.youtube.com/watch?v=ZE-k7V4Ymk8)        | [#208](https://github.com/narevai/varne/pull/208) |
+| [Basic UI 1](https://youtube.com/live/50ahIxMfuJU?feature=share) | [#207](https://github.com/narevai/varne/pull/207) |
+| [Intro and plans for V1](https://youtube.com/live/obq8IIN0epY)   | N/A                                               |
 
 ## Run
 
