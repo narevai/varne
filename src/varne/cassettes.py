@@ -5,10 +5,6 @@ from typing import cast
 import vcr
 from vcr.cassette import Cassette
 
-CASSETTES = [
-    Path("tests/unit/providers/jsonplaceholder/cassettes/test_client/test_fetch.yaml"),
-]
-
 
 class CassetteManager:
     def __init__(self, cassette_paths: list[Path]):
