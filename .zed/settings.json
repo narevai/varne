@@ -1,0 +1,5 @@
+{
+  "terminal": {
+    "detect_venv": "off"
+  }
+}
