@@ -77,7 +77,7 @@ async def page_dashboard() -> None:
                         button_sync.disable()
 
                         try:
-                            _ = await run.io_bound(service.fetch_and_store)
+                            _ = await run.io_bound(service.fetch_meta)
                             await content.refresh()
                             message = f"Synced rows for stack {stack.name} and source {source.name}"
                             ui.notify(message)

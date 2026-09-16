@@ -30,7 +30,7 @@ class JsonPlaceholderService(ProviderService):
         return SourceType.JSONPLACEHOLDER
 
     @override
-    def fetch_and_store(self) -> None:
+    def fetch_meta(self) -> None:
         response = self.client.fetch_posts()
 
         posts_row = RowRaw(
