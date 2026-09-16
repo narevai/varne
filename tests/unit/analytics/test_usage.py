@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 
 from varne.analytics.usage import get_usage_by_id
-from varne.config import SourceId, StackId
+from varne.config import SourceId, SourceType, StackId
 from varne.db.types import DatabaseBackend
 
 
@@ -17,14 +17,14 @@ def test_get_usage_by_id(db: DatabaseBackend):
             {
                 "stack_id": stack_id,
                 "source_id": source_id,
-                "id": "jsonplaceholder",
+                "id": SourceType.JSONPLACEHOLDER,
                 "event_time": now,
                 "amount": 12.0,
             },
             {
                 "stack_id": stack_id,
                 "source_id": source_id,
-                "id": "jsonplaceholder",
+                "id": SourceType.JSONPLACEHOLDER,
                 "event_time": now,
                 "amount": 8.0,
             },
