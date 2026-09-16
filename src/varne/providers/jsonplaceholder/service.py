@@ -3,7 +3,7 @@ from typing import Literal, override
 
 from loguru import logger
 
-from varne.config import SourceId, StackId
+from varne.config import SourceId, SourceType, StackId
 from varne.db.types import DatabaseBackend
 from varne.providers.base import ProviderService
 from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
@@ -26,8 +26,8 @@ class JsonPlaceholderService(ProviderService):
 
     @property
     @override
-    def provider(self) -> Literal["jsonplaceholder"]:
-        return "jsonplaceholder"
+    def provider(self) -> Literal[SourceType.JSONPLACEHOLDER]:
+        return SourceType.JSONPLACEHOLDER
 
     @override
     def fetch_and_store(self) -> None:

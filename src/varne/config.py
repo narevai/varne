@@ -1,4 +1,5 @@
 import os
+from enum import StrEnum
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -8,20 +9,25 @@ from pydantic import BaseModel, Field, SecretStr, ValidationError, model_validat
 type SourceId = str
 
 
+class SourceType(StrEnum):
+    JSONPLACEHOLDER = "jsonplaceholder"
+    VERCEL = "vercel"
+
+
 class ConfigSourceBase(BaseModel):
     id: SourceId
     name: str
 
 
 class ConfigJsonPlaceholder(ConfigSourceBase):
-    type: Literal["jsonplaceholder"] = "jsonplaceholder"
+    type: Literal[SourceType.JSONPLACEHOLDER] = SourceType.JSONPLACEHOLDER
 
 
 type VercelToken = SecretStr
 
 
 class ConfigVercel(ConfigSourceBase):
-    type: Literal["vercel"] = "vercel"
+    type: Literal[SourceType.VERCEL] = SourceType.VERCEL
     api_token: VercelToken | None = None
     api_token_env: str | None = None
 
@@ -51,7 +57,7 @@ class ConfigVercel(ConfigSourceBase):
 
 
 ConfigSource = Annotated[
-    ConfigJsonPlaceholder, ConfigVercel, Field(discriminator="type")
+    ConfigJsonPlaceholder | ConfigVercel, Field(discriminator="type")
 ]
 
 type StackId = str
