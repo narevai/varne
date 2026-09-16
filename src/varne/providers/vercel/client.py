@@ -25,20 +25,20 @@ class VercelClient(ProviderClient):
             "Authorization": f"Bearer {self.api_token.get_secret_value()}",
         }
 
-    def fetch_projects(self) -> str:
+    def fetch_projects(self) -> httpx.Response:
         response = self.http.get(
             url=self.base_url.join("/v10/projects"), headers=self.headers
         )
         response.raise_for_status()
 
-        return response.text
+        return response
 
     def fetch_billing(
         self,
         team_id: str,
         date_from: datetime,
         date_to: datetime,
-    ) -> str:
+    ) -> httpx.Response:
         response = self.http.get(
             url=self.base_url.join("/v1/billing/charges"),
             headers=self.headers,
@@ -49,7 +49,9 @@ class VercelClient(ProviderClient):
             },
         )
 
-        return response.text
+        response.raise_for_status()
+
+        return response
 
     def fetch_web_analytics_visits_count(
         self,
@@ -57,7 +59,7 @@ class VercelClient(ProviderClient):
         project_id: str,
         date_from: datetime,
         date_to: datetime,
-    ) -> str:
+    ) -> httpx.Response:
         response = self.http.get(
             url=self.base_url.join("/v1/query/web-analytics/visits/count"),
             headers=self.headers,
@@ -69,7 +71,9 @@ class VercelClient(ProviderClient):
             },
         )
 
-        return response.text
+        response.raise_for_status()
+
+        return response
 
     def fetch_web_analytics_visits_aggregate(
         self,
@@ -77,7 +81,7 @@ class VercelClient(ProviderClient):
         project_id: str,
         date_from: datetime,
         date_to: datetime,
-    ) -> str:
+    ) -> httpx.Response:
         response = self.http.get(
             url=self.base_url.join("/v1/query/web-analytics/visits/aggregate"),
             headers=self.headers,
@@ -90,4 +94,6 @@ class VercelClient(ProviderClient):
             },
         )
 
-        return response.text
+        response.raise_for_status()
+
+        return response

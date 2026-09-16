@@ -1,5 +1,6 @@
 {
   "terminal": {
     "detect_venv": "off"
-  }
+  },
+  "show_completions_on_input": true
 }

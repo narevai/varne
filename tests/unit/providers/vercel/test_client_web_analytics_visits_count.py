@@ -40,11 +40,11 @@ def test_fetch_web_analytics_visits_count(
 ):
     client = VercelClient(http_client, api_token=vercel_token)
 
-    web_analytics = client.fetch_web_analytics_visits_count(
+    response_web_analytics = client.fetch_web_analytics_visits_count(
         team_id=vercel_team_id,
         project_id=vercel_project_id,
         date_from=datetime(2026, 9, 1, tzinfo=UTC),
         date_to=datetime(2026, 9, 10, tzinfo=UTC),
     )
 
-    assert len(web_analytics) > 0
+    assert response_web_analytics.is_success
