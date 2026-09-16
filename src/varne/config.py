@@ -51,7 +51,7 @@ class ConfigVercel(ConfigSourceBase):
 
 
 ConfigSource = Annotated[
-    ConfigJsonPlaceholder, ConfigVercel, Field(discriminator="type")
+    ConfigJsonPlaceholder | ConfigVercel, Field(discriminator="type")
 ]
 
 type StackId = str
