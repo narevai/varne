@@ -41,5 +41,6 @@ def test_transform_posts():
 
     assert row.stack_id == stack_id
     assert row.source_id == source_id
-    assert row.provider == provider
-    assert row.amount == len("abcdef")
+    assert row.source_type == provider
+    assert row.value_name == "amount"
+    assert row.value == len("abcdef")

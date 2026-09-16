@@ -1,5 +1,3 @@
-from datetime import UTC, datetime
-
 from pydantic import TypeAdapter
 
 from varne.config import SourceType
@@ -8,7 +6,6 @@ from varne.providers.types import RowRaw, RowStaging
 
 
 def transform_posts(row: RowRaw) -> list[RowStaging]:
-    now = datetime.now(UTC)
     rows_staging: list[RowStaging] = []
     adapter = TypeAdapter(list[JsonPlaceholderPost])
     posts_typed = adapter.validate_json(row.payload)
@@ -16,10 +13,10 @@ def transform_posts(row: RowRaw) -> list[RowStaging]:
         row_staging: RowStaging = RowStaging(
             stack_id=row.stack_id,
             source_id=row.source_id,
-            provider=row.source_type,
-            id=SourceType.JSONPLACEHOLDER,
-            event_time=now,
-            amount=float(len(post.body)),
+            source_type=SourceType.JSONPLACEHOLDER,
+            extracted_at=row.extracted_at,
+            value_name="amount",
+            value=str(len(post.body)),
         )
         rows_staging.append(row_staging)
 

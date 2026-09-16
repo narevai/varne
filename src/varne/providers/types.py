@@ -23,7 +23,7 @@ class RowStaging(BaseModel):
 
     stack_id: StackId
     source_id: SourceId
-    provider: str
-    id: str
-    event_time: datetime
-    amount: float
+    source_type: SourceType
+    extracted_at: datetime
+    value_name: str
+    value: str
