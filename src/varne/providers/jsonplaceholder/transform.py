@@ -16,7 +16,7 @@ def transform_posts(row: RowRaw) -> list[RowStaging]:
         row_staging: RowStaging = RowStaging(
             stack_id=row.stack_id,
             source_id=row.source_id,
-            provider=row.provider,
+            provider=row.source_type,
             id=SourceType.JSONPLACEHOLDER,
             event_time=now,
             amount=float(len(post.body)),

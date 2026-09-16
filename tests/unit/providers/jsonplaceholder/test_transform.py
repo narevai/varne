@@ -1,7 +1,7 @@
 import json
 from datetime import UTC, datetime
 
-from varne.config import SourceId, StackId
+from varne.config import SourceId, SourceType, StackId
 from varne.providers.jsonplaceholder.transform import transform_posts
 from varne.providers.types import RowRaw
 
@@ -9,7 +9,7 @@ from varne.providers.types import RowRaw
 def test_transform_posts():
     stack_id: StackId = "stack_test"
     source_id: SourceId = "source_test"
-    provider = "jsonprovider"
+    provider = SourceType.JSONPLACEHOLDER
     now = datetime.now(UTC)
 
     post = [
@@ -26,8 +26,10 @@ def test_transform_posts():
     post_row = RowRaw(
         stack_id=stack_id,
         source_id=source_id,
-        provider=provider,
-        event_time=now,
+        source_type=provider,
+        method="GET",
+        url="TODO",
+        extracted_at=now,
         payload=post_str,
     )
 

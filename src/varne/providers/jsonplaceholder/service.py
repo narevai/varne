@@ -31,13 +31,16 @@ class JsonPlaceholderService(ProviderService):
 
     @override
     def fetch_and_store(self) -> None:
-        posts_payload: str = self.client.fetch_posts()
+        response = self.client.fetch_posts()
+
         posts_row = RowRaw(
             stack_id=self.stack_id,
             source_id=self.source_id,
-            provider=self.provider,
-            event_time=datetime.now(UTC),
-            payload=posts_payload,
+            source_type=self.provider,
+            method=response.request.method,
+            url=str(response.request.url),
+            extracted_at=datetime.now(UTC),
+            payload=response.text,
         )
 
         self.store_raw([posts_row])
