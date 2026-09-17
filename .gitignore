@@ -35,3 +35,4 @@ htmlcov/
 *.db
 *.db-shm
 *.db-wal
+.Trash-*
