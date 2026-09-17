@@ -9,7 +9,7 @@ from varne.db.types import DatabaseBackend
 from varne.providers.base import ProviderService
 from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
 from varne.providers.jsonplaceholder.transform import transform_posts
-from varne.providers.types import RowRaw, RowStaging
+from varne.providers.types import RowDimSourceMeta, RowRaw
 
 
 class JsonPlaceholderService(ProviderService):
@@ -44,6 +44,6 @@ class JsonPlaceholderService(ProviderService):
         )
 
         self.store_raw([posts_row])
-        posts_transformed: list[RowStaging] = transform_posts(posts_row)
+        posts_transformed: list[RowDimSourceMeta] = transform_posts(posts_row)
         self.store_staging(posts_transformed)
         logger.info("completed fetch and store for jsonplaceholder")

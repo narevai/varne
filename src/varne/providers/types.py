@@ -18,12 +18,12 @@ class RowRaw(BaseModel):
     payload: str
 
 
-class RowStaging(BaseModel):
+class RowDimSourceMeta(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid", strict=True)
 
     stack_id: StackId
     source_id: SourceId
-    provider: str
-    id: str
-    event_time: datetime
-    amount: float
+    source_type: SourceType
+    extracted_at: datetime
+    value_name: str
+    value: str

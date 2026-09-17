@@ -13,7 +13,7 @@ from varne.ui.layout import create_layout
 
 
 def get_usage_rows(db: DatabaseBackend, stack_id: StackId) -> list[dict[str, object]]:
-    result = cast(pd.DataFrame, get_usage_by_id(db, stack_id).execute())
+    result = get_usage_by_id(db, stack_id).to_pandas()
     rows = result.to_dict(orient="records")  # pyright: ignore[reportUnknownVariableType]
 
     return cast(list[dict[str, object]], rows)
@@ -104,9 +104,9 @@ async def page_dashboard() -> None:
             ui.table(
                 columns=[
                     {
-                        "name": "id",
-                        "label": "ID",
-                        "field": "id",
+                        "name": "source_id",
+                        "label": "Source Id",
+                        "field": "source_id",
                         "align": "left",
                     },
                     {

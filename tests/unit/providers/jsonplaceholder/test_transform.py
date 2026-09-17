@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 
 from varne.config import SourceId, SourceType, StackId
 from varne.providers.jsonplaceholder.transform import transform_posts
-from varne.providers.types import RowRaw
+from varne.providers.types import RowDimSourceMeta, RowRaw
 
 
 def test_transform_posts():
@@ -37,11 +37,14 @@ def test_transform_posts():
 
     rows = transform_posts(post_row)
 
-    assert len(rows) == 1
+    assert len(rows) == 2
+    assert all(isinstance(row, RowDimSourceMeta) for row in rows)
 
-    row = rows[0]
+    row_id = next(x for x in rows if x.value_name == "id")
 
-    assert row.stack_id == stack_id
-    assert row.source_id == source_id
-    assert row.id == source_type
-    assert row.amount == len("abcdef")
+    assert row_id.stack_id == stack_id
+    assert row_id.source_id == source_id
+    assert row_id.value == source_type
+
+    row_amount = next(x for x in rows if x.value_name == "amount")
+    assert row_amount.value == str(len("abcdef"))

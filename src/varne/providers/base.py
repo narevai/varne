@@ -6,7 +6,7 @@ from loguru import logger
 from varne.config import SourceId, StackId
 from varne.db.schema import TableDimSourceMeta, TableRaw
 from varne.db.types import DatabaseBackend
-from varne.providers.types import RowRaw, RowStaging
+from varne.providers.types import RowDimSourceMeta, RowRaw
 
 
 class ProviderClient(ABC):
@@ -54,7 +54,7 @@ class ProviderService(ABC):
         payload = [row.model_dump() for row in rows]
         self.db.insert(self.table_raw.name, payload)
 
-    def store_staging(self, rows: list[RowStaging]):
+    def store_staging(self, rows: list[RowDimSourceMeta]):
         logger.debug(f"saving rows to {self.table_dim_source_meta.name}")
         payload = [row.model_dump() for row in rows]
         self.db.insert(self.table_dim_source_meta.name, payload)

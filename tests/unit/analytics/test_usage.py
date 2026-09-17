@@ -18,16 +18,30 @@ def test_get_usage_by_id(db: DatabaseBackend):
             {
                 "stack_id": stack_id,
                 "source_id": source_id,
-                "id": SourceType.JSONPLACEHOLDER,
-                "event_time": now,
-                "amount": 12.0,
+                "extracted_at": now,
+                "value_name": "id",
+                "value": SourceType.JSONPLACEHOLDER
             },
             {
                 "stack_id": stack_id,
                 "source_id": source_id,
-                "id": SourceType.JSONPLACEHOLDER,
-                "event_time": now,
-                "amount": 8.0,
+                "extracted_at": now,
+                "value_name": "amount",
+                "value": str(12.0)
+            },
+            {
+                "stack_id": stack_id,
+                "source_id": source_id,
+                "extracted_at": now,
+                "value_name": "id",
+                "value": SourceType.JSONPLACEHOLDER
+            },
+            {
+                "stack_id": stack_id,
+                "source_id": source_id,
+                "extracted_at": now,
+                "value_name": "amount",
+                "value": str(8.0)
             },
         ],
     )

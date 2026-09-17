@@ -12,6 +12,7 @@ class TableName(StrEnum):
     RAW = "raw"
     DIM_SOURCE_META = "dim_source_meta"
 
+
 class Table(ABC):
     @property
     @abstractmethod
@@ -59,10 +60,10 @@ class TableDimSourceMeta(Table):
             {
                 "stack_id": dt.string,
                 "source_id": dt.string,
-                "provider": dt.string,
-                "id": dt.string,
-                "event_time": dt.timestamp,
-                "amount": dt.float,
+                "source_type": dt.string,
+                "extracted_at": dt.timestamp,
+                "value_name": dt.string,
+                "value": dt.string,
             }
         )
 

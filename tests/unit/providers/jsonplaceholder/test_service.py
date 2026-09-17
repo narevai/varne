@@ -23,4 +23,4 @@ def test_store(db: DatabaseBackend, http_client: httpx.Client):
     staging_count = db.table(TableName.DIM_SOURCE_META).count().execute()
 
     assert raw_count == 1
-    assert staging_count == 100
+    assert staging_count == 200
