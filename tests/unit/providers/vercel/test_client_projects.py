@@ -40,6 +40,7 @@ def vcr_config():
 def test_fetch_projects(http_client: httpx.Client, vercel_token: VercelToken):
     client = VercelClient(http_client, api_token=vercel_token)
 
-    projects = client.fetch_projects()
+    response = client.fetch_projects()
 
-    assert len(projects) > 0
+    assert len(response.text) > 0
+    assert response.is_success

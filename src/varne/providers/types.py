@@ -3,7 +3,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel, ConfigDict
 
-from varne.config import SourceId, StackId
+from varne.config import SourceId, SourceType, StackId
 
 
 class RowRaw(BaseModel):
@@ -11,8 +11,10 @@ class RowRaw(BaseModel):
 
     stack_id: StackId
     source_id: SourceId
-    provider: str
-    event_time: datetime
+    source_type: SourceType
+    extracted_at: datetime
+    method: str
+    url: str
     payload: str
 
 

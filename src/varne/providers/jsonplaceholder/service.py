@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 from typing import Literal, override
 
+import httpx2 as httpx
 from loguru import logger
 
 from varne.config import SourceId, SourceType, StackId
@@ -31,13 +32,15 @@ class JsonPlaceholderService(ProviderService):
 
     @override
     def fetch_and_store(self) -> None:
-        posts_payload: str = self.client.fetch_posts()
+        response: httpx.Response = self.client.fetch_posts()
         posts_row = RowRaw(
             stack_id=self.stack_id,
             source_id=self.source_id,
-            provider=self.provider,
-            event_time=datetime.now(UTC),
-            payload=posts_payload,
+            source_type=self.provider,
+            extracted_at=datetime.now(UTC),
+            method=response.request.method,
+            url=str(response.request.url),
+            payload=response.text,
         )
 
         self.store_raw([posts_row])

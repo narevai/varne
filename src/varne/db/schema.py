@@ -32,8 +32,10 @@ class TableRaw(Table):
             {
                 "stack_id": dt.string,
                 "source_id": dt.string,
-                "provider": dt.string,
-                "event_time": dt.timestamp,
+                "source_type": dt.string,
+                "extracted_at": dt.timestamp,
+                "method": dt.string,
+                "url": dt.string,
                 "payload": dt.string,
             }
         )

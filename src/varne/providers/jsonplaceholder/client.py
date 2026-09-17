@@ -11,9 +11,9 @@ class JsonPlaceholderClient(ProviderClient):
     def base_url(self) -> httpx.URL:
         return httpx.URL("https://jsonplaceholder.typicode.com")
 
-    def fetch_posts(self) -> str:
+    def fetch_posts(self) -> httpx.Response:
         response = self.http.get(self.base_url.join("/posts"))
 
         response.raise_for_status()
 
-        return response.text
+        return response

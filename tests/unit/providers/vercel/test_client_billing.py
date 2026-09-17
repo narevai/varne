@@ -58,10 +58,11 @@ def test_fetch_billing(
 ):
     client = VercelClient(http_client, api_token=vercel_token)
 
-    billing = client.fetch_billing(
+    response = client.fetch_billing(
         team_id=vercel_team_id,
         date_from=datetime(2026, 9, 1, tzinfo=UTC),
         date_to=datetime(2026, 9, 10, tzinfo=UTC),
     )
 
-    assert len(billing) > 0
+    assert len(response.text) > 0
+    assert response.is_success
