@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 from varne.analytics.usage import get_usage_by_id
 from varne.config import SourceId, SourceType, StackId
+from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
 
 
@@ -12,7 +13,7 @@ def test_get_usage_by_id(db: DatabaseBackend):
     source_id: SourceId = "source_test"
 
     db.insert(
-        "staging",
+        TableName.DIM_SOURCE_META,
         [
             {
                 "stack_id": stack_id,

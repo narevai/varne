@@ -4,7 +4,7 @@ import httpx2 as httpx
 from loguru import logger
 
 from varne.config import SourceId, StackId
-from varne.db.schema import TableRaw, TableStaging
+from varne.db.schema import TableDimSourceMeta, TableRaw
 from varne.db.types import DatabaseBackend
 from varne.providers.types import RowRaw, RowStaging
 
@@ -28,15 +28,15 @@ class ProviderService(ABC):
     db: DatabaseBackend
     stack_id: StackId
     source_id: SourceId
-    raw_table: TableRaw
-    staging_table: TableStaging
+    table_raw: TableRaw
+    table_dim_source_meta: TableDimSourceMeta
 
     def __init__(
         self, db: DatabaseBackend, stack_id: StackId, source_id: SourceId
     ) -> None:
         self.db = db
-        self.raw_table = TableRaw()
-        self.staging_table = TableStaging()
+        self.table_raw = TableRaw()
+        self.table_dim_source_meta = TableDimSourceMeta()
         self.stack_id = stack_id
         self.source_id = source_id
 
@@ -50,11 +50,11 @@ class ProviderService(ABC):
         raise NotImplementedError()
 
     def store_raw(self, rows: list[RowRaw]):
-        logger.debug(f"saving rows to {self.raw_table.name}")
+        logger.debug(f"saving rows to {self.table_raw.name}")
         payload = [row.model_dump() for row in rows]
-        self.db.insert(self.raw_table.name, payload)
+        self.db.insert(self.table_raw.name, payload)
 
     def store_staging(self, rows: list[RowStaging]):
-        logger.debug(f"saving rows to {self.staging_table.name}")
+        logger.debug(f"saving rows to {self.table_dim_source_meta.name}")
         payload = [row.model_dump() for row in rows]
-        self.db.insert(self.staging_table.name, payload)
+        self.db.insert(self.table_dim_source_meta.name, payload)

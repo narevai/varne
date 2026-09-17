@@ -1,3 +1,4 @@
+from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
 
 
@@ -7,4 +8,6 @@ def test_ibis_connection(db: DatabaseBackend):
 
 
 def test_db_table_create(db: DatabaseBackend):
-    assert db.list_tables() == ["raw", "staging"]
+    tables_db = db.list_tables().sort()
+    tables_expected = [TableName.RAW.value, TableName.DIM_SOURCE_META.value].sort()
+    assert tables_db == tables_expected

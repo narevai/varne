@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from enum import StrEnum
 from typing import override
 
 import ibis
@@ -7,10 +8,14 @@ import ibis.expr.datatypes as dt
 from varne.db.types import DatabaseBackend
 
 
+class TableName(StrEnum):
+    RAW = "raw"
+    DIM_SOURCE_META = "dim_source_meta"
+
 class Table(ABC):
     @property
     @abstractmethod
-    def name(self) -> str:
+    def name(self) -> TableName:
         raise NotImplementedError()
 
     @property
@@ -22,8 +27,8 @@ class Table(ABC):
 class TableRaw(Table):
     @property
     @override
-    def name(self):
-        return "raw"
+    def name(self) -> TableName:
+        return TableName.RAW
 
     @property
     @override
@@ -41,11 +46,11 @@ class TableRaw(Table):
         )
 
 
-class TableStaging(Table):
+class TableDimSourceMeta(Table):
     @property
     @override
-    def name(self) -> str:
-        return "staging"
+    def name(self) -> TableName:
+        return TableName.DIM_SOURCE_META
 
     @property
     @override
@@ -62,7 +67,7 @@ class TableStaging(Table):
         )
 
 
-TABLES: list[Table] = [TableRaw(), TableStaging()]
+TABLES: list[Table] = [TableRaw(), TableDimSourceMeta()]
 
 
 def create_tables(db: DatabaseBackend) -> None:
