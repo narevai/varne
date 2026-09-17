@@ -1,5 +1,8 @@
 {
   "terminal": {
-    "detect_venv": "off"
+    "detect_venv": "off",
+    "shell": {
+      "program": "/bin/bash"
+    }
   }
 }
