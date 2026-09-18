@@ -1,7 +1,5 @@
 from pydantic import TypeAdapter
 
-from varne.config import SourceType
-from varne.providers.jsonplaceholder.types import JsonPlaceholderPost
 from varne.providers.types import RowDimSourceMeta, RowRaw
 from varne.providers.vercel.types import VercelProjectsResponse
 
@@ -17,6 +15,7 @@ def project_to_meta(row_raw: RowRaw, value_name: str, value: str) -> RowDimSourc
     )
 
     return row_staging
+
 
 def transform_meta(row: RowRaw) -> list[RowDimSourceMeta]:
     rows_staging: list[RowDimSourceMeta] = []
