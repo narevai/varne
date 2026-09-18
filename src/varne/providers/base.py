@@ -46,7 +46,7 @@ class ProviderService(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def fetch_and_store(self) -> None:
+    def fetch_source_meta(self) -> None:
         raise NotImplementedError()
 
     def store_raw(self, rows: list[RowRaw]):

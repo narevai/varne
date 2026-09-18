@@ -31,7 +31,7 @@ class VercelService(ProviderService):
         return SourceType.VERCEL
 
     @override
-    def fetch_and_store(self) -> None:
+    def fetch_source_meta(self) -> None:
         response: httpx.Response = self.client.fetch_projects()
 
         raw = RowRaw(

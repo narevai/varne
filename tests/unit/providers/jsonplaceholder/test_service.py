@@ -17,7 +17,7 @@ def test_store(db: DatabaseBackend, http_client: httpx.Client):
         db=db, client=client, stack_id=stack_id, source_id=source_id
     )
 
-    service.fetch_and_store()
+    service.fetch_source_meta()
 
     raw_count = db.table(TableName.RAW).count().execute()
     staging_count = db.table(TableName.DIM_SOURCE_META).count().execute()
