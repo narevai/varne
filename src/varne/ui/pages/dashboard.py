@@ -1,5 +1,6 @@
 from typing import cast
 
+import pandas as pd
 from loguru import logger
 from nicegui import run, ui
 from nicegui.elements.select import Select
@@ -11,11 +12,9 @@ from varne.dependencies import get_config_manager, get_db, get_json_placeholder_
 from varne.ui.layout import create_layout
 
 
-def get_source_meta_rows(db: DatabaseBackend, stack_id: StackId) -> list[dict[str, object]]:
-    result = get_source_meta(db, stack_id).to_pandas()
-    rows = result.to_dict(orient="records")  # pyright: ignore[reportUnknownVariableType]
-
-    return cast(list[dict[str, object]], rows)
+def get_source_meta_rows(db: DatabaseBackend, stack_id: StackId) -> pd.DataFrame:
+    df_result = get_source_meta(db, stack_id).to_pandas()
+    return df_result
 
 
 def create_stack_select(config: ConfigVarne | None) -> Select:
@@ -98,26 +97,20 @@ async def page_dashboard() -> None:
         async def content():
             stack_id = cast(StackId, stack_select.value)
 
-            rows = await run.io_bound(get_source_meta_rows, db, stack_id)
+            df_rows = await run.io_bound(get_source_meta_rows, db, stack_id)
 
-            ui.table(
-                columns=[
-                    {
-                        "name": "source_id",
-                        "label": "Id",
-                        "field": "source_id",
-                        "align": "left",
-                    },
-                    {
-                        "name": "source_type",
-                        "label": "Type",
-                        "field": "source_type",
-                        "align": "right",
-                    },
-                ],
-                rows=rows or [],
-                row_key="id",
+            if df_rows is None:
+              df_rows = pd.DataFrame(columns=["source_id", "source_type", "source_name"])
+
+            df_rows = df_rows.rename(
+                columns={
+                    "source_id": "ID",
+                    "source_type": "Type",
+                    "source_name": "Name",
+                }
             )
+
+            ui.table.from_pandas(df_rows)
 
         ui.label("Dashboard").classes("text-2xl font-bold")
 
