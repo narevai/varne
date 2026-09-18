@@ -10,8 +10,8 @@ from varne.providers.base import ProviderClient
 class VercelClient(ProviderClient):
     api_token: VercelToken
 
-    def __init__(self, client: httpx.Client, api_token: VercelToken):
-        super().__init__(client)
+    def __init__(self, http: httpx.Client, api_token: VercelToken):
+        super().__init__(http)
         self.api_token = api_token
 
     @property

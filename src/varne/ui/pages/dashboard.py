@@ -8,7 +8,7 @@ from nicegui.elements.select import Select
 from varne.analytics.usage import get_source_meta
 from varne.config import ConfigVarne, StackId
 from varne.db.types import DatabaseBackend
-from varne.dependencies import get_config_manager, get_db, get_json_placeholder_service
+from varne.dependencies import get_config_manager, get_db, get_service
 from varne.ui.layout import create_layout
 
 
@@ -69,9 +69,7 @@ async def page_dashboard() -> None:
             else:
                 for stack in config_manager.config.stacks:
                     for source in stack.sources:
-                        service = get_json_placeholder_service(
-                            stack_id=stack.id, source_id=source.id
-                        )
+                        service = get_service(stack_id=stack.id, source=source)
 
                         button_sync.disable()
 

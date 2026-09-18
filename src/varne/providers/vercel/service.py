@@ -43,6 +43,7 @@ class VercelService(ProviderService):
             url=str(response.request.url),
             payload=response.text,
         )
+        breakpoint()
         self.store_raw([raw])
 
         meta = transform_meta(raw)

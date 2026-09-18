@@ -1,4 +1,4 @@
-.PHONY: install format check test dev
+.PHONY: install format check test dev debug
 
 install:
 	uv pip install --system -e . --group dev
@@ -11,6 +11,9 @@ check:
 	ruff format --check src tests
 	ruff check src tests
 	basedpyright src tests
+
+debug:
+	DEBUG=true LOG_LEVEL=DEBUG python -m pdb -m varne.app
 
 test:
 	pytest --record-mode=none --block-network
