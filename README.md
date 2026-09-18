@@ -7,6 +7,7 @@
 ## Devlog
 | YouTube                                                          | PR                                                |
 | ---------------------------------------------------------------- | ------------------------------------------------- |
+| [Cassette Replay for Vercel](https://youtu.be/QZhYUPvFr_c)       | [#222](https://github.com/narevai/varne/pull/222) |
 | [ConfigManager](https://youtu.be/qYlT9Y-A7Lg)                    | [#219](https://github.com/narevai/varne/pull/219) |
 | [Stronger typing part 2](https://youtube.com/live/uE0IJrpH270)   | [#217](https://github.com/narevai/varne/pull/217) |
 | [Stronger typing part 1](https://youtube.com/live/Zfq7MEACyYA).  | [#217](https://github.com/narevai/varne/pull/217) |
