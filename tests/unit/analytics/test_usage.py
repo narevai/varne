@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from varne.analytics.usage import get_usage_by_id
+from varne.analytics.usage import get_source_meta
 from varne.config import SourceId, SourceType, StackId
 from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
@@ -46,7 +46,7 @@ def test_get_usage_by_id(db: DatabaseBackend):
         ],
     )
 
-    result = get_usage_by_id(db, stack_id).execute()
+    result = get_source_meta(db, stack_id).execute()
 
     assert len(result) == 1
     assert result.iloc[0]["total_amount"] == 20.0

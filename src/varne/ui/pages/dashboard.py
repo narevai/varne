@@ -4,15 +4,15 @@ from loguru import logger
 from nicegui import run, ui
 from nicegui.elements.select import Select
 
-from varne.analytics.usage import get_usage_by_id
+from varne.analytics.usage import get_source_meta
 from varne.config import ConfigVarne, StackId
 from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db, get_json_placeholder_service
 from varne.ui.layout import create_layout
 
 
-def get_usage_rows(db: DatabaseBackend, stack_id: StackId) -> list[dict[str, object]]:
-    result = get_usage_by_id(db, stack_id).to_pandas()
+def get_source_meta_rows(db: DatabaseBackend, stack_id: StackId) -> list[dict[str, object]]:
+    result = get_source_meta(db, stack_id).to_pandas()
     rows = result.to_dict(orient="records")  # pyright: ignore[reportUnknownVariableType]
 
     return cast(list[dict[str, object]], rows)
@@ -98,20 +98,20 @@ async def page_dashboard() -> None:
         async def content():
             stack_id = cast(StackId, stack_select.value)
 
-            rows = await run.io_bound(get_usage_rows, db, stack_id)
+            rows = await run.io_bound(get_source_meta_rows, db, stack_id)
 
             ui.table(
                 columns=[
                     {
                         "name": "source_id",
-                        "label": "Source Id",
+                        "label": "Id",
                         "field": "source_id",
                         "align": "left",
                     },
                     {
-                        "name": "total_amount",
-                        "label": "Total Amount",
-                        "field": "total_amount",
+                        "name": "source_type",
+                        "label": "Type",
+                        "field": "source_type",
                         "align": "right",
                     },
                 ],
