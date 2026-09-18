@@ -78,8 +78,6 @@ async def page_dashboard() -> None:
                         try:
                             _ = await run.io_bound(service.fetch_source_meta)
                             await content.refresh()
-                            message = f"Synced rows for stack {stack.name} and source {source.name}"
-                            ui.notify(message)
 
                         except Exception as ex:
                             logger.error(
@@ -92,6 +90,8 @@ async def page_dashboard() -> None:
 
                         finally:
                             button_sync.enable()
+                message = "Synced rows"
+                ui.notify(message)
 
         @ui.refreshable
         async def content():
