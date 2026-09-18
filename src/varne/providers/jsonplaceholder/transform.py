@@ -5,7 +5,7 @@ from varne.providers.jsonplaceholder.types import JsonPlaceholderPost
 from varne.providers.types import RowDimSourceMeta, RowRaw
 
 
-def post_to_row(row_raw: RowRaw, value_name: str, value: str) -> RowDimSourceMeta:
+def post_to_meta(row_raw: RowRaw, value_name: str, value: str) -> RowDimSourceMeta:
     row_staging: RowDimSourceMeta = RowDimSourceMeta(
         stack_id=row_raw.stack_id,
         source_id=row_raw.source_id,
@@ -18,15 +18,15 @@ def post_to_row(row_raw: RowRaw, value_name: str, value: str) -> RowDimSourceMet
     return row_staging
 
 
-def transform_posts(row: RowRaw) -> list[RowDimSourceMeta]:
+def transform_meta(row: RowRaw) -> list[RowDimSourceMeta]:
     rows_staging: list[RowDimSourceMeta] = []
     adapter = TypeAdapter(list[JsonPlaceholderPost])
     posts_typed = adapter.validate_json(row.payload)
     for post in posts_typed:
-        row_id: RowDimSourceMeta = post_to_row(
+        row_id: RowDimSourceMeta = post_to_meta(
             row, value_name="id", value=str(SourceType.JSONPLACEHOLDER)
         )
-        row_amount: RowDimSourceMeta = post_to_row(
+        row_amount: RowDimSourceMeta = post_to_meta(
             row, value_name="amount", value=str(len(post.body))
         )
         rows_staging.append(row_id)

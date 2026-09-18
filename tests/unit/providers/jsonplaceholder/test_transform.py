@@ -2,7 +2,7 @@ import json
 from datetime import UTC, datetime
 
 from varne.config import SourceId, SourceType, StackId
-from varne.providers.jsonplaceholder.transform import transform_posts
+from varne.providers.jsonplaceholder.transform import transform_meta
 from varne.providers.types import RowDimSourceMeta, RowRaw
 
 
@@ -35,7 +35,7 @@ def test_transform_posts():
         payload=post_str,
     )
 
-    rows = transform_posts(post_row)
+    rows = transform_meta(post_row)
 
     assert len(rows) == 2
     assert all(isinstance(row, RowDimSourceMeta) for row in rows)

@@ -1,6 +1,5 @@
 from typing import cast
 
-import pandas as pd
 from loguru import logger
 from nicegui import run, ui
 from nicegui.elements.select import Select
