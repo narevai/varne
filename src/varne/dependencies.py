@@ -51,26 +51,7 @@ def get_config_manager() -> ConfigManager:
 @lru_cache
 def get_cassette_manager() -> CassetteManager:
     return CassetteManager(
-        cassette_paths=[
-            Path(
-                "tests/unit/providers/jsonplaceholder/cassettes/test_client/test_fetch.yaml"
-            ),
-            Path(
-                "tests/unit/providers/jsonplaceholder/cassettes/test_service/test_store.yaml"
-            ),
-            Path(
-                "tests/unit/providers/vercel/cassettes/test_client_projects/test_fetch_projects.yaml"
-            ),
-            Path(
-                "tests/unit/providers/vercel/cassettes/test_client_billing/test_fetch_billing.yaml"
-            ),
-            Path(
-                "tests/unit/providers/vercel/cassettes/test_client_web_analytics_visits_aggregate/test_fetch_web_analytics_visits_aggregate.yaml"
-            ),
-            Path(
-                "tests/unit/providers/vercel/cassettes/test_client_web_analytics_visits_count/test_fetch_web_analytics_visits_count.yaml"
-            ),
-        ]
+        cassette_paths=list(Path("tests/unit/providers").glob("**/cassettes/**/*.yaml"))
     )
 
 
