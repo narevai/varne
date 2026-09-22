@@ -5,7 +5,7 @@ from loguru import logger
 from nicegui import run, ui
 from nicegui.elements.select import Select
 
-from varne.analytics.usage import get_source_meta
+from varne.analytics.meta import get_source_meta
 from varne.config import ConfigVarne, StackId
 from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db, get_service

@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from typing import cast
 
-from varne.analytics.usage import get_source_meta
+from varne.analytics.meta import get_source_meta
 from varne.config import SourceId, SourceType, StackId
 from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
