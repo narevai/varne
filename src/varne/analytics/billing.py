@@ -6,7 +6,7 @@ from varne.db.schema import TableFactBilling
 from varne.db.types import DatabaseBackend
 
 
-def get_billing(
+def get_source_billing(
     db: DatabaseBackend,
     stack_id: StackId,
     source_id: SourceId,

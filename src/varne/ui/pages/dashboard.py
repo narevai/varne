@@ -6,8 +6,9 @@ from nicegui import run, ui
 from nicegui.elements.select import Select
 from nicegui.events import GenericEventArguments
 
-from varne.analytics.billing import get_billing
+from varne.analytics.billing import get_source_billing
 from varne.analytics.meta import get_source_meta
+from varne.analytics.usage import get_source_usage
 from varne.config import ConfigVarne, SourceId, StackId
 from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db, get_service
@@ -22,14 +23,14 @@ def get_source_meta_rows(db: DatabaseBackend, stack_id: StackId) -> pd.DataFrame
 def get_billing_rows(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> pd.DataFrame:
-    df_result = get_billing(db, stack_id, source_id).to_pandas()
+    df_result = get_source_billing(db, stack_id, source_id).to_pandas()
     return df_result
 
 
 def get_usage_rows(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> pd.DataFrame:
-    df_result = get_billing(db, stack_id, source_id).to_pandas()
+    df_result = get_source_usage(db, stack_id, source_id).to_pandas()
     return df_result
 
 
