@@ -2,13 +2,15 @@ from datetime import datetime
 from decimal import Decimal
 from typing import ClassVar
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 def camel_to_pascal(value: str) -> str:
     return "".join(part.capitalize() for part in value.split("_"))
 
+
 type TagValue = str | int | float | bool | None
+
 
 class VercelProject(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
@@ -25,7 +27,9 @@ class VercelProjectsResponse(BaseModel):
 
 
 class VercelBilling(BaseModel):
-    model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore", alias_generator=camel_to_pascal, populate_by_name=True)
+    model_config: ClassVar[ConfigDict] = ConfigDict(
+        extra="ignore", alias_generator=camel_to_pascal, populate_by_name=True
+    )
 
     charge_period_start: datetime
     charge_period_end: datetime
@@ -70,5 +74,6 @@ class VercelWebAnalyticsAggregateItem(BaseModel):
     version: int
     query: VercelWebAnalyticsQuery
     data: list[VercelWebAnalyticsDataPoint]
+
 
 type VercelWebAnalyticsAggregateResponse = list[VercelWebAnalyticsAggregateItem]

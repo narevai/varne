@@ -6,6 +6,7 @@ from nicegui import run, ui
 from nicegui.elements.select import Select
 from nicegui.events import GenericEventArguments
 
+from varne.analytics.billing import get_billing
 from varne.analytics.meta import get_source_meta
 from varne.config import ConfigVarne, SourceId, StackId
 from varne.db.types import DatabaseBackend
@@ -15,6 +16,20 @@ from varne.ui.layout import create_layout
 
 def get_source_meta_rows(db: DatabaseBackend, stack_id: StackId) -> pd.DataFrame:
     df_result = get_source_meta(db, stack_id).to_pandas()
+    return df_result
+
+
+def get_billing_rows(
+    db: DatabaseBackend, stack_id: StackId, source_id: SourceId
+) -> pd.DataFrame:
+    df_result = get_billing(db, stack_id, source_id).to_pandas()
+    return df_result
+
+
+def get_usage_rows(
+    db: DatabaseBackend, stack_id: StackId, source_id: SourceId
+) -> pd.DataFrame:
+    df_result = get_billing(db, stack_id, source_id).to_pandas()
     return df_result
 
 
@@ -112,6 +127,39 @@ async def page_dashboard() -> None:
                 ui.notify(message, type="negative")
 
         @ui.refreshable
+        async def source_detail() -> None:
+            stack_id = cast(StackId, stack_select.value)
+            source_id = "vercel1"
+
+            with ui.card().classes("w-full"):
+                with ui.row().classes("w-full items-center justify-between"):
+                    ui.label(str(source_id)).classes("text-lg font-semibold")
+
+                df_billing = await run.io_bound(
+                    get_billing_rows, db, stack_id, source_id
+                )
+
+                if df_billing is None or df_billing.empty:
+                    ui.label("No billing data available").classes("text-gray-500")
+                    return
+
+                ui.table.from_pandas(
+                    df_billing,
+                    title="Billing",
+                ).classes("w-full")
+
+                df_usage = await run.io_bound(get_usage_rows, db, stack_id, source_id)
+
+                if df_usage is None or df_usage.empty:
+                    ui.label("No billing data available").classes("text-gray-500")
+                    return
+
+                ui.table.from_pandas(
+                    df_usage,
+                    title="Usage",
+                ).classes("w-full")
+
+        @ui.refreshable
         async def content():
             stack_id = cast(StackId, stack_select.value)
 
@@ -140,6 +188,7 @@ async def page_dashboard() -> None:
                         js_handler="() => emit(props.row.ID)",
                         handler=lambda e: pull_billing(e),
                     )
+            await source_detail()
 
         ui.label("Dashboard").classes("text-2xl font-bold")
 

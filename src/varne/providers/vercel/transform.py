@@ -48,7 +48,9 @@ def transform_meta(row: RowRaw) -> list[RowDimSourceMeta]:
 def transform_billing(row: RowRaw) -> list[RowFactBilling]:
     rows_billing: list[RowFactBilling] = []
     response_typed = [
-        VercelBilling.model_validate_json(line) for line in row.payload.splitlines() if line.strip()
+        VercelBilling.model_validate_json(line)
+        for line in row.payload.splitlines()
+        if line.strip()
     ]
 
     for b in response_typed:
@@ -98,7 +100,9 @@ def web_analytics_to_usage(
 def transform_analytics_aggregate(row: RowRaw) -> list[RowFactUsage]:
     rows_usage: list[RowFactUsage] = []
     response_typed = [
-        VercelWebAnalyticsAggregateItem.model_validate_json(line) for line in row.payload.splitlines() if line.strip()
+        VercelWebAnalyticsAggregateItem.model_validate_json(line)
+        for line in row.payload.splitlines()
+        if line.strip()
     ]
 
     for r in response_typed:
