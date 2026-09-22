@@ -3,7 +3,9 @@ from functools import partial
 import httpx2 as httpx
 import pytest
 from tests.sanitize import sanitize_response
-from tests.unit.providers.vercel.test_client_projects import policy_vercel_projects
+from tests.unit.providers.vercel.test_client_web_analytics_visits_aggregate import (
+    policy_vercel_web_analytics_visits_aggregate,
+)
 
 from varne.config import SourceId, SourceType, StackId, VercelToken
 from varne.db.schema import TableName
@@ -18,14 +20,14 @@ def vcr_config():
         "decode_compressed_response": True,
         "filter_headers": ["authorization"],
         "before_record_response": partial(
-            sanitize_response, policy=policy_vercel_projects
+            sanitize_response, policy=policy_vercel_web_analytics_visits_aggregate
         ),
     }
 
 
-@pytest.mark.default_cassette("projects.yaml")
+@pytest.mark.default_cassette("web_analytics_visits_aggregate.yaml")
 @pytest.mark.vcr
-def test_fetch_source_meta(
+def test_fetch_source_usage(
     db: DatabaseBackend, http_client: httpx.Client, vercel_token: VercelToken
 ):
     stack_id: StackId = "stack_test"
@@ -38,10 +40,10 @@ def test_fetch_source_meta(
     assert service.provider == "vercel"
     assert service.provider == SourceType.VERCEL
 
-    service.fetch_source_meta()
+    service._fetch_source_usage()
 
     raw_count = db.table(TableName.RAW).count().execute()
-    staging_count = db.table(TableName.DIM_SOURCE_META).count().execute()
+    staging_count = db.table(TableName.FACT_USAGE).count().execute()
 
     assert raw_count == 1
-    assert staging_count == 3
+    assert staging_count > 0

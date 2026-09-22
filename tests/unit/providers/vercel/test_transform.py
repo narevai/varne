@@ -22,6 +22,7 @@ def vcr_config():
         ),
     }
 
+
 @pytest.mark.default_cassette("projects.yaml")
 @pytest.mark.vcr
 def test_transform_meta(

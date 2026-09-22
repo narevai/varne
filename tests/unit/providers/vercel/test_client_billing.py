@@ -51,6 +51,7 @@ def vcr_config():
         ),
     }
 
+
 @pytest.mark.default_cassette("billing.yaml")
 @pytest.mark.vcr
 def test_fetch_billing(

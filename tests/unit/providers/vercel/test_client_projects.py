@@ -34,6 +34,7 @@ def vcr_config():
         ),
     }
 
+
 @pytest.mark.default_cassette("projects.yaml")
 @pytest.mark.vcr
 def test_fetch_projects(http_client: httpx.Client, vercel_token: VercelToken):

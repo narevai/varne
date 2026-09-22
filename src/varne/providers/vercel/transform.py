@@ -4,9 +4,9 @@ from pydantic import TypeAdapter
 
 from varne.providers.types import RowDimSourceMeta, RowFactBilling, RowFactUsage, RowRaw
 from varne.providers.vercel.types import (
-    VercelBillingResponse,
+    VercelBilling,
     VercelProjectsResponse,
-    VercelWebAnalyticsAggregateResponse,
+    VercelWebAnalyticsAggregateItem,
 )
 
 
@@ -47,10 +47,11 @@ def transform_meta(row: RowRaw) -> list[RowDimSourceMeta]:
 
 def transform_billing(row: RowRaw) -> list[RowFactBilling]:
     rows_billing: list[RowFactBilling] = []
-    adapter = TypeAdapter(VercelBillingResponse)
-    response_typed = adapter.validate_json(row.payload)
+    response_typed = [
+        VercelBilling.model_validate_json(line) for line in row.payload.splitlines() if line.strip()
+    ]
 
-    for b in response_typed.root:
+    for b in response_typed:
         row_billing = RowFactBilling(
             stack_id=row.stack_id,
             source_id=row.source_id,
@@ -67,7 +68,7 @@ def transform_billing(row: RowRaw) -> list[RowFactBilling]:
             service_provider_name=b.service_provider_name,
             consumed_quantity=b.consumed_quantity,
             consumed_unit=b.consumed_unit,
-            tags=b.tags,
+            tags=str(b.tags),
             pricing_category=b.pricing_category,
             pricing_currency=b.pricing_currency,
             pricing_quantity=b.pricing_quantity,
@@ -96,10 +97,11 @@ def web_analytics_to_usage(
 
 def transform_analytics_aggregate(row: RowRaw) -> list[RowFactUsage]:
     rows_usage: list[RowFactUsage] = []
-    adapter = TypeAdapter(VercelWebAnalyticsAggregateResponse)
-    response_typed = adapter.validate_json(row.payload)
+    response_typed = [
+        VercelWebAnalyticsAggregateItem.model_validate_json(line) for line in row.payload.splitlines() if line.strip()
+    ]
 
-    for r in response_typed.root:
+    for r in response_typed:
         for u in r.data:
             row_visitors: RowFactUsage = web_analytics_to_usage(
                 row, event_time=u.timestamp, usage_name="visitors", usage=u.visitors

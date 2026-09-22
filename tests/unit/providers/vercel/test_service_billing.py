@@ -22,6 +22,7 @@ def vcr_config():
         ),
     }
 
+
 @pytest.mark.default_cassette("billing.yaml")
 @pytest.mark.vcr
 def test_fetch_source_billing(
@@ -40,7 +41,7 @@ def test_fetch_source_billing(
     service._fetch_source_billing()
 
     raw_count = db.table(TableName.RAW).count().execute()
-    staging_count = db.table(TableName.DIM_SOURCE_META).count().execute()
+    staging_count = db.table(TableName.FACT_BILLING).count().execute()
 
     assert raw_count == 1
-    assert staging_count == 3
+    assert staging_count > 0

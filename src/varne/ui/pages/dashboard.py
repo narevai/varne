@@ -4,9 +4,10 @@ import pandas as pd
 from loguru import logger
 from nicegui import run, ui
 from nicegui.elements.select import Select
+from nicegui.events import GenericEventArguments
 
 from varne.analytics.meta import get_source_meta
-from varne.config import ConfigVarne, StackId
+from varne.config import ConfigVarne, SourceId, StackId
 from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db, get_service
 from varne.ui.layout import create_layout
@@ -63,7 +64,7 @@ async def page_dashboard() -> None:
                 )
                 logger.error(message)
 
-        async def sync_usage() -> None:
+        async def sync_meta() -> None:
             if config_manager.config is None:
                 button_sync.disable()
             else:
@@ -91,6 +92,25 @@ async def page_dashboard() -> None:
                 message = "Synced rows"
                 ui.notify(message)
 
+        async def pull_billing(e: GenericEventArguments) -> None:
+            if config_manager.config is None:
+                return
+            stack_id = cast(StackId, stack_select.value)
+            stack = next(x for x in config_manager.config.stacks if x.id == stack_id)
+
+            source_id = cast(SourceId, e.args)
+            source = next(x for x in stack.sources if x.id == source_id)
+
+            service = get_service(stack_id=stack.id, source=source)
+
+            try:
+                _ = await run.io_bound(service.fetch_source_data)
+
+            except Exception as ex:
+                message = f"Pull failed for stack {stack.name}, source {source.name} with {ex}"
+                logger.error(message)
+                ui.notify(message, type="negative")
+
         @ui.refreshable
         async def content():
             stack_id = cast(StackId, stack_select.value)
@@ -110,7 +130,16 @@ async def page_dashboard() -> None:
                 }
             )
 
-            ui.table.from_pandas(df_rows, title="Synced metadata")
+            df_rows["action"] = None
+
+            table = ui.table.from_pandas(df_rows, title="Synced metadata")
+            with table.add_slot("body-cell-action"):
+                with table.cell("action"):
+                    ui.button("Pull billing").props("flat").on(
+                        "click",
+                        js_handler="() => emit(props.row.ID)",
+                        handler=lambda e: pull_billing(e),
+                    )
 
         ui.label("Dashboard").classes("text-2xl font-bold")
 
@@ -119,7 +148,7 @@ async def page_dashboard() -> None:
 
         with ui.row().classes("items-center gap-4"):
             stack_select = create_stack_select(config_manager.config)
-            button_sync = ui.button("sync metadata", on_click=sync_usage).classes(
+            button_sync = ui.button("sync metadata", on_click=sync_meta).classes(
                 "self-end"
             )
             ui.button(text="reload config", on_click=reload_config).classes("self-end")

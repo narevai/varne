@@ -40,18 +40,18 @@ class RowFactBilling(BaseModel):
     charge_period_start: datetime
     charge_period_end: datetime
     charge_category: str
-    billed_cost: Decimal = Field(max_digits=20, decimal_places=18)
+    billed_cost: Decimal = Field(max_digits=38, decimal_places=24)
     billing_currency: str
-    effective_cost: Decimal = Field(max_digits=20, decimal_places=18)
+    effective_cost: Decimal = Field(max_digits=38, decimal_places=24)
     service_name: str
     service_category: str
     service_provider_name: str
-    consumed_quantity: str
+    consumed_quantity: Decimal = Field(max_digits=38, decimal_places=24)
     consumed_unit: str
     tags: str
     pricing_category: str
     pricing_currency: str
-    pricing_quantity: Decimal = Field(max_digits=20, decimal_places=18)
+    pricing_quantity: Decimal = Field(max_digits=38, decimal_places=24)
     pricing_unit: str
 
 
