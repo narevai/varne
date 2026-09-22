@@ -30,7 +30,7 @@ class RowDimSourceMeta(BaseModel):
     value: str
 
 
-class RowFactSourceBilling(BaseModel):
+class RowFactBilling(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid", strict=True)
 
     stack_id: StackId
@@ -55,7 +55,7 @@ class RowFactSourceBilling(BaseModel):
     pricing_unit: str
 
 
-class RowFactSourceUsage(BaseModel):
+class RowFactUsage(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid", strict=True)
 
     stack_id: StackId

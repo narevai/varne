@@ -9,7 +9,11 @@ from varne.db.types import DatabaseBackend
 from varne.providers.base import ProviderService
 from varne.providers.types import RowRaw
 from varne.providers.vercel.client import VercelClient
-from varne.providers.vercel.transform import transform_meta
+from varne.providers.vercel.transform import (
+    transform_analytics_aggregate,
+    transform_billing,
+    transform_meta,
+)
 
 
 class VercelService(ProviderService):
@@ -47,12 +51,14 @@ class VercelService(ProviderService):
 
         meta = transform_meta(raw)
         self.store_dim_source_meta(meta)
-        logger.info(f"completed fetch and store for {self.provider}")
+        logger.info(f"completed fetch source meta {self.provider}")
 
     @override
     def fetch_source_data(self) -> None:
         self._fetch_source_billing()
         self._fetch_source_usage()
+
+        logger.info(f"completed fetch source data {self.provider}")
 
     def _fetch_source_billing(self) -> None:
         team_id = "team_4lN90TlRlQzpFGhMLIoTTS9D"
@@ -74,9 +80,8 @@ class VercelService(ProviderService):
         )
         self.store_raw([raw])
 
-        # meta = transform_meta(raw)
-        # self.store_staging(meta)
-        # logger.info(f"completed fetch and store for {self.provider}")
+        billing = transform_billing(raw)
+        self.store_fact_billing(billing)
 
     def _fetch_source_usage(self) -> None:
         project_id = "prj_5LAip7eW0S0iDBoLNDwa9gMTye78"
@@ -99,6 +104,5 @@ class VercelService(ProviderService):
         )
         self.store_raw([raw])
 
-        # meta = transform_meta(raw)
-        # self.store_staging(meta)
-        # logger.info(f"completed fetch and store for {self.provider}")
+        usage = transform_analytics_aggregate(raw)
+        self.store_fact_usage(usage)

@@ -13,8 +13,8 @@ from varne.db.schema import (
 from varne.db.types import DatabaseBackend
 from varne.providers.types import (
     RowDimSourceMeta,
-    RowFactSourceBilling,
-    RowFactSourceUsage,
+    RowFactBilling,
+    RowFactUsage,
     RowRaw,
 )
 
@@ -77,12 +77,12 @@ class ProviderService(ABC):
         payload = [row.model_dump() for row in rows]
         self.db.insert(self.table_dim_source_meta.name, payload)
 
-    def store_fact_source_billing(self, rows: list[RowFactSourceBilling]):
+    def store_fact_billing(self, rows: list[RowFactBilling]):
         logger.debug(f"saving rows to {self.table_fact_billing.name}")
         payload = [row.model_dump() for row in rows]
         self.db.insert(self.table_fact_billing.name, payload)
 
-    def store_fact_source_usage(self, rows: list[RowFactSourceUsage]):
+    def store_fact_usage(self, rows: list[RowFactUsage]):
         logger.debug(f"saving rows to {self.table_fact_usage.name}")
         payload = [row.model_dump() for row in rows]
         self.db.insert(self.table_fact_usage.name, payload)
