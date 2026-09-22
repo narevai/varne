@@ -110,7 +110,7 @@ async def page_dashboard() -> None:
                 }
             )
 
-            ui.table.from_pandas(df_rows)
+            ui.table.from_pandas(df_rows, title="Synced metadata")
 
         ui.label("Dashboard").classes("text-2xl font-bold")
 
