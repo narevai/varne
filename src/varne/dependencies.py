@@ -4,7 +4,13 @@ from pathlib import Path
 import httpx2 as httpx
 
 from varne.cassettes import CassetteManager
-from varne.config import ConfigJsonPlaceholder, ConfigManager, ConfigSource, ConfigVercel, SourceId, SourceType, StackId
+from varne.config import (
+    ConfigJsonPlaceholder,
+    ConfigManager,
+    ConfigSource,
+    ConfigVercel,
+    StackId,
+)
 from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.db.types import DatabaseBackend
@@ -70,17 +76,17 @@ def get_cassette_manager() -> CassetteManager:
 
 def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
     match source:
-      case ConfigJsonPlaceholder():
-        return JsonPlaceholderService(
-            db=get_db(),
-            client=JsonPlaceholderClient(http=get_http()),
-            stack_id=stack_id,
-            source_id=source.id,
-        )
-      case ConfigVercel():
-        return VercelService(
-          db=get_db(),
-          client=VercelClient(http=get_http(), api_token=source.get_api_token()),
-          stack_id=stack_id,
-          source_id=source.id
-        )
+        case ConfigJsonPlaceholder():
+            return JsonPlaceholderService(
+                db=get_db(),
+                client=JsonPlaceholderClient(http=get_http()),
+                stack_id=stack_id,
+                source_id=source.id,
+            )
+        case ConfigVercel():
+            return VercelService(
+                db=get_db(),
+                client=VercelClient(http=get_http(), api_token=source.get_api_token()),
+                stack_id=stack_id,
+                source_id=source.id,
+            )

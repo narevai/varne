@@ -98,7 +98,9 @@ async def page_dashboard() -> None:
             df_rows = await run.io_bound(get_source_meta_rows, db, stack_id)
 
             if df_rows is None:
-              df_rows = pd.DataFrame(columns=["source_id", "source_type", "source_name"])
+                df_rows = pd.DataFrame(
+                    columns=["source_id", "source_type", "source_name"]
+                )
 
             df_rows = df_rows.rename(
                 columns={

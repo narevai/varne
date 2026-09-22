@@ -2,14 +2,15 @@ import httpx2 as httpx
 import pytest
 
 from varne.config import SourceId, SourceType, StackId, VercelToken
-from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
 from varne.providers.vercel.client import VercelClient
 from varne.providers.vercel.service import VercelService
 
 
 @pytest.mark.vcr
-def test_store(db: DatabaseBackend, http_client: httpx.Client, vercel_token: VercelToken):
+def test_store(
+    db: DatabaseBackend, http_client: httpx.Client, vercel_token: VercelToken
+):
     stack_id: StackId = "stack_test"
     source_id: SourceId = "source_test"
     client = VercelClient(http_client, api_token=vercel_token)
