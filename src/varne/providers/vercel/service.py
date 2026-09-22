@@ -46,5 +46,59 @@ class VercelService(ProviderService):
         self.store_raw([raw])
 
         meta = transform_meta(raw)
-        self.store_staging(meta)
+        self.store_dim_source_meta(meta)
         logger.info(f"completed fetch and store for {self.provider}")
+
+    @override
+    def fetch_source_data(self) -> None:
+        self._fetch_source_billing()
+        self._fetch_source_usage()
+
+    def _fetch_source_billing(self) -> None:
+        team_id = "team_4lN90TlRlQzpFGhMLIoTTS9D"
+        date_from = datetime(2026, 9, 1, tzinfo=UTC)
+        date_to = datetime(2026, 9, 10, tzinfo=UTC)
+
+        response: httpx.Response = self.client.fetch_billing(
+            team_id=team_id, date_from=date_from, date_to=date_to
+        )
+
+        raw = RowRaw(
+            stack_id=self.stack_id,
+            source_id=self.source_id,
+            source_type=self.provider,
+            extracted_at=datetime.now(UTC),
+            method=response.request.method,
+            url=str(response.request.url),
+            payload=response.text,
+        )
+        self.store_raw([raw])
+
+        # meta = transform_meta(raw)
+        # self.store_staging(meta)
+        # logger.info(f"completed fetch and store for {self.provider}")
+
+    def _fetch_source_usage(self) -> None:
+        project_id = "prj_5LAip7eW0S0iDBoLNDwa9gMTye78"
+        team_id = "team_4lN90TlRlQzpFGhMLIoTTS9D"
+        date_from = datetime(2026, 9, 1, tzinfo=UTC)
+        date_to = datetime(2026, 9, 10, tzinfo=UTC)
+
+        response: httpx.Response = self.client.fetch_web_analytics_visits_aggregate(
+            team_id=team_id, project_id=project_id, date_from=date_from, date_to=date_to
+        )
+
+        raw = RowRaw(
+            stack_id=self.stack_id,
+            source_id=self.source_id,
+            source_type=self.provider,
+            extracted_at=datetime.now(UTC),
+            method=response.request.method,
+            url=str(response.request.url),
+            payload=response.text,
+        )
+        self.store_raw([raw])
+
+        # meta = transform_meta(raw)
+        # self.store_staging(meta)
+        # logger.info(f"completed fetch and store for {self.provider}")

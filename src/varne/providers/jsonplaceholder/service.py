@@ -45,5 +45,9 @@ class JsonPlaceholderService(ProviderService):
 
         self.store_raw([raw])
         meta: list[RowDimSourceMeta] = transform_meta(raw)
-        self.store_staging(meta)
+        self.store_dim_source_meta(meta)
         logger.info(f"completed fetch and store for {self.provider}")
+
+    @override
+    def fetch_source_data(self) -> None:
+        pass

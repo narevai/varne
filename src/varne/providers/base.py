@@ -4,9 +4,19 @@ import httpx2 as httpx
 from loguru import logger
 
 from varne.config import SourceId, StackId
-from varne.db.schema import TableDimSourceMeta, TableRaw
+from varne.db.schema import (
+    TableDimSourceMeta,
+    TableFactBilling,
+    TableFactUsage,
+    TableRaw,
+)
 from varne.db.types import DatabaseBackend
-from varne.providers.types import RowDimSourceMeta, RowRaw
+from varne.providers.types import (
+    RowDimSourceMeta,
+    RowFactSourceBilling,
+    RowFactSourceUsage,
+    RowRaw,
+)
 
 
 class ProviderClient(ABC):
@@ -30,6 +40,8 @@ class ProviderService(ABC):
     source_id: SourceId
     table_raw: TableRaw
     table_dim_source_meta: TableDimSourceMeta
+    table_fact_billing: TableFactBilling
+    table_fact_usage: TableFactUsage
 
     def __init__(
         self, db: DatabaseBackend, stack_id: StackId, source_id: SourceId
@@ -37,6 +49,8 @@ class ProviderService(ABC):
         self.db = db
         self.table_raw = TableRaw()
         self.table_dim_source_meta = TableDimSourceMeta()
+        self.table_fact_billing = TableFactBilling()
+        self.table_fact_usage = TableFactUsage()
         self.stack_id = stack_id
         self.source_id = source_id
 
@@ -49,12 +63,26 @@ class ProviderService(ABC):
     def fetch_source_meta(self) -> None:
         raise NotImplementedError()
 
+    @abstractmethod
+    def fetch_source_data(self) -> None:
+        raise NotImplementedError()
+
     def store_raw(self, rows: list[RowRaw]):
         logger.debug(f"saving rows to {self.table_raw.name}")
         payload = [row.model_dump() for row in rows]
         self.db.insert(self.table_raw.name, payload)
 
-    def store_staging(self, rows: list[RowDimSourceMeta]):
+    def store_dim_source_meta(self, rows: list[RowDimSourceMeta]):
         logger.debug(f"saving rows to {self.table_dim_source_meta.name}")
         payload = [row.model_dump() for row in rows]
         self.db.insert(self.table_dim_source_meta.name, payload)
+
+    def store_fact_source_billing(self, rows: list[RowFactSourceBilling]):
+        logger.debug(f"saving rows to {self.table_fact_billing.name}")
+        payload = [row.model_dump() for row in rows]
+        self.db.insert(self.table_fact_billing.name, payload)
+
+    def store_fact_source_usage(self, rows: list[RowFactSourceUsage]):
+        logger.debug(f"saving rows to {self.table_fact_usage.name}")
+        payload = [row.model_dump() for row in rows]
+        self.db.insert(self.table_fact_usage.name, payload)
