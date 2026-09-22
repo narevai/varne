@@ -30,7 +30,7 @@ def vcr_config():
         ),
     }
 
-
+@pytest.mark.default_cassette("web_analytics_visits_aggregate.yaml")
 @pytest.mark.vcr
 def test_fetch_web_analytics_visits_aggregate(
     http_client: httpx.Client,

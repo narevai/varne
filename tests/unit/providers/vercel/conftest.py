@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 from pydantic import SecretStr
@@ -19,3 +20,7 @@ def vercel_project_id() -> str:
 @pytest.fixture
 def vercel_token() -> VercelToken:
     return SecretStr(os.getenv("VERCEL_TOKEN", "test-token"))
+
+@pytest.fixture
+def vcr_cassette_dir() -> str:
+    return str(Path(__file__).parent / "cassettes")

@@ -22,7 +22,7 @@ def vcr_config():
         ),
     }
 
-
+@pytest.mark.default_cassette("projects.yaml")
 @pytest.mark.vcr
 def test_transform_meta(
     http_client: httpx.Client,
@@ -49,8 +49,6 @@ def test_transform_meta(
     )
 
     rows = transform_meta(row_raw)
-
-    print(rows)
 
     assert len(rows) == 3
     assert all(isinstance(row, RowDimSourceMeta) for row in rows)

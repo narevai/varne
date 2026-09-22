@@ -51,7 +51,7 @@ def vcr_config():
         ),
     }
 
-
+@pytest.mark.default_cassette("billing.yaml")
 @pytest.mark.vcr
 def test_fetch_billing(
     http_client: httpx.Client, vercel_token: VercelToken, vercel_team_id: str
