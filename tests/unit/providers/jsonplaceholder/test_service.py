@@ -2,6 +2,7 @@ import httpx2 as httpx
 import pytest
 
 from varne.config import SourceId, StackId
+from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
 from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
 from varne.providers.jsonplaceholder.service import JsonPlaceholderService
@@ -16,10 +17,10 @@ def test_store(db: DatabaseBackend, http_client: httpx.Client):
         db=db, client=client, stack_id=stack_id, source_id=source_id
     )
 
-    service.fetch_and_store()
+    service.fetch_source_meta()
 
-    raw_count = db.table("raw").count().execute()
-    staging_count = db.table("staging").count().execute()
+    raw_count = db.table(TableName.RAW).count().execute()
+    staging_count = db.table(TableName.DIM_SOURCE_META).count().execute()
 
     assert raw_count == 1
-    assert staging_count == 100
+    assert staging_count == 200

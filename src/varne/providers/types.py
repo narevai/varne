@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import ClassVar
+from decimal import Decimal
+from typing import Annotated, ClassVar
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-from varne.config import SourceId, StackId
+from varne.config import SourceId, SourceType, StackId
 
 
 class RowRaw(BaseModel):
@@ -11,17 +12,56 @@ class RowRaw(BaseModel):
 
     stack_id: StackId
     source_id: SourceId
-    provider: str
-    event_time: datetime
+    source_type: SourceType
+    extracted_at: datetime
+    method: str
+    url: str
     payload: str
 
 
-class RowStaging(BaseModel):
+class RowDimSourceMeta(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid", strict=True)
 
     stack_id: StackId
     source_id: SourceId
-    provider: str
-    id: str
+    source_type: SourceType
+    extracted_at: datetime
+    value_name: str
+    value: str
+
+
+class RowFactBilling(BaseModel):
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid", strict=True)
+
+    stack_id: StackId
+    source_id: SourceId
+    source_type: SourceType
+    extracted_at: datetime
+    charge_period_start: datetime
+    charge_period_end: datetime
+    charge_category: str
+    billed_cost: Decimal = Field(max_digits=38, decimal_places=24)
+    billing_currency: str
+    effective_cost: Decimal = Field(max_digits=38, decimal_places=24)
+    service_name: str
+    service_category: str
+    service_provider_name: str
+    consumed_quantity: Decimal = Field(max_digits=38, decimal_places=24)
+    consumed_unit: str
+    tags: str
+    pricing_category: str
+    pricing_currency: str
+    pricing_quantity: Decimal = Field(max_digits=38, decimal_places=24)
+    pricing_unit: str
+
+
+class RowFactUsage(BaseModel):
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid", strict=True)
+
+    stack_id: StackId
+    source_id: SourceId
+    source_type: SourceType
+    extracted_at: datetime
     event_time: datetime
-    amount: float
+    usage_name: str
+    usage: Annotated[int, Field(ge=0)]

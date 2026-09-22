@@ -40,7 +40,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Fri, 11 Sep 2026 05:08:50 GMT
+      - Tue, 22 Sep 2026 12:23:06 GMT
       server:
       - Vercel
       strict-transport-security:
@@ -50,9 +50,9 @@ interactions:
       x-ratelimit-remaining:
       - '399'
       x-ratelimit-reset:
-      - '1789106931'
+      - '1790083387'
       x-vercel-id:
-      - sfo1::s7725-1789103330221-fce7551e83e5
+      - sfo1::8qhcl-1790079786326-ef81f1d4112e
     status:
       code: 200
       message: OK

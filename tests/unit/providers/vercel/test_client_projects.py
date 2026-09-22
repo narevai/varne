@@ -13,7 +13,6 @@ policy_vercel_projects = SanitizePolicy(
         FieldPolicy(
             field="projects",
             keep=("id", "accountId"),
-            limit=2,
             match_field="id",
             match_value="prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
         ),
@@ -36,10 +35,12 @@ def vcr_config():
     }
 
 
+@pytest.mark.default_cassette("projects.yaml")
 @pytest.mark.vcr
 def test_fetch_projects(http_client: httpx.Client, vercel_token: VercelToken):
     client = VercelClient(http_client, api_token=vercel_token)
 
-    projects = client.fetch_projects()
+    response = client.fetch_projects()
 
-    assert len(projects) > 0
+    assert len(response.text) > 0
+    assert response.is_success

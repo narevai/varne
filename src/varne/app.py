@@ -18,15 +18,25 @@ logger.add(sys.stderr, level=settings.log_level)
 
 app = nicegui_app
 app.include_router(router, prefix="/api/v1")
+cassette_manager = None
 
 
-def main() -> None:
-    cassette_manager = None
-
+@app.on_startup
+def startup() -> None:
+    global cassette_manager
     if settings.debug:
         cassette_manager = get_cassette_manager()
         cassette_manager.start()
 
+
+@app.on_shutdown
+def shutdown() -> None:
+    global cassette_manager
+    if cassette_manager is not None:
+        cassette_manager.stop()
+
+
+def main() -> None:
     try:
         ui.run(
             host=settings.host,

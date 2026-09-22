@@ -2,18 +2,18 @@ import ibis
 from ibis.expr.types.relations import Table
 
 from varne.config import SourceId, StackId
-from varne.db.schema import TableFactUsage
+from varne.db.schema import TableFactBilling
 from varne.db.types import DatabaseBackend
 
 
-def get_source_usage(
+def get_source_billing(
     db: DatabaseBackend,
     stack_id: StackId,
     source_id: SourceId,
     page: int = 1,
     page_size: int = 25,
 ) -> Table:
-    staging = db.table(TableFactUsage().name)
+    staging = db.table(TableFactBilling().name)
 
     offset = (page - 1) * page_size
 

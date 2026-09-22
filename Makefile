@@ -1,4 +1,4 @@
-.PHONY: install format check test dev
+.PHONY: install format check test dev debug
 
 install:
 	uv pip install --system -e . --group dev
@@ -12,6 +12,9 @@ check:
 	ruff check src tests
 	basedpyright src tests
 
+debug:
+	DEBUG=true LOG_LEVEL=DEBUG python -m pdb -m varne.app
+
 test:
 	pytest --record-mode=none --block-network
 
@@ -19,6 +22,9 @@ dev:
 	DEBUG=true LOG_LEVEL=DEBUG python -m varne.app
 
 vcr-record:
+	infisical run -- pytest --record-mode=new_episodes
+
+vcr-record-rewrite:
 	infisical run -- pytest --record-mode=rewrite
 
 vcr-format:
