@@ -21,15 +21,16 @@ def transform_meta(row: RowRaw) -> list[RowDimSourceMeta]:
     rows_staging: list[RowDimSourceMeta] = []
     adapter = TypeAdapter(VercelProjectsResponse)
     projects_typed = adapter.validate_json(row.payload)
+
     for project in projects_typed.projects:
         row_id: RowDimSourceMeta = project_to_meta(
             row, value_name="id", value=project.id
         )
         row_name: RowDimSourceMeta = project_to_meta(
-            row, value_name="id", value=project.name
+            row, value_name="name", value=project.name
         )
         row_account_id: RowDimSourceMeta = project_to_meta(
-            row, value_name="id", value=project.account_id
+            row, value_name="account_id", value=project.account_id
         )
         rows_staging.append(row_id)
         rows_staging.append(row_name)

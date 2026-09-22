@@ -119,7 +119,7 @@ async def page_dashboard() -> None:
 
         with ui.row().classes("items-center gap-4"):
             stack_select = create_stack_select(config_manager.config)
-            button_sync = ui.button("sync usage", on_click=sync_usage).classes(
+            button_sync = ui.button("sync metadata", on_click=sync_usage).classes(
                 "self-end"
             )
             ui.button(text="reload config", on_click=reload_config).classes("self-end")

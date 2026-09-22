@@ -22,6 +22,9 @@ dev:
 	DEBUG=true LOG_LEVEL=DEBUG python -m varne.app
 
 vcr-record:
+	infisical run -- pytest --record-mode=new_episodes
+
+vcr-record-rewrite:
 	infisical run -- pytest --record-mode=rewrite
 
 vcr-format:
