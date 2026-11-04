@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-11-04
+
+### Added
+
+- Anonymous `server_start` analytics event sent to Umami when the server starts (version, environment, demo flag, random instance ID). Skipped in development. Disable with `DO_NOT_TRACK=true` or an empty `UMAMI_WEBSITE_ID`; see the README.
+- Startup log line with a link to the documentation.
+
+### Changed
+
+- Documentation links in the UI now point to `https://narev.ai/docs/varne?utm_source=docker`.
+- CI (`Build and Test`) now runs on pull requests and pushes to `0.x`; the backend job is named `Python Build and Test`.
+
+### Dependencies
+
+- Python in CI 3.12 → 3.15; `pnpm` → 12.
+- **`backend/`:** `fastapi` → 0.162.0, `dlt` → 1.32.0, `cryptography` → 50.0.2, `azure-storage-blob` → 12.31.1.
+- **`frontend/`:** React monorepo, TanStack Router monorepo, Tailwind CSS 4.3.4, `axios` 1.21.0, `@tabler/icons-react` 3.50.0, `zustand` 5.0.16, `@hookform/resolvers` 5.9.2, `typescript-eslint` 8.72.1, `eslint-plugin-react-refresh` 0.5.7, `@types/node` 24.19.2, `prettier` 3.9.10.
+
 ## [0.5.0] - 2026-08-31
 
 ### Changed
