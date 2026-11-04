@@ -2,9 +2,9 @@ name: Build and Test
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, "0.x"]
   pull_request:
-    branches: [main, dev]
+    branches: [main, "0.x"]
   workflow_call:
 
 jobs:
@@ -45,7 +45,7 @@ jobs:
         run: pnpm run build
 
   backend:
-    name: Backend Build and Test
+    name: Python Build and Test
     runs-on: ubuntu-latest
     defaults:
       run:

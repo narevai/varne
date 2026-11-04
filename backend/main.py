@@ -1,5 +1,7 @@
+import asyncio
 import logging
 import os
+from contextlib import asynccontextmanager
 import subprocess
 from pathlib import Path
 
@@ -13,11 +15,22 @@ from app.api import v1
 from app.config import get_settings
 from app.database import Base, engine
 from app.logger import setup_logging
+from app.telemetry import track_server_start
 
 setup_logging()
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
+
+DOCS_URL = "https://narev.ai/docs/varne?utm_source=docker"
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    logger.info(f"📖 Documentation: {DOCS_URL}")
+    task = asyncio.create_task(track_server_start())
+    yield
+    task.cancel()
 
 
 def create_app() -> FastAPI:
@@ -28,6 +41,7 @@ def create_app() -> FastAPI:
         description=settings.api_description,
         version=settings.api_version,
         debug=settings.debug,
+        lifespan=lifespan,
     )
 
     # Add CORS middleware
