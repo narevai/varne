@@ -196,7 +196,7 @@ export default function Apps() {
               You're viewing demo data. To connect real providers, please
               disable demo mode in your configuration and follow the{' '}
               <a
-                href='https://narev.ai/docs'
+                href='https://narev.ai/docs/varne?utm_source=docker'
                 className='underline hover:no-underline'
               >
                 setup documentation

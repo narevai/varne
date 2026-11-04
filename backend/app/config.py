@@ -67,6 +67,18 @@ class Settings(BaseSettings):
         description="Demo mode - populate database with sample data on startup",
     )
 
+    # Analytics (Umami) - anonymous "server started" event
+    umami_host: str = Field(
+        default="https://cloud.umami.is", description="Umami host URL"
+    )
+    umami_website_id: str | None = Field(
+        default="845ce56d-b618-400b-8e4b-b40353659bb6",
+        description="Umami website ID (public); set empty to disable analytics",
+    )
+    do_not_track: bool = Field(
+        default=False, description="Disable anonymous analytics (DO_NOT_TRACK=1)"
+    )
+
     # Security
     encryption_key: str | None = Field(
         default=None, description="Fernet encryption key for API keys"

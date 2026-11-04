@@ -50,7 +50,7 @@ export const sidebarData: SidebarData = {
         },
         {
           title: 'Documentation',
-          url: 'https://www.narev.ai/docs',
+          url: 'https://narev.ai/docs/varne?utm_source=docker',
           icon: IconHelp,
         },
       ],

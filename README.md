@@ -92,6 +92,12 @@ Varne does not include built-in authentication yet. For production use, run it b
 
 - Full production setup in the [Deployment Guide](https://www.narev.ai/docs/narev-oss/getting-started/deployment).
 
+### Anonymous analytics
+
+Official Docker images send a single anonymous `server_start` event to [Umami](https://umami.is) when the server starts. It contains only the Varne version, environment, demo flag, and a random instance ID. No billing data or credentials are sent. As with any network request, Umami sees the server's IP address. It is skipped in development.
+
+To disable it, set `DO_NOT_TRACK=true` (or set `UMAMI_WEBSITE_ID` to an empty value).
+
 ## License
 
 Apache 2.0
