@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Documentation links in the UI now point to `https://narev.ai/docs/varne?utm_source=docker`.
 - CI (`Build and Test`) now runs on pull requests and pushes to `0.x`; the backend job is named `Python Build and Test`.
-- Default `API_VERSION` now matches the release version.
 
 ### Dependencies
 
