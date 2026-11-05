@@ -1,5 +1,5 @@
 from loguru import logger
-from nicegui import ui
+from nicegui import context, ui
 from nicegui.elements.column import Column
 
 from varne.dependencies import get_config_manager
@@ -40,8 +40,9 @@ def create_layout() -> Column:
         ui.button(icon="menu", on_click=lambda: drawer.toggle())
         ui.label("Varne")
 
-    with ui.page_scroller(position="bottom-right", x_offset=20, y_offset=20):
-        ui.button("Scroll to Top")
+    with context.client.layout:
+        with ui.page_scroller(position="bottom-right", x_offset=20, y_offset=20):
+            ui.button("Scroll to Top")
 
     content = ui.column()
 

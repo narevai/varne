@@ -264,6 +264,7 @@ section {display:flex;flex-direction:column;width:100%}
 .q-expansion-item {width:100%}.q-list {width:100%}
 .q-slider,.q-range {min-width:180px;max-width:100%}
 .q-scrollarea {height:200px;width:100%}.q-splitter {width:100%;min-height:180px}
+.q-page-sticky,.q-page-scroller {z-index:2500}
 .q-carousel {height:240px;width:100%;background:var(--muted);color:var(--foreground)}
 .nicegui-image,.nicegui-interactive_image,video {max-width:100%;max-height:300px}
 .nicegui-echart,.nicegui-plotly,.nicegui-line-plot,.nicegui-scene,.nicegui-leaflet,.nicegui-aggrid {width:100%;min-height:240px;max-width:100%}
