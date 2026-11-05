@@ -10,7 +10,7 @@ format:
 check:
 	ruff format --check src tests
 	ruff check src tests
-	basedpyright --pythonpath /usr/local/bin/python
+	basedpyright basedpyright --pythonpath "$$(python -c 'import sys; print(sys.executable)')"
 
 debug:
 	DEBUG=true LOG_LEVEL=DEBUG python -m pdb -m varne.app
