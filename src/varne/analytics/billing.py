@@ -24,3 +24,20 @@ def get_source_billing(
     )
 
     return records
+
+
+def get_billing_per_day(db: DatabaseBackend) -> Table:
+    staging = db.table(TableFactBilling().name)
+
+    records = (
+        staging.group_by(
+            day=ibis._.charge_period_start.truncate("D"),
+            stack_id=ibis._.stack_id,
+            source_id=ibis._.source_id,
+            currency=ibis._.billing_currency,
+        )
+        .aggregate(cost=ibis._.billed_cost.sum())
+        .order_by("day")
+    )
+
+    return records

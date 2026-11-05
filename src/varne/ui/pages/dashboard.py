@@ -6,7 +6,7 @@ from nicegui import run, ui
 from nicegui.elements.select import Select
 from nicegui.events import GenericEventArguments
 
-from varne.analytics.billing import get_source_billing
+from varne.analytics.billing import get_billing_per_day, get_source_billing
 from varne.analytics.cost_per_usage import get_source_cost_per_usage
 from varne.analytics.meta import get_source_meta
 from varne.analytics.usage import get_source_usage
@@ -39,6 +39,11 @@ def get_usage_rows(
     df_result = get_source_usage(
         db, stack_id, source_id, page_size=CHART_ROWS
     ).to_pandas()
+    return df_result
+
+
+def get_billing_per_day_rows(db: DatabaseBackend) -> pd.DataFrame:
+    df_result = get_billing_per_day(db).to_pandas()
     return df_result
 
 
@@ -140,6 +145,42 @@ async def page_dashboard() -> None:
                 logger.error(message)
                 ui.notify(message, type="negative")
 
+        async def total_cost() -> None:
+            if config_manager.config is None:
+                return
+
+            df_total = await run.io_bound(get_billing_per_day_rows, db)
+
+            if df_total.empty:
+                return
+
+            source_names = {
+                (stack.id, source.id): source.name
+                for stack in config_manager.config.stacks
+                for source in stack.sources
+            }
+            df_total["source"] = [
+                source_names.get((stack_id, source_id), source_id)
+                for stack_id, source_id in zip(
+                    cast(list[str], df_total["stack_id"].tolist()),
+                    cast(list[str], df_total["source_id"].tolist()),
+                    strict=True,
+                )
+            ]
+
+            currencies = ", ".join(
+                cast(list[str], df_total["currency"].unique().tolist())
+            )
+            with ui.card():
+                bar_chart(
+                    f"Cost per day ({currencies})",
+                    df_total,
+                    x="day",
+                    y="cost",
+                    series="source",
+                    value_format=".2~r",
+                )
+
         @ui.refreshable
         async def source_detail() -> None:
             stack_id = cast(StackId, stack_select.value)
@@ -231,6 +272,7 @@ async def page_dashboard() -> None:
                         js_handler="() => emit(props.row.ID)",
                         handler=lambda e: pull_billing(e),
                     )
+            await total_cost()
             await source_detail()
 
         ui.html("<h1>Dashboard</h1>")
