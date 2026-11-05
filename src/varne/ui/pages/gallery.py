@@ -533,8 +533,7 @@ def page_gallery(component: str | None = None) -> None:
     with create_layout():
         ui.html("<h1>Native NiceGUI components</h1>")
         ui.label(
-            "Plain ui.* elements inheriting the global CSS theme. "
-            "Jump to a component below or scroll through every example."
+            "Plain ui.* elements inheriting the global CSS theme. Jump to a component below or scroll through every example."
         )
         dark = ui.dark_mode(False)
         ui.switch("Preview dark theme", on_change=lambda e: dark.set_value(e.value))
