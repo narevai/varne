@@ -1289,15 +1289,15 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "basedpyright", specifier = ">=1.39.10" },
-    { name = "debugpy", specifier = ">=1.8.17" },
+    { name = "basedpyright", specifier = "==1.39.10" },
+    { name = "debugpy", specifier = "==1.8.22" },
     { name = "httpx2", specifier = "==2.12.0" },
     { name = "pytest", specifier = "==9.1.1" },
     { name = "pytest-asyncio", specifier = "==1.4.0" },
     { name = "pytest-cov", specifier = "==7.1.0" },
-    { name = "pytest-recording", specifier = ">=0.13.4" },
-    { name = "ruff", specifier = ">=0.16.5" },
-    { name = "vcrpy", specifier = ">=8.3.0" },
+    { name = "pytest-recording", specifier = "==0.13.4" },
+    { name = "ruff", specifier = "==0.16.5" },
+    { name = "vcrpy", specifier = "==8.3.0" },
 ]
 
 [[package]]
