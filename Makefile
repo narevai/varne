@@ -10,7 +10,7 @@ format:
 check:
 	ruff format --check src tests
 	ruff check src tests
-	basedpyright src tests
+	basedpyright --pythonpath /usr/local/bin/python
 
 debug:
 	DEBUG=true LOG_LEVEL=DEBUG python -m pdb -m varne.app

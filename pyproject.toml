@@ -84,6 +84,8 @@ filterwarnings = [
 ]
 
 [tool.basedpyright]
+typeCheckingMode = "recommended"
+include = ["src", "tests"]
 reportUnusedCallResult = false
 reportUnusedImport = false
 reportUnknownMemberType = false
