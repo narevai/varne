@@ -138,7 +138,7 @@ async def page_dashboard() -> None:
                     get_billing_rows, db, stack_id, source_id
                 )
 
-                if df_billing is None or df_billing.empty:
+                if df_billing.empty:
                     ui.label("No billing data available")
                     return
 
@@ -149,7 +149,7 @@ async def page_dashboard() -> None:
 
                 df_usage = await run.io_bound(get_usage_rows, db, stack_id, source_id)
 
-                if df_usage is None or df_usage.empty:
+                if df_usage.empty:
                     ui.label("No billing data available")
                     return
 
@@ -164,7 +164,7 @@ async def page_dashboard() -> None:
 
             df_rows = await run.io_bound(get_source_meta_rows, db, stack_id)
 
-            if df_rows is None:
+            if df_rows.empty:
                 df_rows = pd.DataFrame(
                     columns=["source_id", "source_type", "source_name"]
                 )
