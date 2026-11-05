@@ -1,0 +1,302 @@
+/* Varne UI theme. Modified from upstream; see THIRD-PARTY-NOTICES.txt. */
+@font-face {
+	font-family: Geist;
+	src:
+		url("/ui-assets/fonts/Geist-Variable.woff2") format("woff2-variations"),
+		url("/ui-assets/fonts/Geist-Variable.woff2") format("woff2");
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: Geist;
+	src:
+		url("/ui-assets/fonts/Geist-Italic-Variable.woff2") format("woff2-variations"),
+		url("/ui-assets/fonts/Geist-Italic-Variable.woff2") format("woff2");
+	font-weight: 100 900;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Geist Mono";
+	src:
+		url("/ui-assets/fonts/GeistMono-Variable.woff2") format("woff2-variations"),
+		url("/ui-assets/fonts/GeistMono-Variable.woff2") format("woff2");
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Geist Mono";
+	src:
+		url("/ui-assets/fonts/GeistMono-Italic-Variable.woff2") format("woff2-variations"),
+		url("/ui-assets/fonts/GeistMono-Italic-Variable.woff2") format("woff2");
+	font-weight: 100 900;
+	font-style: italic;
+	font-display: swap;
+}
+
+:root {
+	--font-geist-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Roboto", sans-serif;
+	--font-geist-mono: "Geist Mono", ui-monospace, "SFMono-Regular", "Menlo", "Monaco", "Liberation Mono", monospace;
+}
+
+:root {
+	color-scheme: light;
+	--radius: 0.5rem;
+	--color-cream-100: oklch(0.98 0 0);
+	--background: #f4f4f5;
+	--foreground: oklch(0.141 0.005 285.823);
+	--card: oklch(1 0 0);
+	--card-foreground: oklch(0.141 0.005 285.823);
+	--popover: oklch(1 0 0);
+	--popover-foreground: oklch(0.141 0.005 285.823);
+	--primary: oklch(0.5081 0.1049 165.61);
+	--primary-foreground: oklch(0.985 0 0);
+	--secondary: oklch(0.967 0.001 286.375);
+	--secondary-foreground: oklch(0.21 0.006 285.885);
+	--muted: oklch(0.967 0.001 286.375);
+	--muted-foreground: oklch(0.52 0.016 285.938);
+	--accent: oklch(0.967 0.001 286.375);
+	--accent-foreground: oklch(0.21 0.006 285.885);
+	--destructive: oklch(0.577 0.245 27.325);
+	--border: oklch(0.92 0.004 286.32);
+	--input: oklch(0.92 0.004 286.32);
+	--ring: oklch(0.705 0.015 286.067);
+	/* Chart color system. Semantic: status only. Sequential: one hue, stepped
+	   lightness, for ordered series (seq = teal, ord = indigo percentiles).
+	   Categorical: six hues assigned by rank, then grey for "Other". Hues 0-70
+	   are reserved for status, so no category can look like an error. Info is
+	   the in-progress status (a check or a recovery under way); it shares the
+	   blue family with cat-1 and cat-5, so keep it to badges and state marks,
+	   not series that sit beside categorical ones. */
+	--chart-success: oklch(0.63 0.11 182);
+	--chart-error: oklch(0.6 0.16 27);
+	--chart-warning: oklch(0.74 0.13 62);
+	--chart-info: oklch(0.64 0.1 240);
+	--chart-neutral: oklch(0.8 0.012 200);
+	/* Text-safe versions of the status hues: same hue, lightness set so 12px
+	   text clears WCAG 4.5:1 on the card and on a 10% tint of itself. Fills,
+	   swatches and bars keep the base tokens. */
+	--chart-success-ink: oklch(0.45 0.1 182);
+	--chart-error-ink: oklch(0.48 0.16 27);
+	--chart-warning-ink: oklch(0.5 0.12 62);
+	--chart-info-ink: oklch(0.47 0.11 245);
+	--chart-seq-1: oklch(0.38 0.085 205);
+	--chart-seq-2: oklch(0.48 0.115 200);
+	--chart-seq-3: oklch(0.6 0.115 190);
+	--chart-seq-4: oklch(0.72 0.095 186);
+	--chart-seq-5: oklch(0.86 0.055 184);
+	--chart-token-input: oklch(0.48 0.115 200);
+	--chart-token-output: oklch(0.68 0.1 188);
+	--chart-token-cached: oklch(0.86 0.055 184);
+	--chart-ord-1: oklch(0.82 0.055 265);
+	--chart-ord-2: oklch(0.7 0.095 265);
+	--chart-ord-3: oklch(0.57 0.125 267);
+	--chart-ord-4: oklch(0.44 0.135 270);
+	--chart-cat-1: oklch(0.55 0.13 255);
+	--chart-cat-2: oklch(0.63 0.13 300);
+	--chart-cat-3: oklch(0.67 0.13 340);
+	--chart-cat-4: oklch(0.66 0.12 135);
+	--chart-cat-5: oklch(0.42 0.1 225);
+	--chart-cat-6: oklch(0.45 0.09 155);
+	--chart-cat-other: oklch(0.78 0.012 200);
+	--chart-track: oklch(0.965 0.004 195);
+	--sidebar: color-mix(in oklch, var(--color-cream-100) 20%, transparent);
+	--sidebar-foreground: oklch(0.141 0.005 285.823);
+	--sidebar-primary: oklch(0.21 0.006 285.885);
+	--sidebar-primary-foreground: oklch(0.985 0 0);
+	--sidebar-accent: oklch(0.94 0.001 286.375);
+	--sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+	--sidebar-border: oklch(0.92 0.004 286.32);
+	--sidebar-ring: oklch(0.705 0.015 286.067);
+}
+
+body.body--dark {
+	color-scheme: dark;
+	--color-ink-900: oklch(0.141 0.005 285.823);
+	--background: var(--color-ink-900);
+	--foreground: oklch(0.985 0 0);
+	--card: oklch(0.21 0.006 285.885);
+	--card-foreground: oklch(0.985 0 0);
+	--popover: oklch(0.21 0.006 285.885);
+	--popover-foreground: oklch(0.985 0 0);
+	--primary: oklch(0.92 0.004 286.32);
+	--primary-foreground: oklch(0.21 0.006 285.885);
+	--secondary: oklch(0.274 0.006 286.033);
+	--secondary-foreground: oklch(0.985 0 0);
+	--muted: oklch(0.274 0.006 286.033);
+	--muted-foreground: oklch(0.705 0.015 286.067);
+	--accent: oklch(0.274 0.006 286.033);
+	--accent-foreground: oklch(0.985 0 0);
+	--destructive: oklch(0.704 0.191 22.216);
+	--border: oklch(1 0 0 / 10%);
+	--input: oklch(1 0 0 / 15%);
+	--ring: oklch(0.552 0.016 285.938);
+	/* Same hues, lightness re-anchored: the teal ramp inverts so brightest is
+	   largest, and the two darkest categoricals lift. */
+	--chart-success: oklch(0.72 0.115 182);
+	--chart-error: oklch(0.68 0.155 27);
+	--chart-warning: oklch(0.8 0.125 62);
+	--chart-info: oklch(0.72 0.1 240);
+	--chart-neutral: oklch(0.55 0.015 220);
+	--chart-success-ink: oklch(0.84 0.1 182);
+	--chart-error-ink: oklch(0.82 0.12 27);
+	--chart-warning-ink: oklch(0.86 0.11 62);
+	--chart-info-ink: oklch(0.84 0.08 240);
+	--chart-seq-1: oklch(0.9 0.05 184);
+	--chart-seq-2: oklch(0.8 0.085 186);
+	--chart-seq-3: oklch(0.68 0.11 190);
+	--chart-seq-4: oklch(0.56 0.11 198);
+	--chart-seq-5: oklch(0.44 0.09 205);
+	--chart-token-input: oklch(0.8 0.085 186);
+	--chart-token-output: oklch(0.62 0.11 194);
+	--chart-token-cached: oklch(0.44 0.09 205);
+	--chart-ord-1: oklch(0.88 0.05 265);
+	--chart-ord-2: oklch(0.78 0.09 265);
+	--chart-ord-3: oklch(0.68 0.12 267);
+	--chart-ord-4: oklch(0.58 0.13 270);
+	--chart-cat-1: oklch(0.68 0.12 255);
+	--chart-cat-2: oklch(0.72 0.12 300);
+	--chart-cat-3: oklch(0.75 0.12 340);
+	--chart-cat-4: oklch(0.76 0.115 135);
+	--chart-cat-5: oklch(0.62 0.1 225);
+	--chart-cat-6: oklch(0.64 0.09 155);
+	--chart-cat-other: oklch(0.55 0.015 220);
+	--chart-track: oklch(0.29 0.012 220);
+	--sidebar: color-mix(in oklch, var(--color-ink-900) 20%, transparent);
+	--sidebar-foreground: oklch(0.985 0 0);
+	--sidebar-primary: oklch(0.488 0.243 264.376);
+	--sidebar-primary-foreground: oklch(0.985 0 0);
+	--sidebar-accent: oklch(0.274 0.006 286.033);
+	--sidebar-accent-foreground: oklch(0.985 0 0);
+	--sidebar-border: oklch(1 0 0 / 10%);
+	--sidebar-ring: oklch(0.552 0.016 285.938);
+}
+/* Global native NiceGUI and Quasar defaults. No application classes required. */
+:root {
+ --nicegui-default-padding:1.5rem;
+ --nicegui-default-gap:1rem;
+}
+/* Quasar ships Material defaults on :root; NiceGUI also sets inline --q-* on body.
+   Re-map the full palette to design tokens so toggles, tabs, progress, etc. match. */
+:root,
+body,
+#q-app {
+ --q-primary:var(--primary)!important;
+ --q-secondary:var(--secondary)!important;
+ --q-accent:var(--accent-foreground)!important;
+ --q-positive:var(--chart-success-ink)!important;
+ --q-negative:var(--destructive)!important;
+ --q-info:var(--chart-info-ink)!important;
+ --q-warning:var(--chart-warning-ink)!important;
+ --q-dark:var(--card)!important;
+ --q-dark-page:var(--background)!important;
+}
+body {
+ font-family:var(--font-geist-sans);font-size:14px;line-height:1.5;
+ background:var(--background);color:var(--foreground);
+ -webkit-font-smoothing:antialiased;
+}
+body.body--dark {background:var(--background);color:var(--foreground)}
+h1 {font-size:1.5rem;font-weight:600;letter-spacing:-.04em;line-height:1.3;margin:0}
+h2 {font-size:1.125rem;font-weight:600;line-height:1.4;margin:0}
+h3 {font-size:1rem;font-weight:600;line-height:1.4;margin:0}
+a {color:var(--primary);text-underline-offset:3px}
+code,pre,.nicegui-code,.cm-editor,.nicegui-log {font-family:var(--font-geist-mono)}
+.nicegui-content {min-width:0}
+.nicegui-content>.nicegui-column {width:100%;min-width:0}
+.nicegui-row {align-items:center;gap:.75rem}
+.nicegui-row:has(.q-field) {align-items:flex-end}
+.q-header,.q-footer {background:var(--background);color:var(--foreground);box-shadow:none;padding:.75rem 1.5rem;gap:.75rem;border-bottom:1px solid var(--border)}
+.q-drawer {background:var(--background);color:var(--foreground);border-right:1px solid var(--border);padding:1rem .75rem}
+.q-drawer .q-item {border-radius:6px;min-height:38px;color:var(--muted-foreground);margin-bottom:4px}
+.q-item:hover,.q-drawer .q-item[aria-current=page] {background:var(--accent);color:var(--foreground)}
+.q-card,section {background:var(--card);color:var(--card-foreground);border:1px solid var(--border);border-radius:var(--radius);box-shadow:none;padding:1.25rem;gap:1rem;max-width:100%;min-width:0}
+section {display:flex;flex-direction:column;width:100%}
+.q-card {width:100%}.q-card__section,.q-card__actions {padding:1rem}
+.q-btn {font-family:inherit;text-transform:none;font-size:13px;font-weight:500;min-height:36px;border-radius:6px;padding:6px 14px}
+.q-btn:before {box-shadow:none}.q-btn--round {padding:0}
+.q-field {font-family:inherit;font-size:13px;max-width:100%;overflow:visible}
+.q-field__control {border-radius:6px;color:var(--foreground);background:var(--card);min-height:40px;padding:0 12px}
+.q-field--filled .q-field__control {background:var(--muted)}
+.q-field__native,.q-field__input {color:var(--foreground)}
+.q-field__label,.q-field__marginal {color:var(--muted-foreground)}
+.q-field--standard .q-field__control:before,.q-field--filled .q-field__control:before {
+ border:1px solid var(--input);border-radius:6px;transition:border-color .2s ease
+}
+.q-field--standard .q-field__control:hover:before,.q-field--filled .q-field__control:hover:before {
+ border-color:color-mix(in oklch,var(--input) 65%,var(--foreground))
+}
+.q-field--standard .q-field__control:after,.q-field--filled .q-field__control:after {
+ top:0;right:0;bottom:0;left:0;height:auto;border:2px solid var(--ring);border-radius:6px;
+ transform:none;opacity:0;background:transparent;transition:opacity .2s ease
+}
+.q-field--standard.q-field--highlighted .q-field__control:after,.q-field--filled.q-field--highlighted .q-field__control:after {
+ transform:none;opacity:1
+}
+.q-field--error .q-field__control:before {border-color:var(--destructive)}
+.q-field__bottom {padding:4px 12px 0}
+.q-select .q-field__control {cursor:pointer}
+.gallery-index {display:flex;flex-direction:column;background:transparent;border:none;padding:0;gap:.75rem;width:100%}
+.gallery-index__list {
+ display:grid;grid-template-columns:repeat(auto-fill,minmax(11rem,1fr));gap:.35rem .75rem;
+ list-style:none;margin:0;padding:0;width:100%
+}
+.gallery-index__list a {color:var(--foreground);text-decoration:none;font-size:13px}
+.gallery-index__list a:hover {color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.gallery-demo {scroll-margin-top:5rem}
+.q-table__container,.q-menu,.q-dialog__inner>.q-card,.q-date,.q-time,.q-stepper,.q-editor,.q-uploader {
+ background:var(--card);color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius);box-shadow:none;max-width:100%
+}
+.q-menu,.q-dialog__inner>.q-card {box-shadow:0 8px 24px #00000014}
+.q-table__container {width:100%;overflow:hidden}.q-table__middle {overflow:auto}
+.q-table th {font-weight:500;color:var(--muted-foreground);background:var(--muted)}
+.q-table td,.q-table th {border-color:var(--border);padding:12px 16px}
+.q-table__title {font-size:15px;font-weight:600}
+.q-badge,.q-chip {border-radius:5px;font-weight:500;font-size:12px}
+.q-tab {text-transform:none;font-size:13px}.q-tab-panels {background:var(--card);color:var(--foreground);width:100%}
+.q-notification,.q-tooltip {font-family:inherit;border-radius:6px}
+.q-separator {background:var(--border)}
+.q-expansion-item {width:100%}.q-list {width:100%}
+.q-slider,.q-range {min-width:180px;max-width:100%}
+.q-scrollarea {height:200px;width:100%}.q-splitter {width:100%;min-height:180px}
+.q-carousel {height:240px;width:100%;background:var(--muted);color:var(--foreground)}
+.nicegui-image,.nicegui-interactive_image,video {max-width:100%;max-height:300px}
+.nicegui-echart,.nicegui-plotly,.nicegui-line-plot,.nicegui-scene,.nicegui-leaflet,.nicegui-aggrid {width:100%;min-height:240px;max-width:100%}
+.nicegui-codemirror,.nicegui-json-editor,.nicegui-xterm,.nicegui-log {width:100%;min-height:160px;max-width:100%}
+:focus-visible {outline:2px solid var(--ring);outline-offset:3px}
+/* Beats Quasar's !important color utilities and a few hard-coded Material hues. */
+@layer theme {
+ .text-primary,.q-item--active,.q-item.q-router-link--active,.q-stepper__tab--active,.q-stepper__tab--done {color:var(--primary)!important}
+ .bg-primary,.q-btn.bg-primary,.q-badge.bg-primary,.q-chip.bg-primary,.q-avatar.bg-primary {background:var(--primary)!important;color:var(--primary-foreground)!important}
+ .text-secondary {color:var(--secondary-foreground)!important}
+ .bg-secondary {background:var(--secondary)!important;color:var(--secondary-foreground)!important}
+ .text-accent {color:var(--accent-foreground)!important}
+ .bg-accent {background:var(--accent)!important;color:var(--accent-foreground)!important}
+ .text-positive {color:var(--chart-success-ink)!important}
+ .bg-positive {background:var(--chart-success)!important;color:var(--primary-foreground)!important}
+ .text-negative {color:var(--destructive)!important}
+ .bg-negative {background:var(--destructive)!important;color:var(--primary-foreground)!important}
+ .text-info {color:var(--chart-info-ink)!important}
+ .bg-info {background:var(--chart-info)!important;color:var(--primary-foreground)!important}
+ .text-warning {color:var(--chart-warning-ink)!important}
+ .bg-warning {background:var(--chart-warning)!important;color:var(--foreground)!important}
+ .q-tab--active {color:var(--primary)!important}
+ .q-tab__indicator {background:var(--primary)!important}
+ .q-slide-item__top {background:var(--primary)!important}
+ .q-btn--flat,.q-btn--outline,.q-btn--flat .q-focusable,.q-btn--outline .q-focusable {background:transparent!important;color:var(--primary)!important}
+ .q-btn--outline:before {border-color:var(--border)!important}
+ .q-btn.disabled,.q-btn.disabled .q-focusable {opacity:.45!important}
+ .q-checkbox__inner--truthy,.q-checkbox__inner--indet,.q-toggle__inner--truthy,.q-radio__inner--truthy {color:var(--primary)!important}
+ .q-slider__track,.q-slider__thumb {color:var(--primary)!important}
+ .q-knob {color:var(--primary)!important}
+ .q-rating__icon--active {color:var(--primary)!important}
+ .q-spinner {color:var(--primary)!important}
+ .q-linear-progress {color:var(--primary)!important}
+ .q-circular-progress {color:var(--primary)!important}
+}
+@media(max-width:768px) {:root {--nicegui-default-padding:.75rem;--nicegui-default-gap:.75rem}.q-header,.q-footer {padding:.75rem}section,.q-card {padding:1rem}}

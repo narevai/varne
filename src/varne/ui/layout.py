@@ -3,6 +3,8 @@ from nicegui import ui
 from nicegui.elements.column import Column
 
 from varne.dependencies import get_config_manager
+from varne.settings import get_settings
+from varne.ui import theme  # noqa: F401
 from varne.ui.components.nav_item import nav_item
 
 
@@ -27,11 +29,14 @@ def create_layout() -> Column:
         nav_item("Integrations", "extension", "/integrations")
         nav_item("Settings", "settings", "/settings")
 
+        if get_settings().environment == "development":
+            nav_item("Components", "widgets", "/dev/components")
+
         # ui.link("Dashboard", "/")
         # ui.link("Integrations", "/integrations")
         # ui.link("Settings", "/settings")
 
-    with ui.header(elevated=True):
+    with ui.header():
         ui.button(icon="menu", on_click=lambda: drawer.toggle())
         ui.label("Varne")
 

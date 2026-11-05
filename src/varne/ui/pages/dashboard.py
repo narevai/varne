@@ -40,9 +40,7 @@ def create_stack_select(config: ConfigVarne | None) -> Select:
 
     stack_options = {stack.id: stack.name for stack in config.stacks}
 
-    return ui.select(
-        options=stack_options, label="stack", value=config.stacks[0].id
-    ).classes("w-64")
+    return ui.select(options=stack_options, label="stack", value=config.stacks[0].id)
 
 
 def refresh_stack_select(select: Select, config: ConfigVarne):
@@ -132,33 +130,33 @@ async def page_dashboard() -> None:
             stack_id = cast(StackId, stack_select.value)
             source_id = "vercel1"
 
-            with ui.card().classes("w-full"):
-                with ui.row().classes("w-full items-center justify-between"):
-                    ui.label(str(source_id)).classes("text-lg font-semibold")
+            with ui.card():
+                with ui.row():
+                    ui.label(str(source_id))
 
                 df_billing = await run.io_bound(
                     get_billing_rows, db, stack_id, source_id
                 )
 
                 if df_billing is None or df_billing.empty:
-                    ui.label("No billing data available").classes("text-gray-500")
+                    ui.label("No billing data available")
                     return
 
                 ui.table.from_pandas(
                     df_billing,
                     title="Billing",
-                ).classes("w-full")
+                )
 
                 df_usage = await run.io_bound(get_usage_rows, db, stack_id, source_id)
 
                 if df_usage is None or df_usage.empty:
-                    ui.label("No billing data available").classes("text-gray-500")
+                    ui.label("No billing data available")
                     return
 
                 ui.table.from_pandas(
                     df_usage,
                     title="Usage",
-                ).classes("w-full")
+                )
 
         @ui.refreshable
         async def content():
@@ -191,17 +189,15 @@ async def page_dashboard() -> None:
                     )
             await source_detail()
 
-        ui.label("Dashboard").classes("text-2xl font-bold")
+        ui.html("<h1>Dashboard</h1>")
 
         if config_manager.config is None or not config_manager.config.stacks:
             ui.label("No stacks found, define in Settings")
 
-        with ui.row().classes("items-center gap-4"):
+        with ui.row():
             stack_select = create_stack_select(config_manager.config)
-            button_sync = ui.button("sync metadata", on_click=sync_meta).classes(
-                "self-end"
-            )
-            ui.button(text="reload config", on_click=reload_config).classes("self-end")
+            button_sync = ui.button("sync metadata", on_click=sync_meta)
+            ui.button(text="reload config", on_click=reload_config)
 
         stack_select.on_value_change(lambda _: content.refresh())
 

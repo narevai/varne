@@ -8,5 +8,5 @@ def page_integrations() -> None:
     # TODO
     layout = create_layout()
     with layout:
-        ui.label("Integrations").classes("text-2xl font-bold")
-        [ui.label(f"Integration {i}") for i in range(100)]
+        ui.html("<h1>Integrations</h1>")
+        ui.label("Integrations will appear here once configured.")
