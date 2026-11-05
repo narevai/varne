@@ -52,7 +52,7 @@ def get_config_manager() -> ConfigManager:
 
 
 @lru_cache
-def get_cassette_manager() -> "CassetteManager":
+def get_cassette_manager() -> CassetteManager:
     from varne.cassettes import CassetteManager
 
     return CassetteManager(
