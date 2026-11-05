@@ -1,7 +1,7 @@
 import ibis
 from ibis.expr.types.relations import Table
 
-from varne.config import StackId
+from varne.config import SourceId, StackId
 from varne.db.schema import TableDimSourceMeta
 from varne.db.types import DatabaseBackend
 
@@ -21,3 +21,15 @@ def get_source_meta(db: DatabaseBackend, stack_id: StackId) -> Table:
     )
 
     return records
+
+
+def has_source_meta(
+    db: DatabaseBackend, stack_id: StackId, source_id: SourceId
+) -> bool:
+    staging = db.table(TableDimSourceMeta().name)
+
+    records = staging.filter(
+        staging.stack_id == stack_id, staging.source_id == source_id
+    )
+
+    return not records.limit(1).to_pandas().empty

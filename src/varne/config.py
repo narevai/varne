@@ -73,6 +73,17 @@ class ConfigVarne(BaseModel):
     stacks: list[ConfigStack]
 
 
+def parse_config(text: str) -> ConfigVarne:
+    try:
+        raw = yaml.safe_load(text)  # pyright: ignore[reportAny]
+        return ConfigVarne.model_validate(raw or {})
+    except yaml.YAMLError as exc:
+        raise ValueError(str(exc)) from exc
+    except ValidationError as exc:
+        error = exc.errors()[0]
+        raise ValueError(f"{'.'.join(map(str, error['loc']))}: {error['msg']}") from exc
+
+
 class ConfigManager:
     def __init__(self, path: Path | str):
         self.path: Path = Path(path)
@@ -81,16 +92,25 @@ class ConfigManager:
 
     def load(self) -> ConfigVarne:
         try:
-            raw = yaml.safe_load(self.path.read_text())  # pyright: ignore[reportAny]
-            self.config = ConfigVarne.model_validate(raw or {})
-        except yaml.YAMLError as exc:
+            self.config = parse_config(self.path.read_text())
+            self.error = None
+        except ValueError as exc:
             self.error = str(exc)
             self.config = ConfigVarne(stacks=[])
-        except ValidationError as exc:
-            error = exc.errors()[0]
-            self.error = f"{'.'.join(map(str, error['loc']))}: {error['msg']}"
-            self.config = ConfigVarne(stacks=[])
         return self.config
+
+    def save_text(self, text: str) -> str | None:
+        try:
+            parse_config(text)
+        except ValueError as exc:
+            return str(exc)
+
+        config_tmp_path = self.path.with_suffix(".tmp")
+        config_tmp_path.write_text(text)
+        config_tmp_path.replace(self.path)
+
+        self.load()
+        return None
 
     def save(self):
 

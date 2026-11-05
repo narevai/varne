@@ -7,12 +7,16 @@ from nicegui.elements.select import Select
 from nicegui.events import GenericEventArguments
 
 from varne.analytics.billing import get_source_billing
+from varne.analytics.cost_per_usage import get_source_cost_per_usage
 from varne.analytics.meta import get_source_meta
 from varne.analytics.usage import get_source_usage
 from varne.config import ConfigVarne, SourceId, StackId
 from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db, get_service
+from varne.ui.components.bar_chart import bar_chart
 from varne.ui.layout import create_layout
+
+CHART_ROWS = 1000
 
 
 def get_source_meta_rows(db: DatabaseBackend, stack_id: StackId) -> pd.DataFrame:
@@ -23,14 +27,25 @@ def get_source_meta_rows(db: DatabaseBackend, stack_id: StackId) -> pd.DataFrame
 def get_billing_rows(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> pd.DataFrame:
-    df_result = get_source_billing(db, stack_id, source_id).to_pandas()
+    df_result = get_source_billing(
+        db, stack_id, source_id, page_size=CHART_ROWS
+    ).to_pandas()
     return df_result
 
 
 def get_usage_rows(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> pd.DataFrame:
-    df_result = get_source_usage(db, stack_id, source_id).to_pandas()
+    df_result = get_source_usage(
+        db, stack_id, source_id, page_size=CHART_ROWS
+    ).to_pandas()
+    return df_result
+
+
+def get_cost_per_usage_rows(
+    db: DatabaseBackend, stack_id: StackId, source_id: SourceId
+) -> pd.DataFrame:
+    df_result = get_source_cost_per_usage(db, stack_id, source_id).to_pandas()
     return df_result
 
 
@@ -142,20 +157,49 @@ async def page_dashboard() -> None:
                     ui.label("No billing data available")
                     return
 
-                ui.table.from_pandas(
+                currencies = ", ".join(
+                    cast(list[str], df_billing["billing_currency"].unique().tolist())
+                )
+                bar_chart(
+                    f"Billing ({currencies})",
                     df_billing,
-                    title="Billing",
+                    x="charge_period_start",
+                    y="billed_cost",
+                    series="service_name",
+                    value_format=".2~r",
                 )
 
                 df_usage = await run.io_bound(get_usage_rows, db, stack_id, source_id)
 
                 if df_usage.empty:
-                    ui.label("No billing data available")
+                    ui.label("No usage data available")
                     return
 
-                ui.table.from_pandas(
+                units = ", ".join(
+                    cast(list[str], df_usage["usage_name"].unique().tolist())
+                )
+                bar_chart(
+                    f"Usage ({units})",
                     df_usage,
-                    title="Usage",
+                    x="event_time",
+                    y="usage",
+                    series="usage_name",
+                )
+
+                df_cost = await run.io_bound(
+                    get_cost_per_usage_rows, db, stack_id, source_id
+                )
+
+                if df_cost.empty:
+                    return
+
+                bar_chart(
+                    f"Cost per visitor ({currencies})",
+                    df_cost,
+                    x="day",
+                    y="cost_per_usage",
+                    series="series",
+                    value_format=".2~r",
                 )
 
         @ui.refreshable

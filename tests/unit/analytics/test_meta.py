@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from typing import cast
 
-from varne.analytics.meta import get_source_meta
+from varne.analytics.meta import get_source_meta, has_source_meta
 from varne.config import SourceId, SourceType, StackId
 from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
@@ -60,3 +60,27 @@ def test_get_source_meta(db: DatabaseBackend):
 
     assert result_dict[0].get("source_id") == source_id
     assert result_dict[0].get("source_type") == source_type
+
+
+def test_has_source_meta(db: DatabaseBackend):
+    stack_id: StackId = "stack_test"
+    source_id: SourceId = "source_test"
+
+    assert not has_source_meta(db, stack_id, source_id)
+
+    db.insert(
+        TableName.DIM_SOURCE_META,
+        [
+            {
+                "stack_id": stack_id,
+                "source_id": source_id,
+                "source_type": SourceType.JSONPLACEHOLDER,
+                "extracted_at": datetime.now(UTC),
+                "value_name": "id",
+                "value": SourceType.JSONPLACEHOLDER,
+            },
+        ],
+    )
+
+    assert has_source_meta(db, stack_id, source_id)
+    assert not has_source_meta(db, stack_id, "other_source")
