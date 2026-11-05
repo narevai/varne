@@ -1,6 +1,9 @@
 from functools import lru_cache
+from importlib.resources import files
+from pathlib import Path
 from typing import ClassVar
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,6 +26,10 @@ class Settings(BaseSettings):
 
     database_path: str = "./data/app.duckdb"
     config_path: str = "./config/varne.yaml"
+
+    static_path: Path = Field(
+        default_factory=lambda: Path(str(files("varne.ui") / "static"))
+    )
 
 
 @lru_cache
