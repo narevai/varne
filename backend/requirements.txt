@@ -3,7 +3,7 @@ fastapi==0.162.0
 uvicorn[standard]==0.52.4
 
 # Database
-sqlalchemy==2.0.52
+sqlalchemy==2.1.8
 
 # Data processing
 pydantic==2.13.5
