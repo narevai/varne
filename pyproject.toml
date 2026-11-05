@@ -12,6 +12,7 @@ dependencies = [
     "uvicorn[standard]==0.52.4",
     "nicegui==3.16.0",
     "ibis-framework[duckdb]==12.0.0",
+    "duckdb==1.5.5",
     "loguru==0.7.3",
     "pydantic==2.13.5",
     "pydantic-settings==2.15.0",
