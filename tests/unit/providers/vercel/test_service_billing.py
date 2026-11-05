@@ -1,4 +1,5 @@
 from functools import partial
+from typing import cast
 
 import httpx2 as httpx
 import pytest
@@ -40,8 +41,8 @@ def test_fetch_source_billing(
 
     service._fetch_source_billing()
 
-    raw_count = db.table(TableName.RAW).count().execute()
-    staging_count = db.table(TableName.FACT_BILLING).count().execute()
+    raw_count = cast(int, db.table(TableName.RAW).count().execute())
+    staging_count = cast(int, db.table(TableName.FACT_BILLING).count().execute())
 
     assert raw_count == 1
     assert staging_count > 0

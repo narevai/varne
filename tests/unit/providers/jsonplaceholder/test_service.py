@@ -1,3 +1,5 @@
+from typing import cast
+
 import httpx2 as httpx
 import pytest
 
@@ -19,8 +21,8 @@ def test_store(db: DatabaseBackend, http_client: httpx.Client):
 
     service.fetch_source_meta()
 
-    raw_count = db.table(TableName.RAW).count().execute()
-    staging_count = db.table(TableName.DIM_SOURCE_META).count().execute()
+    raw_count = cast(int, db.table(TableName.RAW).count().execute())
+    staging_count = cast(int, db.table(TableName.DIM_SOURCE_META).count().execute())
 
     assert raw_count == 1
     assert staging_count == 200
