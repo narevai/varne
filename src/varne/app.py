@@ -6,7 +6,9 @@ from nicegui import ui
 
 from varne.api.v1 import router
 from varne.settings import get_settings
+from varne.ui import theme  # noqa: F401
 from varne.ui.pages.dashboard import page_dashboard  # noqa: F401
+from varne.ui.pages.gallery import page_gallery  # noqa: F401
 from varne.ui.pages.integrations import page_integrations  # noqa: F401
 from varne.ui.pages.settings import page_settings  # noqa: F401
 
