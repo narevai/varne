@@ -5,7 +5,6 @@ from nicegui import app as nicegui_app
 from nicegui import ui
 
 from varne.api.v1 import router
-from varne.dependencies import get_cassette_manager
 from varne.settings import get_settings
 from varne.ui.pages.dashboard import page_dashboard  # noqa: F401
 from varne.ui.pages.integrations import page_integrations  # noqa: F401
@@ -25,6 +24,8 @@ cassette_manager = None
 def startup() -> None:
     global cassette_manager
     if settings.debug:
+        from varne.dependencies import get_cassette_manager
+
         cassette_manager = get_cassette_manager()
         cassette_manager.start()
 

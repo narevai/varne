@@ -1,9 +1,9 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import httpx2 as httpx
 
-from varne.cassettes import CassetteManager
 from varne.config import (
     ConfigJsonPlaceholder,
     ConfigManager,
@@ -21,6 +21,9 @@ from varne.providers.jsonplaceholder.service import JsonPlaceholderService
 from varne.providers.vercel.client import VercelClient
 from varne.providers.vercel.service import VercelService
 from varne.settings import get_settings
+
+if TYPE_CHECKING:
+    from varne.cassettes import CassetteManager
 
 
 @lru_cache
@@ -50,6 +53,8 @@ def get_config_manager() -> ConfigManager:
 
 @lru_cache
 def get_cassette_manager() -> CassetteManager:
+    from varne.cassettes import CassetteManager
+
     return CassetteManager(
         cassette_paths=list(Path("tests/unit/providers").glob("**/cassettes/**/*.yaml"))
     )
