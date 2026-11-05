@@ -187,13 +187,14 @@ jobs:
       - name: Test built image
         run: |
           # Test the multi-arch image
-          docker run --rm -d --name test-container -p 8000:8000 -e ENVIRONMENT=production ${{ env.FULL_IMAGE_NAME }}:${{ inputs.test_tag || steps.meta.outputs.version }}
+          docker run -d --name test-container -p 8000:8000 -e ENVIRONMENT=production ${{ env.FULL_IMAGE_NAME }}:${{ inputs.test_tag || steps.meta.outputs.version }}
           
           # Wait for container to be ready with timeout
           for i in {1..30}; do
             if ! docker ps | grep test-container >/dev/null; then
               echo "Container crashed! Logs:"
-              docker logs test-container 2>&1 || echo "No logs available"
+              docker logs test-container 2>&1 || true
+              docker rm -f test-container 2>&1 || true
               exit 1
             fi
             if curl -f http://localhost:8000/api/v1/health >/dev/null 2>&1; then
@@ -208,4 +209,4 @@ jobs:
             sleep 2
           done
           
-          docker stop test-container
+          docker rm -f test-container
