@@ -129,3 +129,30 @@ def test_config_vercel(config_single_vercel: Path):
     assert config.stacks[0].sources[0].id == "vercel1"
     assert config.stacks[0].sources[0].name == "Vercel 1"
     assert config.stacks[0].sources[0].type == SourceType.VERCEL
+
+
+def test_config_save_text_valid(config_single_jsonplaceholder: Path):
+    manager = ConfigManager(path=config_single_jsonplaceholder)
+    manager.load()
+
+    text = "# my comment\nstacks:\n  - id: stack_new\n    name: New\n"
+    error = manager.save_text(text)
+
+    assert error is None
+    assert config_single_jsonplaceholder.read_text() == text
+    assert manager.config is not None
+    assert manager.config.stacks[0].id == "stack_new"
+    assert manager.error is None
+
+
+def test_config_save_text_invalid_keeps_file(config_single_jsonplaceholder: Path):
+    manager = ConfigManager(path=config_single_jsonplaceholder)
+    manager.load()
+    before = config_single_jsonplaceholder.read_text()
+
+    error = manager.save_text("stacks:\n  - id: stack_new\n")
+
+    assert error == "stacks.0.name: Field required"
+    assert config_single_jsonplaceholder.read_text() == before
+    assert manager.config is not None
+    assert manager.config.stacks[0].id == "stack_id1"
