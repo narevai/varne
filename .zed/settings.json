@@ -4,5 +4,23 @@
     "shell": {
       "program": "/bin/bash"
     }
+  },
+  "lsp": {
+    "basedpyright": {
+      "binary": {
+        "path": "/usr/local/bin/basedpyright-langserver",
+        "arguments": ["--stdio"]
+      },
+      "settings": {
+        "python": {
+          "pythonPath": "/usr/local/bin/python"
+        },
+        "basedpyright": {
+          "analysis": {
+            "diagnosticMode": "workspace"
+          }
+        }
+      }
+    }
   }
 }
