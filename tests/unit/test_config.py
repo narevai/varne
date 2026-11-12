@@ -156,3 +156,31 @@ def test_config_save_text_invalid_keeps_file(config_single_jsonplaceholder: Path
     assert config_single_jsonplaceholder.read_text() == before
     assert manager.config is not None
     assert manager.config.stacks[0].id == "stack_id1"
+
+
+def test_config_missing_file_is_created_empty(tmp_path: Path):
+    path = tmp_path / "does" / "not" / "exist" / "varne.yaml"
+    manager = ConfigManager(path=path)
+
+    config = manager.load()
+
+    assert manager.error is None
+    assert config.stacks == []
+    assert path.read_text() == "stacks: []\n"
+
+
+def test_config_missing_file_not_creatable_reports_error(tmp_path: Path):
+    blocker = tmp_path / "file"
+    blocker.write_text("x")
+    manager = ConfigManager(path=blocker / "varne.yaml")
+
+    config = manager.load()
+
+    assert manager.error is not None
+    assert config.stacks == []
+
+
+def test_config_existing_file_is_not_overwritten(config_single_jsonplaceholder: Path):
+    before = config_single_jsonplaceholder.read_text()
+    ConfigManager(path=config_single_jsonplaceholder).load()
+    assert config_single_jsonplaceholder.read_text() == before
