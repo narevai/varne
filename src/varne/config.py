@@ -73,6 +73,9 @@ class ConfigVarne(BaseModel):
     stacks: list[ConfigStack]
 
 
+EMPTY_CONFIG_TEXT = "stacks: []\n"
+
+
 def parse_config(text: str) -> ConfigVarne:
     try:
         raw = yaml.safe_load(text)  # pyright: ignore[reportAny]
@@ -90,11 +93,19 @@ class ConfigManager:
         self.config: ConfigVarne | None = None
         self.error: str | None = None
 
+    def _ensure_file(self) -> None:
+        """Create an empty config on first start so the file always exists."""
+        if self.path.exists():
+            return
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_text(EMPTY_CONFIG_TEXT)
+
     def load(self) -> ConfigVarne:
         try:
+            self._ensure_file()
             self.config = parse_config(self.path.read_text())
             self.error = None
-        except ValueError as exc:
+        except (ValueError, OSError) as exc:
             self.error = str(exc)
             self.config = ConfigVarne(stacks=[])
         return self.config
@@ -105,6 +116,7 @@ class ConfigManager:
         except ValueError as exc:
             return str(exc)
 
+        self.path.parent.mkdir(parents=True, exist_ok=True)
         config_tmp_path = self.path.with_suffix(".tmp")
         config_tmp_path.write_text(text)
         config_tmp_path.replace(self.path)
@@ -121,6 +133,7 @@ class ConfigManager:
         else:
             config_current = self.config.model_dump(mode="json", exclude_none=True)
 
+        self.path.parent.mkdir(parents=True, exist_ok=True)
         config_tmp_path = self.path.with_suffix(".tmp")
         config_tmp = yaml.safe_dump(config_current, sort_keys=False)
         config_tmp_path.write_text(config_tmp)
