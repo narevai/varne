@@ -7,7 +7,7 @@ sqlalchemy==2.0.52
 
 # Data processing
 pydantic==2.13.5
-pydantic-settings==2.15.0
+pydantic-settings==2.16.3
 pandas==2.3.3
 openpyxl==3.1.5
 
