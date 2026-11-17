@@ -48,6 +48,7 @@ stacks:
       - id: vercel1
         name: Vercel 1
         type: vercel
+        team_id: team_test
 """
     )
 
@@ -69,6 +70,7 @@ stacks:
       - id: vercel1
         name: Vercel 1
         type: vercel
+        team_id: team_test
         api_token: testtoken
 """
     )
@@ -184,3 +186,67 @@ def test_config_existing_file_is_not_overwritten(config_single_jsonplaceholder: 
     before = config_single_jsonplaceholder.read_text()
     ConfigManager(path=config_single_jsonplaceholder).load()
     assert config_single_jsonplaceholder.read_text() == before
+
+
+def test_vercel_source_needs_a_team_id():
+    from pydantic import SecretStr
+
+    from varne.config import ConfigVercel
+
+    with pytest.raises(ValidationError):
+        ConfigVercel(id="v", name="V", api_token=SecretStr("x"))  # pyright: ignore[reportCallIssue]
+
+
+def test_vercel_source_defaults():
+    from pydantic import SecretStr
+
+    from varne.config import ConfigVercel
+
+    source = ConfigVercel(id="v", name="V", api_token=SecretStr("x"), team_id="team_1")
+
+    assert source.project_ids == []
+    assert source.lookback_days == 30
+
+
+def test_vercel_source_reads_team_and_projects_from_yaml():
+    from varne.config import ConfigVercel, parse_config
+
+    config = parse_config(
+        """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: v
+        name: V
+        type: vercel
+        api_token: abc
+        team_id: team_1
+        project_ids: [prj_a, prj_b]
+        lookback_days: 7
+"""
+    )
+    source = config.stacks[0].sources[0]
+
+    assert isinstance(source, ConfigVercel)
+    assert source.team_id == "team_1"
+    assert source.project_ids == ["prj_a", "prj_b"]
+    assert source.lookback_days == 7
+
+
+def test_old_vercel_config_without_team_id_gives_a_readable_error():
+    from varne.config import parse_config
+
+    with pytest.raises(ValueError, match="team_id"):
+        parse_config(
+            """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: v
+        name: V
+        type: vercel
+        api_token: abc
+"""
+        )

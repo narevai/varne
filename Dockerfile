@@ -8,6 +8,7 @@ RUN apt-get update && \
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PORT=8000
+ENV ENVIRONMENT=production
 
 COPY pyproject.toml uv.lock ./
 COPY src/ ./src/

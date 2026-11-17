@@ -75,4 +75,7 @@ def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
                 client=VercelClient(http=get_http(), api_token=source.get_api_token()),
                 stack_id=stack_id,
                 source_id=source.id,
+                team_id=source.team_id,
+                project_ids=source.project_ids,
+                lookback_days=source.lookback_days,
             )

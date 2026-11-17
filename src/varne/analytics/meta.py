@@ -2,6 +2,7 @@ import ibis
 from ibis.expr.types.relations import Table
 
 from varne.config import SourceId, StackId
+from varne.db.lock import serialized
 from varne.db.schema import TableDimSourceMeta
 from varne.db.types import DatabaseBackend
 
@@ -23,6 +24,7 @@ def get_source_meta(db: DatabaseBackend, stack_id: StackId) -> Table:
     return records
 
 
+@serialized
 def has_source_meta(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> bool:

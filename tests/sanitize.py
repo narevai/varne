@@ -44,14 +44,20 @@ def sanitize(
     if isinstance(value, dict):
         sanitized_dict: dict[str, JsonValue] = {}
 
-        for child_key, child_value in value.items():
+        for index, (child_key, child_value) in enumerate(value.items()):
             should_keep = field_policy is not None and child_key in field_policy.keep
 
             if should_keep:
                 sanitized_dict[child_key] = child_value
                 continue
 
-            sanitized_dict[child_key] = sanitize(
+            # Some APIs use secrets as object keys (e.g. Vercel's protectionBypass),
+            # so redacting values alone is not enough for those fields.
+            output_key = child_key
+            if field_policy is not None and field_policy.redact_keys:
+                output_key = f"<{key}_key_{index}>"
+
+            sanitized_dict[output_key] = sanitize(
                 child_value,
                 policy,
                 child_key,

@@ -11,9 +11,7 @@ from varne.ui.components.nav_item import nav_item
 def create_layout() -> Column:
     config_manager = get_config_manager()
     if config_manager.error is not None:
-        message = (
-            f"Configuration failed to load {config_manager.error} from file {config_manager.path.resolve()}",
-        )
+        message = f"Configuration failed to load {config_manager.error} from file {config_manager.path.resolve()}"
         ui.notify(
             message=message,
             type="negative",

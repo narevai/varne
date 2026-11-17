@@ -13,13 +13,13 @@ check:
 	python -m basedpyright src tests --pythonpath "$$(python -c 'import sys; print(sys.executable)')"
 
 debug:
-	DEBUG=true LOG_LEVEL=DEBUG python -m pdb -m varne.app
+	ENVIRONMENT=development DEBUG=true LOG_LEVEL=DEBUG python -m pdb -m varne.app
 
 test:
 	pytest --record-mode=none --block-network
 
 dev:
-	DEBUG=true LOG_LEVEL=DEBUG python -m varne.app
+	ENVIRONMENT=development DEBUG=true LOG_LEVEL=DEBUG python -m varne.app
 
 vcr-record:
 	infisical run -- pytest --record-mode=new_episodes

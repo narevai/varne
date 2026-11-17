@@ -26,8 +26,11 @@ def get_source_billing(
     return records
 
 
-def get_billing_per_day(db: DatabaseBackend) -> Table:
+def get_billing_per_day(db: DatabaseBackend, stack_id: StackId | None = None) -> Table:
     staging = db.table(TableFactBilling().name)
+
+    if stack_id is not None:
+        staging = staging.filter(staging.stack_id == stack_id)
 
     records = (
         staging.group_by(

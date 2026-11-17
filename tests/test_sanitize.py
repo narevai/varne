@@ -361,3 +361,20 @@ def test_sanitize_response_returns_original_for_non_json():
     result = sanitize_response(response)
 
     assert result == original
+
+
+def test_sanitize_redacts_object_keys_when_asked():
+    policy = SanitizePolicy(
+        fields=(FieldPolicy(field="protectionBypass", redact_keys=True),)
+    )
+    value: dict[str, JsonValue] = {
+        "protectionBypass": {"super-secret-key": {"scope": "automation-bypass"}},
+        "name": "project",
+    }
+
+    result = cast(dict[str, JsonValue], sanitize(value, policy))
+    bypass = cast(dict[str, JsonValue], result["protectionBypass"])
+
+    assert "super-secret-key" not in json.dumps(result)
+    assert list(bypass) == ["<protectionBypass_key_0>"]
+    assert result["name"] == "<name>"

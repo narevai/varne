@@ -12,7 +12,7 @@ class Settings(BaseSettings):
         env_file=".env", extra="ignore"
     )
 
-    environment: str = "development"
+    environment: str = "production"
     debug: bool = False
 
     host: str = "0.0.0.0"

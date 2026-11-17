@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from pydantic import TypeAdapter
@@ -70,7 +71,7 @@ def transform_billing(row: RowRaw) -> list[RowFactBilling]:
             service_provider_name=b.service_provider_name,
             consumed_quantity=b.consumed_quantity,
             consumed_unit=b.consumed_unit,
-            tags=str(b.tags),
+            tags=json.dumps(b.tags, sort_keys=True),
             pricing_category=b.pricing_category,
             pricing_currency=b.pricing_currency,
             pricing_quantity=b.pricing_quantity,
@@ -111,7 +112,7 @@ def transform_analytics_aggregate(row: RowRaw) -> list[RowFactUsage]:
                 row, event_time=u.timestamp, usage_name="visitors", usage=u.visitors
             )
             row_pageviews: RowFactUsage = web_analytics_to_usage(
-                row, event_time=u.timestamp, usage_name="visitors", usage=u.pageviews
+                row, event_time=u.timestamp, usage_name="pageviews", usage=u.pageviews
             )
             rows_usage.append(row_visitors)
             rows_usage.append(row_pageviews)

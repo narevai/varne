@@ -1,4 +1,5 @@
-from datetime import UTC, datetime
+from collections.abc import Callable, Sequence
+from datetime import UTC, datetime, timedelta
 from typing import Literal, override
 
 import httpx2 as httpx
@@ -16,8 +17,15 @@ from varne.providers.vercel.transform import (
 )
 
 
+def _utc_now() -> datetime:
+    return datetime.now(UTC)
+
+
 class VercelService(ProviderService):
     client: VercelClient
+    team_id: str
+    project_ids: list[str]
+    lookback_days: int
 
     def __init__(
         self,
@@ -25,32 +33,51 @@ class VercelService(ProviderService):
         client: VercelClient,
         stack_id: StackId,
         source_id: SourceId,
+        team_id: str,
+        project_ids: Sequence[str] = (),
+        lookback_days: int = 30,
+        now: Callable[[], datetime] = _utc_now,
     ) -> None:
         super().__init__(db, stack_id, source_id)
         self.client = client
+        self.team_id = team_id
+        self.project_ids = list(project_ids)
+        self.lookback_days = lookback_days
+        self._now = now
 
     @property
     @override
     def provider(self) -> Literal[SourceType.VERCEL]:
         return SourceType.VERCEL
 
-    @override
-    def fetch_source_meta(self) -> None:
-        response: httpx.Response = self.client.fetch_projects()
+    def period(self) -> tuple[datetime, datetime]:
+        date_to = (
+            self._now()
+            .astimezone(UTC)
+            .replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        return date_to - timedelta(days=self.lookback_days), date_to
 
-        raw = RowRaw(
+    def _raw(self, response: httpx.Response) -> RowRaw:
+        return RowRaw(
             stack_id=self.stack_id,
             source_id=self.source_id,
             source_type=self.provider,
-            extracted_at=datetime.now(UTC),
+            extracted_at=self._now(),
             method=response.request.method,
             url=str(response.request.url),
             payload=response.text,
         )
+
+    @override
+    def fetch_source_meta(self) -> None:
+        response: httpx.Response = self.client.fetch_projects()
+
+        raw = self._raw(response)
         self.store_raw([raw])
 
         meta = transform_meta(raw)
-        self.store_dim_source_meta(meta)
+        self.replace_dim_source_meta(meta)
         logger.info(f"completed fetch source meta {self.provider}")
 
     @override
@@ -61,48 +88,36 @@ class VercelService(ProviderService):
         logger.info(f"completed fetch source data {self.provider}")
 
     def _fetch_source_billing(self) -> None:
-        team_id = "team_4lN90TlRlQzpFGhMLIoTTS9D"
-        date_from = datetime(2026, 9, 1, tzinfo=UTC)
-        date_to = datetime(2026, 9, 10, tzinfo=UTC)
+        date_from, date_to = self.period()
 
         response: httpx.Response = self.client.fetch_billing(
-            team_id=team_id, date_from=date_from, date_to=date_to
+            team_id=self.team_id, date_from=date_from, date_to=date_to
         )
 
-        raw = RowRaw(
-            stack_id=self.stack_id,
-            source_id=self.source_id,
-            source_type=self.provider,
-            extracted_at=datetime.now(UTC),
-            method=response.request.method,
-            url=str(response.request.url),
-            payload=response.text,
-        )
+        raw = self._raw(response)
         self.store_raw([raw])
 
         billing = transform_billing(raw)
-        self.store_fact_billing(billing)
+        self.replace_fact_billing(billing, date_from, date_to)
 
     def _fetch_source_usage(self) -> None:
-        project_id = "prj_5LAip7eW0S0iDBoLNDwa9gMTye78"
-        team_id = "team_4lN90TlRlQzpFGhMLIoTTS9D"
-        date_from = datetime(2026, 9, 1, tzinfo=UTC)
-        date_to = datetime(2026, 9, 10, tzinfo=UTC)
+        if not self.project_ids:
+            logger.info("no project_ids configured, skipping web analytics")
+            return
 
-        response: httpx.Response = self.client.fetch_web_analytics_visits_aggregate(
-            team_id=team_id, project_id=project_id, date_from=date_from, date_to=date_to
-        )
+        date_from, date_to = self.period()
+        usage = []
 
-        raw = RowRaw(
-            stack_id=self.stack_id,
-            source_id=self.source_id,
-            source_type=self.provider,
-            extracted_at=datetime.now(UTC),
-            method=response.request.method,
-            url=str(response.request.url),
-            payload=response.text,
-        )
-        self.store_raw([raw])
+        for project_id in self.project_ids:
+            response: httpx.Response = self.client.fetch_web_analytics_visits_aggregate(
+                team_id=self.team_id,
+                project_id=project_id,
+                date_from=date_from,
+                date_to=date_to,
+            )
 
-        usage = transform_analytics_aggregate(raw)
-        self.store_fact_usage(usage)
+            raw = self._raw(response)
+            self.store_raw([raw])
+            usage += transform_analytics_aggregate(raw)
+
+        self.replace_fact_usage(usage, date_from, date_to)

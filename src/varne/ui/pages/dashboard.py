@@ -10,7 +10,8 @@ from varne.analytics.billing import get_billing_per_day, get_source_billing
 from varne.analytics.cost_per_usage import get_source_cost_per_usage
 from varne.analytics.meta import get_source_meta
 from varne.analytics.usage import get_source_usage
-from varne.config import ConfigVarne, SourceId, StackId
+from varne.config import ConfigStack, ConfigVarne, SourceId, StackId
+from varne.db.lock import serialized
 from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db, get_service
 from varne.ui.components.bar_chart import bar_chart
@@ -19,11 +20,13 @@ from varne.ui.layout import create_layout
 CHART_ROWS = 1000
 
 
+@serialized
 def get_source_meta_rows(db: DatabaseBackend, stack_id: StackId) -> pd.DataFrame:
     df_result = get_source_meta(db, stack_id).to_pandas()
     return df_result
 
 
+@serialized
 def get_billing_rows(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> pd.DataFrame:
@@ -33,6 +36,7 @@ def get_billing_rows(
     return df_result
 
 
+@serialized
 def get_usage_rows(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> pd.DataFrame:
@@ -42,11 +46,13 @@ def get_usage_rows(
     return df_result
 
 
-def get_billing_per_day_rows(db: DatabaseBackend) -> pd.DataFrame:
-    df_result = get_billing_per_day(db).to_pandas()
+@serialized
+def get_billing_per_day_rows(db: DatabaseBackend, stack_id: StackId) -> pd.DataFrame:
+    df_result = get_billing_per_day(db, stack_id).to_pandas()
     return df_result
 
 
+@serialized
 def get_cost_per_usage_rows(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> pd.DataFrame:
@@ -65,7 +71,7 @@ def create_stack_select(config: ConfigVarne | None) -> Select:
 
 def refresh_stack_select(select: Select, config: ConfigVarne):
     select.options = {stack.id: stack.name for stack in config.stacks}
-    select.value = config.stacks[0].id
+    select.value = config.stacks[0].id if config.stacks else None
     select.update()
 
 
@@ -77,19 +83,21 @@ async def page_dashboard() -> None:
 
     with layout:
 
-        def reload_config() -> None:
+        def selected_stack() -> ConfigStack | None:
+            config = config_manager.config
+            if config is None:
+                return None
+            return next((x for x in config.stacks if x.id == stack_select.value), None)
+
+        async def reload_config() -> None:
             config_manager.load()
 
+            selected_before = stack_select.value
             if config_manager.config is not None:
                 refresh_stack_select(stack_select, config_manager.config)
-                message = f"Configuration loaded {config_manager.path.resolve()}"
-                ui.notify(message=message)
-                logger.info(message)
-            else:
-                message = (
-                    f"Configuration failed to load {config_manager.error} from file {config_manager.path.resolve()}",
-                )
 
+            if config_manager.error is not None:
+                message = f"Configuration failed to load {config_manager.error} from file {config_manager.path.resolve()}"
                 ui.notify(
                     message=message,
                     type="negative",
@@ -97,59 +105,79 @@ async def page_dashboard() -> None:
                     close_button=True,
                 )
                 logger.error(message)
+            else:
+                message = f"Configuration loaded {config_manager.path.resolve()}"
+                ui.notify(message=message)
+                logger.info(message)
+
+            if stack_select.value == selected_before:
+                await content.refresh()
 
         async def sync_meta() -> None:
-            if config_manager.config is None:
-                button_sync.disable()
-            else:
-                for stack in config_manager.config.stacks:
-                    for source in stack.sources:
-                        service = get_service(stack_id=stack.id, source=source)
+            stack = selected_stack()
+            if stack is None or not stack.sources:
+                ui.notify("No sources in this stack, define them in Settings")
+                return
 
-                        button_sync.disable()
+            synced = 0
+            button_sync.disable()
+            try:
+                for source in stack.sources:
+                    service = get_service(stack_id=stack.id, source=source)
 
-                        try:
-                            _ = await run.io_bound(service.fetch_source_meta)
-                            await content.refresh()
+                    try:
+                        _ = await run.io_bound(service.fetch_source_meta)
+                        synced += 1
+                    except Exception as ex:
+                        logger.error(
+                            f"Sync failed for stack {stack.name}, source {source.name} with {ex}"
+                        )
+                        ui.notify(
+                            f"Sync failed for stack {stack.name}, source {source.name}",
+                            type="negative",
+                        )
+            finally:
+                button_sync.enable()
 
-                        except Exception as ex:
-                            logger.error(
-                                f"Sync failed for stack {stack.name}, source {source.name} with {ex}"
-                            )
-                            ui.notify(
-                                f"Sync failed for stack {stack.name}, source {source.name}",
-                                type="negative",
-                            )
-
-                        finally:
-                            button_sync.enable()
-                message = "Synced rows"
-                ui.notify(message)
+            await content.refresh()
+            if synced:
+                ui.notify(f"Synced {synced} source(s)")
 
         async def pull_billing(e: GenericEventArguments) -> None:
-            if config_manager.config is None:
+            stack = selected_stack()
+            source = (
+                next((x for x in stack.sources if x.id == e.args), None)
+                if stack is not None
+                else None
+            )
+            if stack is None or source is None:
+                ui.notify(
+                    "Source not found in the current configuration", type="negative"
+                )
                 return
-            stack_id = cast(StackId, stack_select.value)
-            stack = next(x for x in config_manager.config.stacks if x.id == stack_id)
-
-            source_id = cast(SourceId, e.args)
-            source = next(x for x in stack.sources if x.id == source_id)
 
             service = get_service(stack_id=stack.id, source=source)
 
             try:
                 _ = await run.io_bound(service.fetch_source_data)
-
             except Exception as ex:
                 message = f"Pull failed for stack {stack.name}, source {source.name} with {ex}"
                 logger.error(message)
                 ui.notify(message, type="negative")
+                return
+
+            ui.notify(f"Pulled data for {source.name}")
+            await content.refresh()
 
         async def total_cost() -> None:
             if config_manager.config is None:
                 return
 
-            df_total = await run.io_bound(get_billing_per_day_rows, db)
+            stack_id = cast(StackId, stack_select.value)
+            if stack_id is None:
+                return
+
+            df_total = await run.io_bound(get_billing_per_day_rows, db, stack_id)
 
             if df_total.empty:
                 return
@@ -181,14 +209,12 @@ async def page_dashboard() -> None:
                     value_format=".2~r",
                 )
 
-        @ui.refreshable
-        async def source_detail() -> None:
-            stack_id = cast(StackId, stack_select.value)
-            source_id = "vercel1"
-
+        async def source_card(
+            stack_id: StackId, source_id: SourceId, source_name: str
+        ) -> None:
             with ui.card():
                 with ui.row():
-                    ui.label(str(source_id))
+                    ui.label(source_name)
 
                 df_billing = await run.io_bound(
                     get_billing_rows, db, stack_id, source_id
@@ -242,6 +268,15 @@ async def page_dashboard() -> None:
                     series="series",
                     value_format=".2~r",
                 )
+
+        @ui.refreshable
+        async def source_detail() -> None:
+            stack = selected_stack()
+            if stack is None:
+                return
+
+            for source in stack.sources:
+                await source_card(stack.id, source.id, source.name)
 
         @ui.refreshable
         async def content():

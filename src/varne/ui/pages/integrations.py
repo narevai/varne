@@ -54,10 +54,12 @@ async def page_integrations() -> None:
                             ui.icon("circle", size="xs").style(f"color: var({color})")
                             ui.label(source.name).classes("font-medium")
                             ui.space()
-                            if not synced:
-                                ui.button(
-                                    "Sync", on_click=partial(sync_source, stack, source)
-                                ).props("dense size=sm").classes("!min-h-0 !py-1")
+                            ui.button(
+                                "Resync" if synced else "Sync",
+                                on_click=partial(sync_source, stack, source),
+                            ).props(
+                                "dense size=sm flat" if synced else "dense size=sm"
+                            ).classes("!min-h-0 !py-1")
                         ui.label(f"Vercel · {stack.name}").classes("text-xs")
 
         ui.html("<h1>Integrations</h1>")
