@@ -83,16 +83,20 @@ async def page_dashboard() -> None:
 
     with layout:
 
+        def selected_stack_id() -> StackId | None:
+            return cast(StackId | None, stack_select.value)
+
         def selected_stack() -> ConfigStack | None:
             config = config_manager.config
             if config is None:
                 return None
-            return next((x for x in config.stacks if x.id == stack_select.value), None)
+            stack_id = selected_stack_id()
+            return next((x for x in config.stacks if x.id == stack_id), None)
 
         async def reload_config() -> None:
             config_manager.load()
 
-            selected_before = stack_select.value
+            selected_before = selected_stack_id()
             if config_manager.config is not None:
                 refresh_stack_select(stack_select, config_manager.config)
 
@@ -110,7 +114,7 @@ async def page_dashboard() -> None:
                 ui.notify(message=message)
                 logger.info(message)
 
-            if stack_select.value == selected_before:
+            if selected_stack_id() == selected_before:
                 await content.refresh()
 
         async def sync_meta() -> None:
@@ -146,7 +150,7 @@ async def page_dashboard() -> None:
         async def pull_billing(e: GenericEventArguments) -> None:
             stack = selected_stack()
             source = (
-                next((x for x in stack.sources if x.id == e.args), None)
+                next((x for x in stack.sources if x.id == cast(SourceId, e.args)), None)
                 if stack is not None
                 else None
             )
@@ -173,7 +177,7 @@ async def page_dashboard() -> None:
             if config_manager.config is None:
                 return
 
-            stack_id = cast(StackId, stack_select.value)
+            stack_id = selected_stack_id()
             if stack_id is None:
                 return
 

@@ -78,7 +78,7 @@ def count(db: DatabaseBackend, table: TableName) -> int:
 
 def billing_rows(db: DatabaseBackend, source_id: str) -> list[tuple[datetime, Decimal]]:
     df = cast(pd.DataFrame, db.table(TableName.FACT_BILLING).execute())
-    df = df[df["source_id"] == source_id]
+    df = cast(pd.DataFrame, df[df["source_id"] == source_id])
     starts = cast(list[datetime], df["charge_period_start"].tolist())
     costs = cast(list[Decimal], df["billed_cost"].tolist())
     return sorted(zip(starts, costs, strict=True))

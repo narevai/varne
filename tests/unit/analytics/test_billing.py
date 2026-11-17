@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from decimal import Decimal
+from typing import cast
 
 from tests.unit.providers.test_replace import FakeService, billing, day
 
@@ -24,7 +25,7 @@ def test_cost_per_day_can_be_limited_to_one_stack(db: DatabaseBackend):
 
     df = get_billing_per_day(db, "stack").to_pandas()
 
-    assert list(df["stack_id"]) == ["stack"]
+    assert cast(list[str], df["stack_id"].tolist()) == ["stack"]
     assert df["cost"].iloc[0] == Decimal("5")
 
 
@@ -33,4 +34,4 @@ def test_cost_per_day_without_a_stack_still_covers_everything(db: DatabaseBacken
 
     df = get_billing_per_day(db).to_pandas()
 
-    assert sorted(df["stack_id"]) == ["other_stack", "stack"]
+    assert sorted(cast(list[str], df["stack_id"].tolist())) == ["other_stack", "stack"]

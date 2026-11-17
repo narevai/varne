@@ -8,7 +8,7 @@ from loguru import logger
 from varne.config import SourceId, SourceType, StackId
 from varne.db.types import DatabaseBackend
 from varne.providers.base import ProviderService
-from varne.providers.types import RowRaw
+from varne.providers.types import RowFactUsage, RowRaw
 from varne.providers.vercel.client import VercelClient
 from varne.providers.vercel.transform import (
     transform_analytics_aggregate,
@@ -26,6 +26,7 @@ class VercelService(ProviderService):
     team_id: str
     project_ids: list[str]
     lookback_days: int
+    _now: Callable[[], datetime]
 
     def __init__(
         self,
@@ -106,7 +107,7 @@ class VercelService(ProviderService):
             return
 
         date_from, date_to = self.period()
-        usage = []
+        usage: list[RowFactUsage] = []
 
         for project_id in self.project_ids:
             response: httpx.Response = self.client.fetch_web_analytics_visits_aggregate(
