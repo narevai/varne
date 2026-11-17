@@ -1,9 +1,12 @@
+from collections.abc import Callable
+from datetime import datetime
 from functools import partial
 from typing import cast
 
 import httpx2 as httpx
 import pytest
 from tests.sanitize import sanitize_response
+from tests.unit.providers.vercel.conftest import VERCEL_LOOKBACK_DAYS
 from tests.unit.providers.vercel.test_client_projects import policy_vercel_projects
 
 from varne.config import SourceId, SourceType, StackId, VercelToken
@@ -27,13 +30,25 @@ def vcr_config():
 @pytest.mark.default_cassette("projects.yaml")
 @pytest.mark.vcr
 def test_fetch_source_meta(
-    db: DatabaseBackend, http_client: httpx.Client, vercel_token: VercelToken
+    db: DatabaseBackend,
+    http_client: httpx.Client,
+    vercel_token: VercelToken,
+    vercel_team_id: str,
+    vercel_project_id: str,
+    vercel_now: Callable[[], datetime],
 ):
     stack_id: StackId = "stack_test"
     source_id: SourceId = "source_test"
     client = VercelClient(http_client, api_token=vercel_token)
     service = VercelService(
-        db=db, client=client, stack_id=stack_id, source_id=source_id
+        db=db,
+        client=client,
+        stack_id=stack_id,
+        source_id=source_id,
+        team_id=vercel_team_id,
+        project_ids=[vercel_project_id],
+        lookback_days=VERCEL_LOOKBACK_DAYS,
+        now=vercel_now,
     )
 
     assert service.provider == "vercel"

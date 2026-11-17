@@ -136,7 +136,7 @@ interactions:
         "readyAt": 0, "previewCommentsEnabled": false, "oidcTokenClaims": {"sub":
         "<sub>", "iss": "<iss>", "scope": "<scope>", "aud": "<aud>", "owner": "<owner>",
         "owner_id": "<owner_id>", "project": "<project>", "project_id": "<project_id>",
-        "environment": "<environment>", "plan": "<plan>"}}}, "protectionBypass": {"P6Y96GcUAt3gMudAbUDUmxIsFCLI4rSG":
+        "environment": "<environment>", "plan": "<plan>"}}}, "protectionBypass": {"<protectionBypass_key_0>":
         {"scope": "<scope>", "isEnvVar": false, "note": "<note>", "createdAt": 0,
         "createdBy": "<createdBy>"}}, "features": {"webAnalytics": false}, "protectedSourcemaps":
         false, "avatar": "<avatar>"}], "pagination": {"count": 0, "next": null, "prev":

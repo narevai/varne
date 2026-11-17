@@ -30,6 +30,9 @@ class ConfigVercel(ConfigSourceBase):
     type: Literal[SourceType.VERCEL] = SourceType.VERCEL
     api_token: VercelToken | None = None
     api_token_env: str | None = None
+    team_id: str = Field(min_length=1)
+    project_ids: list[str] = Field(default_factory=list)
+    lookback_days: int = Field(default=30, ge=1, le=365)
 
     @model_validator(mode="after")
     def validate_token_source(self) -> ConfigVercel:
