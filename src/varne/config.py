@@ -12,6 +12,7 @@ type SourceId = str
 class SourceType(StrEnum):
     ANTHROPIC = "anthropic"
     JSONPLACEHOLDER = "jsonplaceholder"
+    OPENAI = "openai"
     UMAMI = "umami"
     VERCEL = "vercel"
 
@@ -95,6 +96,40 @@ class ConfigAnthropic(ConfigSourceBase):
         return SecretStr(value)
 
 
+type OpenAIToken = SecretStr
+
+
+class ConfigOpenAI(ConfigSourceBase):
+    type: Literal[SourceType.OPENAI] = SourceType.OPENAI
+    api_token: OpenAIToken | None = None
+    api_token_env: str | None = None
+    lookback_days: int = Field(default=30, ge=1, le=365)
+
+    @model_validator(mode="after")
+    def validate_token_source(self) -> ConfigOpenAI:
+        if (self.api_token is None) == (self.api_token_env is None):
+            raise ValueError(
+                "Exactly one of api_token or api_token_env must be provided"
+            )
+
+        return self
+
+    def get_api_token(self) -> OpenAIToken:
+        if self.api_token is not None:
+            return self.api_token
+
+        assert self.api_token_env is not None
+
+        value = os.getenv(self.api_token_env)
+
+        if value is None:
+            raise RuntimeError(
+                f"Environment variable {self.api_token_env!r} is not set"
+            )
+
+        return SecretStr(value)
+
+
 type UmamiToken = SecretStr
 
 
@@ -131,7 +166,7 @@ class ConfigUmami(ConfigSourceBase):
 
 
 ConfigSource = Annotated[
-    ConfigJsonPlaceholder | ConfigVercel | ConfigAnthropic | ConfigUmami,
+    ConfigJsonPlaceholder | ConfigVercel | ConfigAnthropic | ConfigOpenAI | ConfigUmami,
     Field(discriminator="type"),
 ]
 
