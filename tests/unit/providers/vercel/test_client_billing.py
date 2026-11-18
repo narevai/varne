@@ -13,7 +13,6 @@ policy_vercel_billing = SanitizePolicy(
     root=FieldPolicy(
         match_field="Tags.ProjectId",
         match_value="prj_5LAip7eW0S0iDBoLNDwa9gMTye78",
-        limit=10,
         keep=(
             "ChargePeriodStart",
             "ChargePeriodEnd",
