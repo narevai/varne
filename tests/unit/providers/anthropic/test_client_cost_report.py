@@ -5,7 +5,7 @@ import pytest
 from tests.policy import FieldPolicy, SanitizePolicy
 from tests.sanitize import VcrResponse, sanitize_response
 
-from varne.config import AnthropicToken
+from varne.config import AnthropicToken, SourceType
 from varne.providers.anthropic.client import AnthropicClient
 from varne.providers.anthropic.transform import transform_cost_report
 from varne.providers.types import RowRaw
@@ -69,7 +69,7 @@ def test_fetch_cost_report(http_client: httpx.Client, anthropic_token: Anthropic
         RowRaw(
             stack_id="stack",
             source_id="source",
-            source_type="anthropic",  # pyright: ignore[reportArgumentType]
+            source_type=SourceType.ANTHROPIC,
             extracted_at=datetime(2026, 11, 18, tzinfo=UTC),
             method="GET",
             url=str(response.request.url),

@@ -49,10 +49,12 @@ async def page_integrations() -> None:
                     )
                     color = "--chart-success" if synced else "--chart-error"
 
-                    with ui.card().classes("!w-60 !p-3 !gap-1"):
+                    with ui.card().classes("!w-72 !h-24 !p-3 !gap-1"):
                         with ui.row().classes("items-center w-full no-wrap"):
                             ui.icon("circle", size="xs").style(f"color: var({color})")
-                            ui.label(source.name).classes("font-medium")
+                            ui.label(source.name).classes(
+                                "font-medium truncate min-w-0"
+                            )
                             ui.space()
                             ui.button(
                                 "Resync" if synced else "Sync",
