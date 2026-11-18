@@ -1,8 +1,14 @@
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 from nicegui import ui
 from nicegui.testing import User
+
+from varne.config import SourceType
+from varne.db.schema import TableName
+from varne.dependencies import get_db
+from varne.providers.types import RowFactUsage
 
 
 @pytest.mark.usefixtures("config_path")
@@ -84,3 +90,35 @@ async def test_reload_config_picks_up_new_sources(
     user.find(kind=ui.button, content="reload config").click()
 
     await user.should_see("First Source")
+
+
+ONE_SOURCE = """
+stacks:
+  - id: stack_a
+    name: Stack A
+    sources:
+      - id: usage_only
+        name: Usage Only
+        type: jsonplaceholder
+"""
+
+
+async def test_dashboard_shows_usage_of_a_source_without_billing(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text(ONE_SOURCE)
+    row = RowFactUsage(
+        stack_id="stack_a",
+        source_id="usage_only",
+        source_type=SourceType.JSONPLACEHOLDER,
+        extracted_at=datetime(2026, 11, 18, 12, 0, tzinfo=UTC),
+        event_time=datetime(2026, 11, 17, tzinfo=UTC),
+        usage_name="visitors",
+        usage=84,
+    )
+    get_db().insert(TableName.FACT_USAGE, [row.model_dump()])
+
+    await user.open("/")
+
+    await user.should_see("No billing data available")
+    await user.should_see("Usage (visitors)")

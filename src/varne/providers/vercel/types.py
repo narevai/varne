@@ -1,8 +1,9 @@
 from datetime import datetime
-from decimal import Decimal
 from typing import ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from varne.providers.types import Amount
 
 
 def camel_to_pascal(value: str) -> str:
@@ -34,18 +35,18 @@ class VercelBilling(BaseModel):
     charge_period_start: datetime
     charge_period_end: datetime
     charge_category: str
-    billed_cost: Decimal = Field(max_digits=38, decimal_places=24)
+    billed_cost: Amount
     billing_currency: str
-    effective_cost: Decimal = Field(max_digits=38, decimal_places=24)
+    effective_cost: Amount
     service_name: str
     service_category: str
     service_provider_name: str
-    consumed_quantity: Decimal
-    consumed_unit: str
+    consumed_quantity: Amount | None
+    consumed_unit: str | None
     tags: dict[str, TagValue]
     pricing_category: str
     pricing_currency: str
-    pricing_quantity: Decimal = Field(max_digits=38, decimal_places=24)
+    pricing_quantity: Amount
     pricing_unit: str
 
 

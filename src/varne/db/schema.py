@@ -122,7 +122,7 @@ class TableFactUsage(Table):
                 "extracted_at": dt.timestamp,
                 "event_time": dt.timestamp,
                 "usage_name": dt.string,
-                "usage": dt.uint32,
+                "usage": dt.uint64,
             }
         )
 

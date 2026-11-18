@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 import httpx2 as httpx
+import pyarrow as pa
 from loguru import logger
 
 from varne.config import SourceId, StackId
@@ -28,6 +29,15 @@ class ProviderClient(ABC):
         http: httpx.Client,
     ) -> None:
         self.http = http
+
+    @staticmethod
+    def raise_for_status(response: httpx.Response) -> None:
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as ex:
+            raise httpx.HTTPStatusError(
+                f"{ex} {response.text[:300]}", request=ex.request, response=response
+            ) from ex
 
     @property
     @abstractmethod
@@ -76,18 +86,30 @@ class ProviderService(ABC):
 
     @serialized
     def store_dim_source_meta(self, rows: list[RowDimSourceMeta]):
+        if not rows:
+            return
+
         logger.debug(f"saving rows to {self.table_dim_source_meta.name}")
         payload = [row.model_dump() for row in rows]
         self.db.insert(self.table_dim_source_meta.name, payload)
 
     @serialized
     def store_fact_billing(self, rows: list[RowFactBilling]):
+        if not rows:
+            return
+
         logger.debug(f"saving rows to {self.table_fact_billing.name}")
-        payload = [row.model_dump() for row in rows]
-        self.db.insert(self.table_fact_billing.name, payload)
+        payload = pa.Table.from_pylist(  # pyright: ignore[reportUnknownVariableType]
+            [row.model_dump() for row in rows],
+            schema=self.table_fact_billing.schema.to_pyarrow(),
+        )
+        self.db.insert(self.table_fact_billing.name, payload)  # pyright: ignore[reportUnknownArgumentType]
 
     @serialized
     def store_fact_usage(self, rows: list[RowFactUsage]):
+        if not rows:
+            return
+
         logger.debug(f"saving rows to {self.table_fact_usage.name}")
         payload = [row.model_dump() for row in rows]
         self.db.insert(self.table_fact_usage.name, payload)

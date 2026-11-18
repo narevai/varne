@@ -60,7 +60,7 @@ def sanitize(
             sanitized_dict[output_key] = sanitize(
                 child_value,
                 policy,
-                child_key,
+                output_key,
             )
 
         return sanitized_dict

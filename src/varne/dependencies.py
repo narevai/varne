@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import httpx2 as httpx
 
 from varne.config import (
+    ConfigAnthropic,
     ConfigJsonPlaceholder,
     ConfigManager,
     ConfigSource,
@@ -15,6 +16,8 @@ from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.db.types import DatabaseBackend
 from varne.http import create_http_client
+from varne.providers.anthropic.client import AnthropicClient
+from varne.providers.anthropic.service import AnthropicService
 from varne.providers.base import ProviderService
 from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
 from varne.providers.jsonplaceholder.service import JsonPlaceholderService
@@ -77,5 +80,15 @@ def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
                 source_id=source.id,
                 team_id=source.team_id,
                 project_ids=source.project_ids,
+                lookback_days=source.lookback_days,
+            )
+        case ConfigAnthropic():
+            return AnthropicService(
+                db=get_db(),
+                client=AnthropicClient(
+                    http=get_http(), api_token=source.get_api_token()
+                ),
+                stack_id=stack_id,
+                source_id=source.id,
                 lookback_days=source.lookback_days,
             )
