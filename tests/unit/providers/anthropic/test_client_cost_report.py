@@ -14,12 +14,10 @@ policy_anthropic_cost_report = SanitizePolicy(
     fields=(
         FieldPolicy(
             field="data",
-            limit=3,
             keep=("starting_at", "ending_at"),
         ),
         FieldPolicy(
             field="results",
-            limit=5,
             keep=(
                 "amount",
                 "currency",
