@@ -67,6 +67,8 @@ def test_charges_with_and_without_quantity_can_be_stored_together(
 def test_stored_timestamps_keep_their_utc_time(db: DatabaseBackend):
     FakeService(db, "stack", "source").store_fact_billing([charge(None, None)])
 
-    stored = db.table(TableName.FACT_BILLING).extracted_at.max().execute()
+    stored = cast(
+        datetime, db.table(TableName.FACT_BILLING).extracted_at.max().execute()
+    )
 
     assert stored == AT.replace(tzinfo=None)
