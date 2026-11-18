@@ -12,6 +12,7 @@ type SourceId = str
 class SourceType(StrEnum):
     ANTHROPIC = "anthropic"
     JSONPLACEHOLDER = "jsonplaceholder"
+    UMAMI = "umami"
     VERCEL = "vercel"
 
 
@@ -94,8 +95,43 @@ class ConfigAnthropic(ConfigSourceBase):
         return SecretStr(value)
 
 
+type UmamiToken = SecretStr
+
+
+class ConfigUmami(ConfigSourceBase):
+    type: Literal[SourceType.UMAMI] = SourceType.UMAMI
+    api_token: UmamiToken | None = None
+    api_token_env: str | None = None
+    website_ids: list[str] = Field(min_length=1)
+    lookback_days: int = Field(default=30, ge=1, le=365)
+
+    @model_validator(mode="after")
+    def validate_token_source(self) -> ConfigUmami:
+        if (self.api_token is None) == (self.api_token_env is None):
+            raise ValueError(
+                "Exactly one of api_token or api_token_env must be provided"
+            )
+
+        return self
+
+    def get_api_token(self) -> UmamiToken:
+        if self.api_token is not None:
+            return self.api_token
+
+        assert self.api_token_env is not None
+
+        value = os.getenv(self.api_token_env)
+
+        if value is None:
+            raise RuntimeError(
+                f"Environment variable {self.api_token_env!r} is not set"
+            )
+
+        return SecretStr(value)
+
+
 ConfigSource = Annotated[
-    ConfigJsonPlaceholder | ConfigVercel | ConfigAnthropic,
+    ConfigJsonPlaceholder | ConfigVercel | ConfigAnthropic | ConfigUmami,
     Field(discriminator="type"),
 ]
 

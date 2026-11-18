@@ -9,6 +9,7 @@ from varne.config import (
     ConfigJsonPlaceholder,
     ConfigManager,
     ConfigSource,
+    ConfigUmami,
     ConfigVercel,
     StackId,
 )
@@ -21,6 +22,8 @@ from varne.providers.anthropic.service import AnthropicService
 from varne.providers.base import ProviderService
 from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
 from varne.providers.jsonplaceholder.service import JsonPlaceholderService
+from varne.providers.umami.client import UmamiClient
+from varne.providers.umami.service import UmamiService
 from varne.providers.vercel.client import VercelClient
 from varne.providers.vercel.service import VercelService
 from varne.settings import get_settings
@@ -90,5 +93,14 @@ def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
                 ),
                 stack_id=stack_id,
                 source_id=source.id,
+                lookback_days=source.lookback_days,
+            )
+        case ConfigUmami():
+            return UmamiService(
+                db=get_db(),
+                client=UmamiClient(http=get_http(), api_token=source.get_api_token()),
+                stack_id=stack_id,
+                source_id=source.id,
+                website_ids=source.website_ids,
                 lookback_days=source.lookback_days,
             )
