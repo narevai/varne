@@ -3,6 +3,7 @@
 # ignore reformatted cassettes
 tests/**/*.json
 .infisical.json
+.infisical.yaml
 
 .pnpm-store
 .ruff_cache/
