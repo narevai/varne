@@ -19,7 +19,7 @@ test:
 	pytest --record-mode=none --block-network
 
 dev:
-	ENVIRONMENT=development DEBUG=true LOG_LEVEL=DEBUG python -m varne.app
+	ENVIRONMENT=development DEBUG=false LOG_LEVEL=DEBUG python -m varne.app
 
 vcr-record:
 	infisical run -- pytest --record-mode=new_episodes
