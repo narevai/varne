@@ -8,7 +8,7 @@ from loguru import logger
 from varne.config import SourceId, SourceType, StackId
 from varne.db.types import DatabaseBackend
 from varne.providers.base import ProviderService
-from varne.providers.types import RowFactUsage, RowRaw
+from varne.providers.types import RowRaw
 from varne.providers.vercel.client import VercelClient
 from varne.providers.vercel.transform import (
     transform_analytics_aggregate,
@@ -78,7 +78,7 @@ class VercelService(ProviderService):
         self.store_raw([raw])
 
         meta = transform_meta(raw)
-        self.replace_dim_source_meta(meta)
+        self.store_dim_source_meta(meta)
         logger.info(f"completed fetch source meta {self.provider}")
 
     @override
@@ -99,7 +99,7 @@ class VercelService(ProviderService):
         self.store_raw([raw])
 
         billing = transform_billing(raw)
-        self.replace_fact_billing(billing, date_from, date_to)
+        self.store_fact_billing(billing)
 
     def _fetch_source_usage(self) -> None:
         if not self.project_ids:
@@ -107,7 +107,6 @@ class VercelService(ProviderService):
             return
 
         date_from, date_to = self.period()
-        usage: list[RowFactUsage] = []
 
         for project_id in self.project_ids:
             response: httpx.Response = self.client.fetch_web_analytics_visits_aggregate(
@@ -119,6 +118,6 @@ class VercelService(ProviderService):
 
             raw = self._raw(response)
             self.store_raw([raw])
-            usage += transform_analytics_aggregate(raw)
 
-        self.replace_fact_usage(usage, date_from, date_to)
+            usage = transform_analytics_aggregate(raw)
+            self.store_fact_usage(usage)
