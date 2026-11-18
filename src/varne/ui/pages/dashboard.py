@@ -30,9 +30,7 @@ def get_source_meta_rows(db: DatabaseBackend, stack_id: StackId) -> pd.DataFrame
 def get_billing_rows(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> pd.DataFrame:
-    df_result = get_source_billing(
-        db, stack_id, source_id, page_size=CHART_ROWS
-    ).to_pandas()
+    df_result = get_source_billing(db, stack_id, source_id).to_pandas()
     return df_result
 
 
@@ -224,21 +222,23 @@ async def page_dashboard() -> None:
                     get_billing_rows, db, stack_id, source_id
                 )
 
+                currencies = ""
                 if df_billing.empty:
                     ui.label("No billing data available")
-                    return
-
-                currencies = ", ".join(
-                    cast(list[str], df_billing["billing_currency"].unique().tolist())
-                )
-                bar_chart(
-                    f"Billing ({currencies})",
-                    df_billing,
-                    x="charge_period_start",
-                    y="billed_cost",
-                    series="service_name",
-                    value_format=".2~r",
-                )
+                else:
+                    currencies = ", ".join(
+                        cast(
+                            list[str], df_billing["billing_currency"].unique().tolist()
+                        )
+                    )
+                    bar_chart(
+                        f"Billing ({currencies})",
+                        df_billing,
+                        x="charge_period_start",
+                        y="billed_cost",
+                        series="service_name",
+                        value_format=".2~r",
+                    )
 
                 df_usage = await run.io_bound(get_usage_rows, db, stack_id, source_id)
 
@@ -256,6 +256,9 @@ async def page_dashboard() -> None:
                     y="usage",
                     series="usage_name",
                 )
+
+                if df_billing.empty:
+                    return
 
                 df_cost = await run.io_bound(
                     get_cost_per_usage_rows, db, stack_id, source_id

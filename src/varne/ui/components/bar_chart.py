@@ -5,7 +5,27 @@ import pandas as pd
 from nicegui import ui
 
 FONT = "Geist, ui-sans-serif, system-ui, sans-serif"
-PALETTE = ["#5188cd", "#b5689d", "#669649", "#9274c3", "#0094bc", "#3f9b65"]
+PALETTE = [
+    "#5188cd",
+    "#b5689d",
+    "#669649",
+    "#9274c3",
+    "#0094bc",
+    "#3f9b65",
+    "#d6a23a",
+    "#cf5c5c",
+    "#4fb3a9",
+    "#8c6d4f",
+]
+MAX_SERIES = len(PALETTE)
+OTHER = "Other"
+OTHER_COLOR = "#9aa0a6"
+
+
+def group_small_series(df: pd.DataFrame, y: str, series: str, top: int) -> pd.DataFrame:
+    totals = cast(pd.Series, df.groupby(series)[y].sum()).sort_values(ascending=False)
+    keep = cast(list[str], totals.head(top).index.tolist())
+    return df.assign(**{series: df[series].where(df[series].isin(keep), OTHER)})
 
 
 def bar_chart(
@@ -15,8 +35,17 @@ def bar_chart(
     y: str,
     series: str,
     value_format: str | None = None,
+    top: int = MAX_SERIES,
 ):
     df = df.assign(**{y: df[y].astype(float)})
+    df = group_small_series(df, y, series, top)
+    names = sorted(
+        cast(list[str], df[series].unique().tolist()), key=lambda n: (n == OTHER, n)
+    )
+    colors = [
+        OTHER_COLOR if n == OTHER else PALETTE[i % len(PALETTE)]
+        for i, n in enumerate(names)
+    ]
     fmt = value_format or alt.Undefined
     single_series = len(cast(list[str], df[series].unique().tolist())) == 1
 
@@ -33,6 +62,7 @@ def bar_chart(
             color=alt.Color(
                 f"{series}:N",
                 title=None,
+                scale=alt.Scale(domain=names, range=colors),
                 legend=None if single_series else alt.Legend(),
             ),
             tooltip=[
@@ -61,6 +91,8 @@ def bar_chart(
             labelColor="currentColor",
             labelFontSize=12,
             labelLimit=260,
+            columns=3,
+            symbolLimit=0,
             columnPadding=16,
             offset=16,
         )

@@ -10,6 +10,7 @@ type SourceId = str
 
 
 class SourceType(StrEnum):
+    ANTHROPIC = "anthropic"
     JSONPLACEHOLDER = "jsonplaceholder"
     VERCEL = "vercel"
 
@@ -59,8 +60,43 @@ class ConfigVercel(ConfigSourceBase):
         return SecretStr(value)
 
 
+type AnthropicToken = SecretStr
+
+
+class ConfigAnthropic(ConfigSourceBase):
+    type: Literal[SourceType.ANTHROPIC] = SourceType.ANTHROPIC
+    api_token: AnthropicToken | None = None
+    api_token_env: str | None = None
+    lookback_days: int = Field(default=30, ge=1, le=365)
+
+    @model_validator(mode="after")
+    def validate_token_source(self) -> ConfigAnthropic:
+        if (self.api_token is None) == (self.api_token_env is None):
+            raise ValueError(
+                "Exactly one of api_token or api_token_env must be provided"
+            )
+
+        return self
+
+    def get_api_token(self) -> AnthropicToken:
+        if self.api_token is not None:
+            return self.api_token
+
+        assert self.api_token_env is not None
+
+        value = os.getenv(self.api_token_env)
+
+        if value is None:
+            raise RuntimeError(
+                f"Environment variable {self.api_token_env!r} is not set"
+            )
+
+        return SecretStr(value)
+
+
 ConfigSource = Annotated[
-    ConfigJsonPlaceholder | ConfigVercel, Field(discriminator="type")
+    ConfigJsonPlaceholder | ConfigVercel | ConfigAnthropic,
+    Field(discriminator="type"),
 ]
 
 type StackId = str

@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import cast
 
-from varne.analytics.billing import get_billing_per_day
+from varne.analytics.billing import get_billing_per_day, get_source_billing
 from varne.config import SourceType
 from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
@@ -56,3 +56,14 @@ def test_cost_per_day_without_a_stack_still_covers_everything(db: DatabaseBacken
     df = get_billing_per_day(db).to_pandas()
 
     assert sorted(cast(list[str], df["stack_id"].tolist())) == ["other_stack", "stack"]
+
+
+def test_source_billing_sums_all_rows_not_just_a_page(db: DatabaseBackend):
+    rows = [billing("stack", "a", "0") for _ in range(1500)]
+    rows += [billing("stack", "a", "2"), billing("stack", "a", "3")]
+    db.insert(TableName.FACT_BILLING, [row.model_dump() for row in rows])
+
+    df = get_source_billing(db, "stack", "a").to_pandas()
+
+    assert len(df) == 1
+    assert df["billed_cost"].iloc[0] == Decimal("5")

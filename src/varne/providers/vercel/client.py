@@ -29,7 +29,7 @@ class VercelClient(ProviderClient):
         response = self.http.get(
             url=self.base_url.join("/v10/projects"), headers=self.headers
         )
-        response.raise_for_status()
+        self.raise_for_status(response)
 
         return response
 
@@ -49,7 +49,7 @@ class VercelClient(ProviderClient):
             },
         )
 
-        response.raise_for_status()
+        self.raise_for_status(response)
 
         return response
 
@@ -71,7 +71,7 @@ class VercelClient(ProviderClient):
             },
         )
 
-        response.raise_for_status()
+        self.raise_for_status(response)
 
         return response
 
@@ -94,6 +94,6 @@ class VercelClient(ProviderClient):
             },
         )
 
-        response.raise_for_status()
+        self.raise_for_status(response)
 
         return response

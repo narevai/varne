@@ -7,23 +7,21 @@ from varne.db.types import DatabaseBackend
 
 
 def get_source_billing(
-    db: DatabaseBackend,
-    stack_id: StackId,
-    source_id: SourceId,
-    page: int = 1,
-    page_size: int = 25,
+    db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> Table:
     staging = db.table(TableFactBilling().name)
 
-    offset = (page - 1) * page_size
-
-    records = (
+    return (
         staging.filter(staging.stack_id == stack_id, staging.source_id == source_id)
-        .order_by(ibis.desc(staging.extracted_at))
-        .limit(page_size, offset=offset)
+        .group_by(
+            charge_period_start=ibis._.charge_period_start.truncate("D"),
+            service_name=ibis._.service_name,
+            billing_currency=ibis._.billing_currency,
+        )
+        .aggregate(billed_cost=ibis._.billed_cost.sum())
+        .filter(ibis._.billed_cost != 0)
+        .order_by("charge_period_start")
     )
-
-    return records
 
 
 def get_billing_per_day(db: DatabaseBackend, stack_id: StackId | None = None) -> Table:

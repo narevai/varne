@@ -40,6 +40,7 @@ class CassetteManager:
                 path_cassette_tmp,
                 record_mode="none",
                 allow_playback_repeats=True,
+                match_on=("method", "scheme", "host", "port", "path"),
             ),
         )
 

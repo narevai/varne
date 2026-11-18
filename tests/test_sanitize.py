@@ -378,3 +378,14 @@ def test_sanitize_redacts_object_keys_when_asked():
     assert "super-secret-key" not in json.dumps(result)
     assert list(bypass) == ["<protectionBypass_key_0>"]
     assert result["name"] == "<name>"
+
+
+def test_sanitize_redacted_keys_do_not_leak_into_value_placeholders():
+    policy = SanitizePolicy(
+        fields=(FieldPolicy(field="applications", redact_keys=True),)
+    )
+    value: dict[str, JsonValue] = {"applications": {"calm-salad-83584979": ["app"]}}
+
+    result = sanitize(value, policy)
+
+    assert "calm-salad-83584979" not in json.dumps(result)
