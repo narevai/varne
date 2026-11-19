@@ -68,13 +68,13 @@ def select_series(
     series: pd.Series
 
     if container == SYSTEM:
-        keep = cast(pd.Series, entity == SYSTEM)
+        keep = entity == SYSTEM
         series = system
     else:
-        keep = cast(pd.Series, entity != SYSTEM)
+        keep = entity != SYSTEM
         if container != ALL_CONTAINERS:
-            keep = cast(pd.Series, keep & (entity == container))
-        series = cast(pd.Series, system + "/" + entity) if several_systems else entity
+            keep = keep & (entity == container)
+        series = system + "/" + entity if several_systems else entity
 
     _, divisor = METRICS.get(metric, (metric, 1))
     selected = pd.DataFrame(
