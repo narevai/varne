@@ -10,7 +10,7 @@ DECIMAL_SCALE = 18
 
 
 def round_amount(value: object) -> object:
-    if not isinstance(value, float):
+    if not isinstance(value, float | Decimal):
         return value
 
     with localcontext() as context:

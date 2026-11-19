@@ -99,12 +99,15 @@ class ProviderService(ABC):
         )
         return today - timedelta(days=self.lookback_days), today + timedelta(days=1)
 
+    def _extracted_at(self) -> datetime:
+        return self._pull_at or self._now()
+
     def _raw(self, response: httpx.Response) -> RowRaw:
         return RowRaw(
             stack_id=self.stack_id,
             source_id=self.source_id,
             source_type=self.provider,
-            extracted_at=self._pull_at or self._now(),
+            extracted_at=self._extracted_at(),
             method=response.request.method,
             url=str(response.request.url),
             payload=response.text,

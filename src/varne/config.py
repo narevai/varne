@@ -1,4 +1,5 @@
 import os
+from decimal import Decimal
 from enum import StrEnum
 from pathlib import Path
 from typing import Annotated, Literal, Self
@@ -13,6 +14,7 @@ class SourceType(StrEnum):
     ANTHROPIC = "anthropic"
     JSONPLACEHOLDER = "jsonplaceholder"
     OPENAI = "openai"
+    SELFHOSTED = "selfhosted"
     UMAMI = "umami"
     VERCEL = "vercel"
 
@@ -29,10 +31,13 @@ class ConfigJsonPlaceholder(ConfigSourceBase):
 DEFAULT_LOOKBACK_DAYS = 30
 
 
-class ConfigApiSource(ConfigSourceBase):
+class ConfigLookbackSource(ConfigSourceBase):
+    lookback_days: int = Field(default=DEFAULT_LOOKBACK_DAYS, ge=1, le=365)
+
+
+class ConfigApiSource(ConfigLookbackSource):
     api_token: SecretStr | None = None
     api_token_env: str | None = None
-    lookback_days: int = Field(default=DEFAULT_LOOKBACK_DAYS, ge=1, le=365)
 
     @model_validator(mode="after")
     def validate_token_source(self) -> Self:
@@ -82,6 +87,40 @@ class ConfigOpenAI(ConfigApiSource):
     type: Literal[SourceType.OPENAI] = SourceType.OPENAI
 
 
+class ConfigSelfHosted(ConfigLookbackSource):
+    type: Literal[SourceType.SELFHOSTED] = SourceType.SELFHOSTED
+    hourly_cost: Decimal | None = Field(default=None, gt=0)
+    machine_cost: Decimal | None = Field(default=None, gt=0)
+    amortization_years: Decimal = Field(default=Decimal(6), gt=0, le=50)
+    power_draw_watts: Decimal | None = Field(default=None, gt=0)
+    electricity_price_per_kwh: Decimal | None = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def validate_cost_mode(self) -> Self:
+        if (self.hourly_cost is None) == (self.machine_cost is None):
+            raise ValueError(
+                "Exactly one of hourly_cost or machine_cost must be provided"
+            )
+
+        if (self.power_draw_watts is None) != (self.electricity_price_per_kwh is None):
+            raise ValueError(
+                "power_draw_watts and electricity_price_per_kwh must be provided together"
+            )
+
+        if self.hourly_cost is not None:
+            hardware_only = {
+                "amortization_years",
+                "power_draw_watts",
+                "electricity_price_per_kwh",
+            }
+            if hardware_only & self.model_fields_set:
+                raise ValueError(
+                    "amortization_years, power_draw_watts and electricity_price_per_kwh cannot be used with hourly_cost"
+                )
+
+        return self
+
+
 type UmamiToken = SecretStr
 
 
@@ -91,7 +130,12 @@ class ConfigUmami(ConfigApiSource):
 
 
 ConfigSource = Annotated[
-    ConfigJsonPlaceholder | ConfigVercel | ConfigAnthropic | ConfigOpenAI | ConfigUmami,
+    ConfigJsonPlaceholder
+    | ConfigVercel
+    | ConfigAnthropic
+    | ConfigOpenAI
+    | ConfigSelfHosted
+    | ConfigUmami,
     Field(discriminator="type"),
 ]
 

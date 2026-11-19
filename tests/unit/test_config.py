@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,7 @@ from varne.config import (
     ConfigAnthropic,
     ConfigManager,
     ConfigOpenAI,
+    ConfigSelfHosted,
     ConfigUmami,
     ConfigVarne,
     SourceType,
@@ -366,3 +368,98 @@ stacks:
         website_ids: []
 """
         )
+
+
+def selfhosted(fields: str) -> str:
+    return f"""
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: lab
+        name: Lab
+        type: selfhosted
+{fields}
+"""
+
+
+def test_selfhosted_machine_cost_with_electricity():
+    config = parse_config(
+        selfhosted(
+            "\n".join(
+                [
+                    "        machine_cost: 5000",
+                    "        power_draw_watts: 120",
+                    "        electricity_price_per_kwh: 0.9",
+                ]
+            )
+        )
+    )
+    source = config.stacks[0].sources[0]
+
+    assert isinstance(source, ConfigSelfHosted)
+    assert source.machine_cost == 5000
+    assert source.amortization_years == 6
+    assert source.power_draw_watts == 120
+    assert source.electricity_price_per_kwh == Decimal("0.9")
+    assert source.lookback_days == 30
+
+
+def test_selfhosted_hourly_cost():
+    config = parse_config(selfhosted("        hourly_cost: 0.35"))
+    source = config.stacks[0].sources[0]
+
+    assert isinstance(source, ConfigSelfHosted)
+    assert source.hourly_cost == Decimal("0.35")
+
+
+def test_selfhosted_amortization_years_can_be_changed():
+    config = parse_config(
+        selfhosted("        machine_cost: 5000\n        amortization_years: 4")
+    )
+    source = config.stacks[0].sources[0]
+
+    assert isinstance(source, ConfigSelfHosted)
+    assert source.amortization_years == 4
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        "        lookback_days: 7",
+        "        machine_cost: 5000\n        hourly_cost: 0.35",
+    ],
+)
+def test_selfhosted_needs_exactly_one_of_machine_cost_and_hourly_cost(fields: str):
+    with pytest.raises(ValueError, match="Exactly one of hourly_cost or machine_cost"):
+        parse_config(selfhosted(fields))
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        "        machine_cost: 5000\n        power_draw_watts: 120",
+        "        machine_cost: 5000\n        electricity_price_per_kwh: 0.9",
+    ],
+)
+def test_selfhosted_power_and_electricity_price_come_together(fields: str):
+    with pytest.raises(ValueError, match="must be provided together"):
+        parse_config(selfhosted(fields))
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        "        amortization_years: 6",
+        "        power_draw_watts: 120\n        electricity_price_per_kwh: 0.9",
+    ],
+)
+def test_selfhosted_hourly_cost_excludes_the_hardware_options(extra: str):
+    with pytest.raises(ValueError, match="cannot be used with hourly_cost"):
+        parse_config(selfhosted("        hourly_cost: 0.35\n" + extra))
+
+
+@pytest.mark.parametrize("value", ["0", "-5"])
+def test_selfhosted_costs_must_be_positive(value: str):
+    with pytest.raises(ValueError, match="greater than 0"):
+        parse_config(selfhosted(f"        machine_cost: {value}"))
