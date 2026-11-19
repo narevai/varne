@@ -36,6 +36,8 @@ def bar_chart(
     series: str,
     value_format: str | None = None,
     top: int = MAX_SERIES,
+    time_unit: str = "yearmonthdate",
+    time_format: str = "%b %d",
 ):
     df = df.assign(**{y: df[y].astype(float)})
     df = group_small_series(df, y, series, top)
@@ -53,7 +55,9 @@ def bar_chart(
         alt.Chart(df)
         .mark_bar()
         .encode(
-            x=alt.X(f"yearmonthdate({x}):O", title=None, axis=alt.Axis(format="%b %d")),
+            x=alt.X(
+                f"{time_unit}({x}):O", title=None, axis=alt.Axis(format=time_format)
+            ),
             y=alt.Y(
                 f"sum({y}):Q",
                 title=None,
@@ -65,8 +69,9 @@ def bar_chart(
                 scale=alt.Scale(domain=names, range=colors),
                 legend=None if single_series else alt.Legend(),
             ),
+            order=alt.Order(f"sum({y}):Q", sort="descending"),
             tooltip=[
-                alt.Tooltip(f"yearmonthdate({x}):T", title="Date"),
+                alt.Tooltip(f"{time_unit}({x}):T", title="Date"),
                 alt.Tooltip(f"{series}:N", title="Series"),
                 alt.Tooltip(f"sum({y}):Q", title="Total", format=fmt),
             ],

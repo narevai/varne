@@ -12,6 +12,7 @@ type SourceId = str
 
 class SourceType(StrEnum):
     ANTHROPIC = "anthropic"
+    BESZEL = "beszel"
     JSONPLACEHOLDER = "jsonplaceholder"
     OPENAI = "openai"
     SELFHOSTED = "selfhosted"
@@ -129,10 +130,42 @@ class ConfigUmami(ConfigApiSource):
     website_ids: list[str] = Field(min_length=1)
 
 
+type BeszelPassword = SecretStr
+
+
+class ConfigBeszel(ConfigLookbackSource):
+    type: Literal[SourceType.BESZEL] = SourceType.BESZEL
+    url: str = Field(min_length=1)
+    email: str = Field(min_length=1)
+    password: SecretStr | None = None
+    password_env: str | None = None
+
+    @model_validator(mode="after")
+    def validate_password_source(self) -> Self:
+        if (self.password is None) == (self.password_env is None):
+            raise ValueError("Exactly one of password or password_env must be provided")
+
+        return self
+
+    def get_password(self) -> BeszelPassword:
+        if self.password is not None:
+            return self.password
+
+        assert self.password_env is not None
+
+        value = os.getenv(self.password_env)
+
+        if value is None:
+            raise RuntimeError(f"Environment variable {self.password_env!r} is not set")
+
+        return SecretStr(value)
+
+
 ConfigSource = Annotated[
     ConfigJsonPlaceholder
     | ConfigVercel
     | ConfigAnthropic
+    | ConfigBeszel
     | ConfigOpenAI
     | ConfigSelfHosted
     | ConfigUmami,

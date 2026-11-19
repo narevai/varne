@@ -9,12 +9,13 @@ from nicegui.events import GenericEventArguments
 from varne.analytics.billing import get_billing_per_day, get_source_billing
 from varne.analytics.cost_per_usage import get_source_cost_per_usage
 from varne.analytics.meta import get_source_meta
-from varne.analytics.usage import get_source_usage
+from varne.analytics.usage import get_source_usage, get_usage_names
 from varne.config import ConfigStack, ConfigVarne, SourceId, StackId
 from varne.db.lock import serialized
 from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db, get_service
 from varne.ui.components.bar_chart import bar_chart
+from varne.ui.components.resource_usage import parse_usage_names, resource_usage
 from varne.ui.layout import create_layout
 
 CHART_ROWS = 1000
@@ -42,6 +43,14 @@ def get_usage_rows(
         db, stack_id, source_id, page_size=CHART_ROWS
     ).to_pandas()
     return df_result
+
+
+@serialized
+def get_usage_name_rows(
+    db: DatabaseBackend, stack_id: StackId, source_id: SourceId
+) -> list[str]:
+    df_result = get_usage_names(db, stack_id, source_id).to_pandas()
+    return cast(list[str], df_result["usage_name"].tolist())
 
 
 @serialized
@@ -239,6 +248,15 @@ async def page_dashboard() -> None:
                         series="service_name",
                         value_format=".2~r",
                     )
+
+                usage_names = await run.io_bound(
+                    get_usage_name_rows, db, stack_id, source_id
+                )
+                resources = parse_usage_names(usage_names)
+
+                if resources is not None:
+                    await resource_usage(db, stack_id, source_id, resources)
+                    return
 
                 df_usage = await run.io_bound(get_usage_rows, db, stack_id, source_id)
 

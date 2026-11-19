@@ -4,7 +4,7 @@ from typing import cast
 
 from varne.analytics.billing import get_billing_per_day, get_source_billing
 from varne.analytics.cost_per_usage import get_source_cost_per_usage
-from varne.analytics.usage import get_source_usage
+from varne.analytics.usage import get_source_usage, get_usage_by_metric, get_usage_names
 from varne.config import SourceType
 from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
@@ -145,3 +145,22 @@ def test_cost_per_visitor_uses_the_latest_pull_of_both(db: DatabaseBackend):
     df = get_source_cost_per_usage(db, "stack", "a").to_pandas()
 
     assert cast(list[float], df["cost_per_usage"].tolist()) == [2.0]
+
+
+def test_usage_by_metric_keeps_only_that_metric_of_the_latest_pull(
+    db: DatabaseBackend,
+):
+    put_usage(
+        db,
+        [
+            usage("source", DAY1, 1, PULL1, "lab/web/cpu"),
+            usage("source", DAY1, 2, PULL2, "lab/web/cpu"),
+            usage("source", DAY1, 9, PULL2, "lab/web/memory"),
+        ],
+    )
+
+    rows = get_usage_by_metric(db, "stack", "source", "cpu").to_pandas()
+    names = get_usage_names(db, "stack", "source").to_pandas()
+
+    assert rows["usage"].tolist() == [2]
+    assert names["usage_name"].tolist() == ["lab/web/cpu", "lab/web/memory"]
