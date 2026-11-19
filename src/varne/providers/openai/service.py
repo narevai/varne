@@ -4,7 +4,7 @@ from typing import Literal, override
 
 from loguru import logger
 
-from varne.config import SourceId, SourceType, StackId
+from varne.config import DEFAULT_LOOKBACK_DAYS, SourceId, SourceType, StackId
 from varne.db.types import DatabaseBackend
 from varne.providers.base import ProviderService, utc_now
 from varne.providers.openai.client import OpenAIClient
@@ -22,7 +22,7 @@ class OpenAIService(ProviderService):
         client: OpenAIClient,
         stack_id: StackId,
         source_id: SourceId,
-        lookback_days: int = 30,
+        lookback_days: int = DEFAULT_LOOKBACK_DAYS,
         now: Callable[[], datetime] = utc_now,
     ) -> None:
         super().__init__(db, stack_id, source_id, lookback_days, now)

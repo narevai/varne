@@ -1,7 +1,7 @@
 import os
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
 import yaml
 from pydantic import BaseModel, Field, SecretStr, ValidationError, model_validator
@@ -26,19 +26,16 @@ class ConfigJsonPlaceholder(ConfigSourceBase):
     type: Literal[SourceType.JSONPLACEHOLDER] = SourceType.JSONPLACEHOLDER
 
 
-type VercelToken = SecretStr
+DEFAULT_LOOKBACK_DAYS = 30
 
 
-class ConfigVercel(ConfigSourceBase):
-    type: Literal[SourceType.VERCEL] = SourceType.VERCEL
-    api_token: VercelToken | None = None
+class ConfigApiSource(ConfigSourceBase):
+    api_token: SecretStr | None = None
     api_token_env: str | None = None
-    team_id: str = Field(min_length=1)
-    project_ids: list[str] = Field(default_factory=list)
-    lookback_days: int = Field(default=30, ge=1, le=365)
+    lookback_days: int = Field(default=DEFAULT_LOOKBACK_DAYS, ge=1, le=365)
 
     @model_validator(mode="after")
-    def validate_token_source(self) -> ConfigVercel:
+    def validate_token_source(self) -> Self:
         if (self.api_token is None) == (self.api_token_env is None):
             raise ValueError(
                 "Exactly one of api_token or api_token_env must be provided"
@@ -46,7 +43,7 @@ class ConfigVercel(ConfigSourceBase):
 
         return self
 
-    def get_api_token(self) -> VercelToken:
+    def get_api_token(self) -> SecretStr:
         if self.api_token is not None:
             return self.api_token
 
@@ -60,109 +57,37 @@ class ConfigVercel(ConfigSourceBase):
             )
 
         return SecretStr(value)
+
+
+type VercelToken = SecretStr
+
+
+class ConfigVercel(ConfigApiSource):
+    type: Literal[SourceType.VERCEL] = SourceType.VERCEL
+    team_id: str = Field(min_length=1)
+    project_ids: list[str] = Field(default_factory=list)
 
 
 type AnthropicToken = SecretStr
 
 
-class ConfigAnthropic(ConfigSourceBase):
+class ConfigAnthropic(ConfigApiSource):
     type: Literal[SourceType.ANTHROPIC] = SourceType.ANTHROPIC
-    api_token: AnthropicToken | None = None
-    api_token_env: str | None = None
-    lookback_days: int = Field(default=30, ge=1, le=365)
-
-    @model_validator(mode="after")
-    def validate_token_source(self) -> ConfigAnthropic:
-        if (self.api_token is None) == (self.api_token_env is None):
-            raise ValueError(
-                "Exactly one of api_token or api_token_env must be provided"
-            )
-
-        return self
-
-    def get_api_token(self) -> AnthropicToken:
-        if self.api_token is not None:
-            return self.api_token
-
-        assert self.api_token_env is not None
-
-        value = os.getenv(self.api_token_env)
-
-        if value is None:
-            raise RuntimeError(
-                f"Environment variable {self.api_token_env!r} is not set"
-            )
-
-        return SecretStr(value)
 
 
 type OpenAIToken = SecretStr
 
 
-class ConfigOpenAI(ConfigSourceBase):
+class ConfigOpenAI(ConfigApiSource):
     type: Literal[SourceType.OPENAI] = SourceType.OPENAI
-    api_token: OpenAIToken | None = None
-    api_token_env: str | None = None
-    lookback_days: int = Field(default=30, ge=1, le=365)
-
-    @model_validator(mode="after")
-    def validate_token_source(self) -> ConfigOpenAI:
-        if (self.api_token is None) == (self.api_token_env is None):
-            raise ValueError(
-                "Exactly one of api_token or api_token_env must be provided"
-            )
-
-        return self
-
-    def get_api_token(self) -> OpenAIToken:
-        if self.api_token is not None:
-            return self.api_token
-
-        assert self.api_token_env is not None
-
-        value = os.getenv(self.api_token_env)
-
-        if value is None:
-            raise RuntimeError(
-                f"Environment variable {self.api_token_env!r} is not set"
-            )
-
-        return SecretStr(value)
 
 
 type UmamiToken = SecretStr
 
 
-class ConfigUmami(ConfigSourceBase):
+class ConfigUmami(ConfigApiSource):
     type: Literal[SourceType.UMAMI] = SourceType.UMAMI
-    api_token: UmamiToken | None = None
-    api_token_env: str | None = None
     website_ids: list[str] = Field(min_length=1)
-    lookback_days: int = Field(default=30, ge=1, le=365)
-
-    @model_validator(mode="after")
-    def validate_token_source(self) -> ConfigUmami:
-        if (self.api_token is None) == (self.api_token_env is None):
-            raise ValueError(
-                "Exactly one of api_token or api_token_env must be provided"
-            )
-
-        return self
-
-    def get_api_token(self) -> UmamiToken:
-        if self.api_token is not None:
-            return self.api_token
-
-        assert self.api_token_env is not None
-
-        value = os.getenv(self.api_token_env)
-
-        if value is None:
-            raise RuntimeError(
-                f"Environment variable {self.api_token_env!r} is not set"
-            )
-
-        return SecretStr(value)
 
 
 ConfigSource = Annotated[

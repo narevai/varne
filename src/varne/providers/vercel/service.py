@@ -5,7 +5,7 @@ from typing import Literal, override
 import httpx2 as httpx
 from loguru import logger
 
-from varne.config import SourceId, SourceType, StackId
+from varne.config import DEFAULT_LOOKBACK_DAYS, SourceId, SourceType, StackId
 from varne.db.types import DatabaseBackend
 from varne.providers.base import ProviderService, utc_now
 from varne.providers.vercel.client import VercelClient
@@ -29,7 +29,7 @@ class VercelService(ProviderService):
         source_id: SourceId,
         team_id: str,
         project_ids: Sequence[str] = (),
-        lookback_days: int = 30,
+        lookback_days: int = DEFAULT_LOOKBACK_DAYS,
         now: Callable[[], datetime] = utc_now,
     ) -> None:
         super().__init__(db, stack_id, source_id, lookback_days, now)

@@ -7,7 +7,7 @@ import httpx2 as httpx
 import pyarrow as pa
 from loguru import logger
 
-from varne.config import SourceId, SourceType, StackId
+from varne.config import DEFAULT_LOOKBACK_DAYS, SourceId, SourceType, StackId
 from varne.db.lock import serialized
 from varne.db.schema import (
     TableDimSourceMeta,
@@ -69,7 +69,7 @@ class ProviderService(ABC):
         db: DatabaseBackend,
         stack_id: StackId,
         source_id: SourceId,
-        lookback_days: int = 30,
+        lookback_days: int = DEFAULT_LOOKBACK_DAYS,
         now: Callable[[], datetime] = utc_now,
     ) -> None:
         self.db = db
