@@ -91,7 +91,7 @@ def bar_chart(
             labelColor="currentColor",
             labelFontSize=12,
             labelLimit=260,
-            columns=3,
+            columns=4,
             symbolLimit=0,
             columnPadding=16,
             offset=16,

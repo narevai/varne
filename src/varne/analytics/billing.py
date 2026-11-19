@@ -1,6 +1,7 @@
 import ibis
 from ibis.expr.types.relations import Table
 
+from varne.analytics.latest import latest_per_day
 from varne.config import SourceId, StackId
 from varne.db.schema import TableFactBilling
 from varne.db.types import DatabaseBackend
@@ -10,9 +11,12 @@ def get_source_billing(
     db: DatabaseBackend, stack_id: StackId, source_id: SourceId
 ) -> Table:
     staging = db.table(TableFactBilling().name)
+    staging = staging.filter(
+        staging.stack_id == stack_id, staging.source_id == source_id
+    )
 
     return (
-        staging.filter(staging.stack_id == stack_id, staging.source_id == source_id)
+        latest_per_day(staging, "charge_period_start")
         .group_by(
             charge_period_start=ibis._.charge_period_start.truncate("D"),
             service_name=ibis._.service_name,
@@ -31,7 +35,8 @@ def get_billing_per_day(db: DatabaseBackend, stack_id: StackId | None = None) ->
         staging = staging.filter(staging.stack_id == stack_id)
 
     records = (
-        staging.group_by(
+        latest_per_day(staging, "charge_period_start")
+        .group_by(
             day=ibis._.charge_period_start.truncate("D"),
             stack_id=ibis._.stack_id,
             source_id=ibis._.source_id,

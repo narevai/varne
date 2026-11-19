@@ -7,6 +7,8 @@ from varne.settings import get_settings
 from varne.ui import theme  # noqa: F401
 from varne.ui.components.nav_item import nav_item
 
+DOCS_URL = "https://www.narev.ai/docs/varne"
+
 
 def create_layout() -> Column:
     config_manager = get_config_manager()
@@ -26,6 +28,7 @@ def create_layout() -> Column:
         nav_item("Dashboard", "menu", "/")
         nav_item("Integrations", "extension", "/integrations")
         nav_item("Settings", "settings", "/settings")
+        nav_item("Documentation", "menu_book", DOCS_URL, external=True)
 
         if get_settings().environment == "development":
             nav_item("Components", "widgets", "/dev/components")

@@ -24,6 +24,17 @@ async def test_page_settings(user: User) -> None:
     await user.should_see("stack_test")
 
 
+@pytest.mark.usefixtures("config_path")
+async def test_sidebar_links_to_the_documentation(user: User) -> None:
+    await user.open("/")
+
+    await user.should_see("Documentation")
+    link = user.find("Documentation").elements.pop()
+    item = next(parent for parent in link.ancestors() if parent.props.get("href"))
+    assert item.props["href"] == "https://www.narev.ai/docs/varne"
+    assert item.props["target"] == "_blank"
+
+
 TWO_SOURCES = """
 stacks:
   - id: stack_a

@@ -48,7 +48,7 @@ def test_fetch_costs(http_client: httpx.Client, openai_token: OpenAIToken):
 
     response = client.fetch_costs(
         date_from=datetime(2026, 10, 18, tzinfo=UTC),
-        date_to=datetime(2026, 11, 17, tzinfo=UTC),
+        date_to=datetime(2026, 11, 20, tzinfo=UTC),
     )
 
     assert response.is_success

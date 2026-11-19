@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import cast
 
 import httpx2 as httpx
@@ -115,3 +115,29 @@ stacks:
         website_ids: []
 """
         )
+
+
+def test_all_websites_of_one_pull_share_extracted_at(db: DatabaseBackend):
+    ticks = iter(
+        datetime(2026, 9, 10, 12, tzinfo=UTC) + timedelta(seconds=i) for i in range(100)
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body: dict[str, object] = {
+            "pageviews": [{"x": "2026-09-01T00:00:00Z", "y": 1}],
+            "sessions": [{"x": "2026-09-01T00:00:00Z", "y": 1}],
+        }
+        return httpx.Response(200, json=body, request=request)
+
+    client = UmamiClient(
+        httpx.Client(transport=httpx.MockTransport(handler)), SecretStr("k")
+    )
+    service = UmamiService(
+        db, client, "stack", "source", ["w1", "w2", "w3"], now=lambda: next(ticks)
+    )
+
+    service.fetch_source_data()
+
+    for table in (TableName.RAW, TableName.FACT_USAGE):
+        stamps = db.table(table).extracted_at.nunique().execute()
+        assert cast(int, stamps) == 1

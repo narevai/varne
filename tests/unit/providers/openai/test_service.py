@@ -65,7 +65,7 @@ def test_service_follows_pages_and_stores_every_one(db: DatabaseBackend):
         int(datetime(2026, 9, 1, tzinfo=UTC).timestamp())
     )
     assert seen[0].url.params["end_time"] == str(
-        int(datetime(2026, 9, 10, tzinfo=UTC).timestamp())
+        int(datetime(2026, 9, 11, tzinfo=UTC).timestamp())
     )
     assert seen[0].url.params.get_list("group_by") == ["line_item", "project_id"]
     assert cast(int, db.table(TableName.RAW).count().execute()) == 2

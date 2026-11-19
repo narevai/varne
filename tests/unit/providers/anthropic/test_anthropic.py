@@ -104,7 +104,7 @@ def test_service_follows_pages_and_stores_every_one(db: DatabaseBackend):
     assert len(seen) == 2
     assert seen[0].headers["x-api-key"] == "sk-ant-admin"
     assert seen[0].url.params["starting_at"] == "2026-09-01T00:00:00+00:00"
-    assert seen[0].url.params["ending_at"] == "2026-09-10T00:00:00+00:00"
+    assert seen[0].url.params["ending_at"] == "2026-09-11T00:00:00+00:00"
     assert cast(int, db.table(TableName.RAW).count().execute()) == 2
     assert cast(int, db.table(TableName.FACT_BILLING).count().execute()) == 2
 

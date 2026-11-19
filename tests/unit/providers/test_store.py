@@ -14,8 +14,8 @@ AT = datetime(2026, 11, 18, 8, 30, tzinfo=UTC)
 class FakeService(ProviderService):
     @property
     @override
-    def provider(self) -> str:
-        return "fake"
+    def provider(self) -> SourceType:
+        return SourceType.JSONPLACEHOLDER
 
     @override
     def fetch_source_meta(self) -> None:
