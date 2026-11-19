@@ -1,6 +1,7 @@
 import ibis
 from ibis.expr.types.relations import Table
 
+from varne.analytics.latest import latest_per_day
 from varne.config import SourceId, StackId
 from varne.db.schema import TableFactBilling, TableFactUsage
 from varne.db.types import DatabaseBackend
@@ -15,18 +16,23 @@ def get_source_cost_per_usage(
     billing = db.table(TableFactBilling().name)
     usage = db.table(TableFactUsage().name)
 
+    billing = billing.filter(
+        billing.stack_id == stack_id, billing.source_id == source_id
+    )
+    usage = usage.filter(
+        usage.stack_id == stack_id,
+        usage.source_id == source_id,
+        usage.usage_name == usage_name,
+    )
+
     daily_cost = (
-        billing.filter(billing.stack_id == stack_id, billing.source_id == source_id)
+        latest_per_day(billing, "charge_period_start")
         .group_by(day=ibis._.charge_period_start.truncate("D"))
         .aggregate(cost=ibis._.billed_cost.sum())
     )
 
     daily_usage = (
-        usage.filter(
-            usage.stack_id == stack_id,
-            usage.source_id == source_id,
-            usage.usage_name == usage_name,
-        )
+        latest_per_day(usage, "event_time")
         .group_by(day=ibis._.event_time.truncate("D"))
         .aggregate(units=ibis._.usage.sum())
     )

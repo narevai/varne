@@ -22,12 +22,12 @@ def make(db: DatabaseBackend, now: datetime, lookback_days: int = 30) -> VercelS
     )
 
 
-def test_period_is_complete_days_before_today(db: DatabaseBackend):
+def test_period_includes_today(db: DatabaseBackend):
     service = make(db, datetime(2026, 9, 10, 12, 30, tzinfo=UTC), lookback_days=9)
 
     assert service.period() == (
         datetime(2026, 9, 1, tzinfo=UTC),
-        datetime(2026, 9, 10, tzinfo=UTC),
+        datetime(2026, 9, 11, tzinfo=UTC),
     )
 
 
@@ -38,7 +38,7 @@ def test_period_uses_utc_days_whatever_the_clock_zone(db: DatabaseBackend):
 
     assert service.period() == (
         datetime(2026, 9, 9, tzinfo=UTC),
-        datetime(2026, 9, 10, tzinfo=UTC),
+        datetime(2026, 9, 11, tzinfo=UTC),
     )
 
 

@@ -4,7 +4,15 @@ import pytest
 import yaml
 from pydantic import ValidationError
 
-from varne.config import ConfigManager, ConfigVarne, SourceType
+from varne.config import (
+    ConfigAnthropic,
+    ConfigManager,
+    ConfigOpenAI,
+    ConfigUmami,
+    ConfigVarne,
+    SourceType,
+    parse_config,
+)
 
 
 @pytest.fixture
@@ -248,5 +256,113 @@ stacks:
         name: V
         type: vercel
         api_token: abc
+"""
+        )
+
+
+def test_config_reads_anthropic_source():
+    config = parse_config(
+        """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: a
+        name: A
+        type: anthropic
+        api_token: sk-ant-admin-x
+"""
+    )
+    source = config.stacks[0].sources[0]
+
+    assert isinstance(source, ConfigAnthropic)
+    assert source.lookback_days == 30
+    assert source.get_api_token().get_secret_value() == "sk-ant-admin-x"
+
+
+def test_config_anthropic_needs_exactly_one_token_source():
+    with pytest.raises(ValueError, match="Exactly one of api_token"):
+        parse_config(
+            """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: a
+        name: A
+        type: anthropic
+"""
+        )
+
+
+def test_config_reads_openai_source():
+    config = parse_config(
+        """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: o
+        name: O
+        type: openai
+        api_token: sk-admin-x
+"""
+    )
+    source = config.stacks[0].sources[0]
+
+    assert isinstance(source, ConfigOpenAI)
+    assert source.lookback_days == 30
+    assert source.get_api_token().get_secret_value() == "sk-admin-x"
+
+
+def test_config_openai_needs_exactly_one_token_source():
+    with pytest.raises(ValueError, match="Exactly one of api_token"):
+        parse_config(
+            """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: o
+        name: O
+        type: openai
+"""
+        )
+
+
+def test_config_reads_umami_source():
+    config = parse_config(
+        """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: u
+        name: U
+        type: umami
+        api_token: key
+        website_ids: [w1]
+"""
+    )
+    source = config.stacks[0].sources[0]
+
+    assert isinstance(source, ConfigUmami)
+    assert source.website_ids == ["w1"]
+    assert source.lookback_days == 30
+
+
+def test_config_umami_needs_a_website():
+    with pytest.raises(ValueError, match="website_ids"):
+        parse_config(
+            """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: u
+        name: U
+        type: umami
+        api_token: key
+        website_ids: []
 """
         )

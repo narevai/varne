@@ -1,4 +1,3 @@
-from datetime import UTC, datetime
 from typing import Literal, override
 
 import httpx2 as httpx
@@ -9,7 +8,7 @@ from varne.db.types import DatabaseBackend
 from varne.providers.base import ProviderService
 from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
 from varne.providers.jsonplaceholder.transform import transform_meta
-from varne.providers.types import RowDimSourceMeta, RowRaw
+from varne.providers.types import RowDimSourceMeta
 
 
 class JsonPlaceholderService(ProviderService):
@@ -33,19 +32,12 @@ class JsonPlaceholderService(ProviderService):
     @override
     def fetch_source_meta(self) -> None:
         response: httpx.Response = self.client.fetch_posts()
-        raw = RowRaw(
-            stack_id=self.stack_id,
-            source_id=self.source_id,
-            source_type=self.provider,
-            extracted_at=datetime.now(UTC),
-            method=response.request.method,
-            url=str(response.request.url),
-            payload=response.text,
-        )
+        with self.pull():
+            raw = self._raw(response)
 
-        self.store_raw([raw])
-        meta: list[RowDimSourceMeta] = transform_meta(raw)
-        self.store_dim_source_meta(meta)
+            self.store_raw([raw])
+            meta: list[RowDimSourceMeta] = transform_meta(raw)
+            self.store_dim_source_meta(meta)
         logger.info(f"completed fetch and store for {self.provider}")
 
     @override

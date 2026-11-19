@@ -8,6 +8,7 @@ from varne.config import (
     ConfigAnthropic,
     ConfigJsonPlaceholder,
     ConfigManager,
+    ConfigOpenAI,
     ConfigSource,
     ConfigUmami,
     ConfigVercel,
@@ -22,6 +23,8 @@ from varne.providers.anthropic.service import AnthropicService
 from varne.providers.base import ProviderService
 from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
 from varne.providers.jsonplaceholder.service import JsonPlaceholderService
+from varne.providers.openai.client import OpenAIClient
+from varne.providers.openai.service import OpenAIService
 from varne.providers.umami.client import UmamiClient
 from varne.providers.umami.service import UmamiService
 from varne.providers.vercel.client import VercelClient
@@ -102,5 +105,13 @@ def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
                 stack_id=stack_id,
                 source_id=source.id,
                 website_ids=source.website_ids,
+                lookback_days=source.lookback_days,
+            )
+        case ConfigOpenAI():
+            return OpenAIService(
+                db=get_db(),
+                client=OpenAIClient(http=get_http(), api_token=source.get_api_token()),
+                stack_id=stack_id,
+                source_id=source.id,
                 lookback_days=source.lookback_days,
             )

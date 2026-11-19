@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
+from collections.abc import Callable, Generator
+from contextlib import contextmanager
+from datetime import UTC, datetime, timedelta
 
 import httpx2 as httpx
 import pyarrow as pa
 from loguru import logger
 
-from varne.config import SourceId, StackId
+from varne.config import DEFAULT_LOOKBACK_DAYS, SourceId, SourceType, StackId
 from varne.db.lock import serialized
 from varne.db.schema import (
     TableDimSourceMeta,
@@ -19,6 +22,10 @@ from varne.providers.types import (
     RowFactUsage,
     RowRaw,
 )
+
+
+def utc_now() -> datetime:
+    return datetime.now(UTC)
 
 
 class ProviderClient(ABC):
@@ -53,9 +60,17 @@ class ProviderService(ABC):
     table_dim_source_meta: TableDimSourceMeta
     table_fact_billing: TableFactBilling
     table_fact_usage: TableFactUsage
+    lookback_days: int
+    _now: Callable[[], datetime]
+    _pull_at: datetime | None
 
     def __init__(
-        self, db: DatabaseBackend, stack_id: StackId, source_id: SourceId
+        self,
+        db: DatabaseBackend,
+        stack_id: StackId,
+        source_id: SourceId,
+        lookback_days: int = DEFAULT_LOOKBACK_DAYS,
+        now: Callable[[], datetime] = utc_now,
     ) -> None:
         self.db = db
         self.table_raw = TableRaw()
@@ -64,10 +79,40 @@ class ProviderService(ABC):
         self.table_fact_usage = TableFactUsage()
         self.stack_id = stack_id
         self.source_id = source_id
+        self.lookback_days = lookback_days
+        self._now = now
+        self._pull_at = None
+
+    @contextmanager
+    def pull(self) -> Generator[None]:
+        self._pull_at = self._now()
+        try:
+            yield
+        finally:
+            self._pull_at = None
+
+    def period(self) -> tuple[datetime, datetime]:
+        today = (
+            self._now()
+            .astimezone(UTC)
+            .replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        return today - timedelta(days=self.lookback_days), today + timedelta(days=1)
+
+    def _raw(self, response: httpx.Response) -> RowRaw:
+        return RowRaw(
+            stack_id=self.stack_id,
+            source_id=self.source_id,
+            source_type=self.provider,
+            extracted_at=self._pull_at or self._now(),
+            method=response.request.method,
+            url=str(response.request.url),
+            payload=response.text,
+        )
 
     @property
     @abstractmethod
-    def provider(self) -> str:
+    def provider(self) -> SourceType:
         raise NotImplementedError
 
     @abstractmethod

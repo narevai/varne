@@ -2,8 +2,10 @@ from datetime import UTC, datetime
 
 import httpx2 as httpx
 import pytest
+from pydantic import SecretStr
 from tests.policy import FieldPolicy, SanitizePolicy
 from tests.sanitize import VcrResponse, sanitize_response
+from tests.unit.providers.anthropic.test_transform import page
 
 from varne.config import AnthropicToken, SourceType
 from varne.providers.anthropic.client import AnthropicClient
@@ -77,3 +79,21 @@ def test_fetch_cost_report(http_client: httpx.Client, anthropic_token: Anthropic
         )
     )
     assert all(row.billing_currency == "USD" for row in rows)
+
+
+def test_array_params_use_bracket_names():
+    seen: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        return httpx.Response(200, json=page(None, []), request=request)
+
+    client = AnthropicClient(
+        httpx.Client(transport=httpx.MockTransport(handler)), SecretStr("x")
+    )
+    _ = client.fetch_cost_report(
+        datetime(2026, 9, 1, tzinfo=UTC), datetime(2026, 9, 2, tzinfo=UTC)
+    )
+
+    assert seen[0].url.params.get_list("group_by[]") == ["description", "workspace_id"]
+    assert "group_by" not in seen[0].url.params

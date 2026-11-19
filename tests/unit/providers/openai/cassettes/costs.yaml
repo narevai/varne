@@ -1,0 +1,122 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - identity
+      connection:
+      - keep-alive
+      host:
+      - api.openai.com
+      user-agent:
+      - varne/0.1
+    method: GET
+    uri: https://api.openai.com/v1/organization/costs?start_time=1792281600&end_time=1795132800&bucket_width=1d&group_by=line_item&group_by=project_id&limit=180
+  response:
+    body:
+      string: '{"object": "<object>", "data": [{"object": "<object>", "end_time":
+        1792368000, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1792281600, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1792454400, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1792368000, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1792540800, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1792454400, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1792627200, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1792540800, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1792713600, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1792627200, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1792800000, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1792713600, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1792886400, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1792800000, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1792972800, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1792886400, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793059200, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1792972800, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793145600, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793059200, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793232000, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793145600, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793318400, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793232000, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793404800, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793318400, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793491200, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793404800, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793577600, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793491200, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793664000, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793577600, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793750400, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793664000, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793836800, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793750400, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1793923200, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793836800, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794009600, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1793923200, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794096000, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794009600, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794182400, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794096000, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794268800, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794182400, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794355200, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794268800, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794441600, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794355200, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794528000, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794441600, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794614400, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794528000, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794700800, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794614400, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794787200, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794700800, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794873600, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794787200, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1794960000, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794873600, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1795046400, "end_time_iso": "<end_time_iso>", "results": [], "start_time":
+        1794960000, "start_time_iso": "<start_time_iso>"}, {"object": "<object>",
+        "end_time": 1795132800, "end_time_iso": "<end_time_iso>", "results": [{"object":
+        "<object>", "amount": {"currency": "usd", "value": 0.0}, "api_key_id": null,
+        "api_source": null, "line_item": "gpt-4.1-mini-2025-04-14, cached input",
+        "organization_id": "<organization_id>", "organization_name": "<organization_name>",
+        "project_id": "<project_id>", "project_name": "<project_name>", "quantity":
+        0.0, "quantity_unit": "tokens", "user_email": null, "user_id": null}, {"object":
+        "<object>", "amount": {"currency": "usd", "value": 0.007296}, "api_key_id":
+        null, "api_source": null, "line_item": "gpt-4.1-mini-2025-04-14, input", "organization_id":
+        "<organization_id>", "organization_name": "<organization_name>", "project_id":
+        "<project_id>", "project_name": "<project_name>", "quantity": 18240.0, "quantity_unit":
+        "tokens", "user_email": null, "user_id": null}, {"object": "<object>", "amount":
+        {"currency": "usd", "value": 0.0432}, "api_key_id": null, "api_source": null,
+        "line_item": "gpt-4.1-mini-2025-04-14, output", "organization_id": "<organization_id>",
+        "organization_name": "<organization_name>", "project_id": "<project_id>",
+        "project_name": "<project_name>", "quantity": 27000.0, "quantity_unit": "tokens",
+        "user_email": null, "user_id": null}, {"object": "<object>", "amount": {"currency":
+        "usd", "value": 0.0}, "api_key_id": null, "api_source": null, "line_item":
+        "gpt-4o-mini-2024-07-18, cached input", "organization_id": "<organization_id>",
+        "organization_name": "<organization_name>", "project_id": "<project_id>",
+        "project_name": "<project_name>", "quantity": 0.0, "quantity_unit": "tokens",
+        "user_email": null, "user_id": null}, {"object": "<object>", "amount": {"currency":
+        "usd", "value": 1.395e-05}, "api_key_id": null, "api_source": null, "line_item":
+        "gpt-4o-mini-2024-07-18, input", "organization_id": "<organization_id>", "organization_name":
+        "<organization_name>", "project_id": "<project_id>", "project_name": "<project_name>",
+        "quantity": 93.0, "quantity_unit": "tokens", "user_email": null, "user_id":
+        null}, {"object": "<object>", "amount": {"currency": "usd", "value": 0.0003066},
+        "api_key_id": null, "api_source": null, "line_item": "gpt-4o-mini-2024-07-18,
+        output", "organization_id": "<organization_id>", "organization_name": "<organization_name>",
+        "project_id": "<project_id>", "project_name": "<project_name>", "quantity":
+        511.0, "quantity_unit": "tokens", "user_email": null, "user_id": null}], "start_time":
+        1795046400, "start_time_iso": "<start_time_iso>"}], "has_more": false, "next_page":
+        null}'
+    headers:
+      content-type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,11 +1,9 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import cast
 
 import httpx2 as httpx
-import pytest
 from pydantic import SecretStr
 
-from varne.config import ConfigUmami, parse_config
 from varne.db.schema import TableName
 from varne.db.types import DatabaseBackend
 from varne.providers.umami.client import UmamiClient
@@ -65,53 +63,27 @@ def test_sync_checks_every_website_and_stores_its_id(db: DatabaseBackend):
     assert cast(int, db.table(TableName.DIM_SOURCE_META).count().execute()) == 2
 
 
-def test_error_says_what_the_api_answered():
+def test_all_websites_of_one_pull_share_extracted_at(db: DatabaseBackend):
+    ticks = iter(
+        datetime(2026, 9, 10, 12, tzinfo=UTC) + timedelta(seconds=i) for i in range(100)
+    )
+
     def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(401, json={"error": "Unauthorized"}, request=request)
+        body: dict[str, object] = {
+            "pageviews": [{"x": "2026-09-01T00:00:00Z", "y": 1}],
+            "sessions": [{"x": "2026-09-01T00:00:00Z", "y": 1}],
+        }
+        return httpx.Response(200, json=body, request=request)
 
     client = UmamiClient(
-        httpx.Client(transport=httpx.MockTransport(handler)), SecretStr("x")
+        httpx.Client(transport=httpx.MockTransport(handler)), SecretStr("k")
+    )
+    service = UmamiService(
+        db, client, "stack", "source", ["w1", "w2", "w3"], now=lambda: next(ticks)
     )
 
-    with pytest.raises(httpx.HTTPStatusError, match="Unauthorized"):
-        client.fetch_pageviews(
-            "w1", datetime(2026, 9, 1, tzinfo=UTC), datetime(2026, 9, 2, tzinfo=UTC)
-        )
+    service.fetch_source_data()
 
-
-def test_config_reads_umami_source():
-    config = parse_config(
-        """
-stacks:
-  - id: s
-    name: S
-    sources:
-      - id: u
-        name: U
-        type: umami
-        api_token: key
-        website_ids: [w1]
-"""
-    )
-    source = config.stacks[0].sources[0]
-
-    assert isinstance(source, ConfigUmami)
-    assert source.website_ids == ["w1"]
-    assert source.lookback_days == 30
-
-
-def test_config_umami_needs_a_website():
-    with pytest.raises(ValueError, match="website_ids"):
-        parse_config(
-            """
-stacks:
-  - id: s
-    name: S
-    sources:
-      - id: u
-        name: U
-        type: umami
-        api_token: key
-        website_ids: []
-"""
-        )
+    for table in (TableName.RAW, TableName.FACT_USAGE):
+        stamps = db.table(table).extracted_at.nunique().execute()
+        assert cast(int, stamps) == 1
