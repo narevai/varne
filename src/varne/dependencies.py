@@ -9,6 +9,7 @@ from varne.config import (
     ConfigJsonPlaceholder,
     ConfigManager,
     ConfigOpenAI,
+    ConfigSelfHosted,
     ConfigSource,
     ConfigUmami,
     ConfigVercel,
@@ -25,6 +26,8 @@ from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
 from varne.providers.jsonplaceholder.service import JsonPlaceholderService
 from varne.providers.openai.client import OpenAIClient
 from varne.providers.openai.service import OpenAIService
+from varne.providers.selfhosted.rates import cost_lines
+from varne.providers.selfhosted.service import SelfHostedService
 from varne.providers.umami.client import UmamiClient
 from varne.providers.umami.service import UmamiService
 from varne.providers.vercel.client import VercelClient
@@ -113,5 +116,19 @@ def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
                 client=OpenAIClient(http=get_http(), api_token=source.get_api_token()),
                 stack_id=stack_id,
                 source_id=source.id,
+                lookback_days=source.lookback_days,
+            )
+        case ConfigSelfHosted():
+            return SelfHostedService(
+                db=get_db(),
+                stack_id=stack_id,
+                source_id=source.id,
+                lines=cost_lines(
+                    hourly_cost=source.hourly_cost,
+                    machine_cost=source.machine_cost,
+                    amortization_years=source.amortization_years,
+                    power_draw_watts=source.power_draw_watts,
+                    electricity_price_per_kwh=source.electricity_price_per_kwh,
+                ),
                 lookback_days=source.lookback_days,
             )
