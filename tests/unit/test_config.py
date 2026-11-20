@@ -6,7 +6,9 @@ import yaml
 from pydantic import ValidationError
 
 from varne.config import (
+    DEFAULT_LOOKBACK_DAYS,
     ConfigAnthropic,
+    ConfigBeszel,
     ConfigManager,
     ConfigOpenAI,
     ConfigSelfHosted,
@@ -463,3 +465,45 @@ def test_selfhosted_hourly_cost_excludes_the_hardware_options(extra: str):
 def test_selfhosted_costs_must_be_positive(value: str):
     with pytest.raises(ValueError, match="greater than 0"):
         parse_config(selfhosted(f"        machine_cost: {value}"))
+
+
+def test_beszel_source_uses_the_default_lookback():
+    config = parse_config(
+        """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: b
+        name: Beszel
+        type: beszel
+        url: http://hub:8090
+        email: me@example.com
+        password: secret
+"""
+    )
+
+    source = config.stacks[0].sources[0]
+    assert isinstance(source, ConfigBeszel)
+    assert source.lookback_days == DEFAULT_LOOKBACK_DAYS
+    assert source.get_password().get_secret_value() == "secret"
+
+
+def test_beszel_password_comes_from_exactly_one_place():
+    text = """
+stacks:
+  - id: s
+    name: S
+    sources:
+      - id: b
+        name: Beszel
+        type: beszel
+        url: http://hub:8090
+        email: me@example.com
+"""
+
+    with pytest.raises(ValueError, match="Exactly one of password or password_env"):
+        parse_config(text)
+
+    with pytest.raises(ValueError, match="Exactly one of password or password_env"):
+        parse_config(text + "        password: a\n        password_env: B\n")

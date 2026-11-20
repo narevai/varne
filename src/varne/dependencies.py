@@ -6,6 +6,7 @@ import httpx2 as httpx
 
 from varne.config import (
     ConfigAnthropic,
+    ConfigBeszel,
     ConfigJsonPlaceholder,
     ConfigManager,
     ConfigOpenAI,
@@ -22,6 +23,8 @@ from varne.http import create_http_client
 from varne.providers.anthropic.client import AnthropicClient
 from varne.providers.anthropic.service import AnthropicService
 from varne.providers.base import ProviderService
+from varne.providers.beszel.client import BeszelClient
+from varne.providers.beszel.service import BeszelService
 from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
 from varne.providers.jsonplaceholder.service import JsonPlaceholderService
 from varne.providers.openai.client import OpenAIClient
@@ -130,5 +133,18 @@ def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
                     power_draw_watts=source.power_draw_watts,
                     electricity_price_per_kwh=source.electricity_price_per_kwh,
                 ),
+                lookback_days=source.lookback_days,
+            )
+        case ConfigBeszel():
+            return BeszelService(
+                db=get_db(),
+                client=BeszelClient(
+                    http=get_http(),
+                    url=source.url,
+                    email=source.email,
+                    password=source.get_password(),
+                ),
+                stack_id=stack_id,
+                source_id=source.id,
                 lookback_days=source.lookback_days,
             )
