@@ -7,6 +7,9 @@
 ## Devlog
 | YouTube                                                          | PR                                                |
 | ---------------------------------------------------------------- | ------------------------------------------------- |
+| [Add Vercel Billing part 2](TODO)                                | [#228](https://github.com/narevai/varne/pull/228) |
+| [Add Vercel Billing part 1](TODO)                                | [#228](https://github.com/narevai/varne/pull/228) |
+| [Bug fix in config parser](https://youtu.be/0mD6B4o3bAE)         | [#225](https://github.com/narevai/varne/pull/225) |
 | [Cassette Replay for Vercel](https://youtu.be/QZhYUPvFr_c)       | [#222](https://github.com/narevai/varne/pull/222) |
 | [ConfigManager](https://youtu.be/qYlT9Y-A7Lg)                    | [#219](https://github.com/narevai/varne/pull/219) |
 | [Stronger typing part 2](https://youtube.com/live/uE0IJrpH270)   | [#217](https://github.com/narevai/varne/pull/217) |
