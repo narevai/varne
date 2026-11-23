@@ -3,19 +3,22 @@ from typing import cast
 import pandas as pd
 from loguru import logger
 from nicegui import run, ui
-from nicegui.elements.select import Select
 from nicegui.events import GenericEventArguments
 
 from varne.analytics.billing import get_billing_per_day, get_source_billing
 from varne.analytics.cost_per_usage import get_source_cost_per_usage
 from varne.analytics.meta import get_source_meta
-from varne.analytics.usage import get_source_usage, get_usage_names
-from varne.config import ConfigStack, ConfigVarne, SourceId, StackId
+from varne.analytics.usage import get_source_usage
+from varne.config import ConfigStack, SourceId, SourceType, StackId
 from varne.db.lock import serialized
 from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db, get_service
+from varne.ui.components.application_costs import application_costs
 from varne.ui.components.bar_chart import bar_chart
-from varne.ui.components.resource_usage import parse_usage_names, resource_usage
+from varne.ui.components.stack_select import (
+    create_stack_select,
+    refresh_stack_select,
+)
 from varne.ui.layout import create_layout
 
 CHART_ROWS = 1000
@@ -46,14 +49,6 @@ def get_usage_rows(
 
 
 @serialized
-def get_usage_name_rows(
-    db: DatabaseBackend, stack_id: StackId, source_id: SourceId
-) -> list[str]:
-    df_result = get_usage_names(db, stack_id, source_id).to_pandas()
-    return cast(list[str], df_result["usage_name"].tolist())
-
-
-@serialized
 def get_billing_per_day_rows(db: DatabaseBackend, stack_id: StackId) -> pd.DataFrame:
     df_result = get_billing_per_day(db, stack_id).to_pandas()
     return df_result
@@ -65,21 +60,6 @@ def get_cost_per_usage_rows(
 ) -> pd.DataFrame:
     df_result = get_source_cost_per_usage(db, stack_id, source_id).to_pandas()
     return df_result
-
-
-def create_stack_select(config: ConfigVarne | None) -> Select:
-    if config is None or not config.stacks:
-        return ui.select(options={}, label="stack", value=None)
-
-    stack_options = {stack.id: stack.name for stack in config.stacks}
-
-    return ui.select(options=stack_options, label="stack", value=config.stacks[0].id)
-
-
-def refresh_stack_select(select: Select, config: ConfigVarne):
-    select.options = {stack.id: stack.name for stack in config.stacks}
-    select.value = config.stacks[0].id if config.stacks else None
-    select.update()
 
 
 @ui.page("/")
@@ -221,11 +201,18 @@ async def page_dashboard() -> None:
                 )
 
         async def source_card(
-            stack_id: StackId, source_id: SourceId, source_name: str
+            stack_id: StackId,
+            source_id: SourceId,
+            source_name: str,
+            source_type: SourceType,
         ) -> None:
             with ui.card():
                 with ui.row():
                     ui.label(source_name)
+
+                if source_type == SourceType.DOCKER:
+                    await application_costs(db, stack_id, source_id)
+                    return
 
                 df_billing = await run.io_bound(
                     get_billing_rows, db, stack_id, source_id
@@ -248,15 +235,6 @@ async def page_dashboard() -> None:
                         series="service_name",
                         value_format=".2~r",
                     )
-
-                usage_names = await run.io_bound(
-                    get_usage_name_rows, db, stack_id, source_id
-                )
-                resources = parse_usage_names(usage_names)
-
-                if resources is not None:
-                    await resource_usage(db, stack_id, source_id, resources)
-                    return
 
                 df_usage = await run.io_bound(get_usage_rows, db, stack_id, source_id)
 
@@ -301,7 +279,7 @@ async def page_dashboard() -> None:
                 return
 
             for source in stack.sources:
-                await source_card(stack.id, source.id, source.name)
+                await source_card(stack.id, source.id, source.name, source.type)
 
         @ui.refreshable
         async def content():

@@ -12,10 +12,9 @@ type SourceId = str
 
 class SourceType(StrEnum):
     ANTHROPIC = "anthropic"
-    BESZEL = "beszel"
+    DOCKER = "docker"
     JSONPLACEHOLDER = "jsonplaceholder"
     OPENAI = "openai"
-    SELFHOSTED = "selfhosted"
     UMAMI = "umami"
     VERCEL = "vercel"
 
@@ -88,8 +87,17 @@ class ConfigOpenAI(ConfigApiSource):
     type: Literal[SourceType.OPENAI] = SourceType.OPENAI
 
 
-class ConfigSelfHosted(ConfigLookbackSource):
-    type: Literal[SourceType.SELFHOSTED] = SourceType.SELFHOSTED
+type UmamiToken = SecretStr
+
+
+class ConfigUmami(ConfigApiSource):
+    type: Literal[SourceType.UMAMI] = SourceType.UMAMI
+    website_ids: list[str] = Field(min_length=1)
+
+
+class ConfigDockerCost(BaseModel):
+    """What the machine costs: a rented hourly rate, or hardware plus power."""
+
     hourly_cost: Decimal | None = Field(default=None, gt=0)
     machine_cost: Decimal | None = Field(default=None, gt=0)
     amortization_years: Decimal = Field(default=Decimal(6), gt=0, le=50)
@@ -122,19 +130,11 @@ class ConfigSelfHosted(ConfigLookbackSource):
         return self
 
 
-type UmamiToken = SecretStr
-
-
-class ConfigUmami(ConfigApiSource):
-    type: Literal[SourceType.UMAMI] = SourceType.UMAMI
-    website_ids: list[str] = Field(min_length=1)
-
-
 type BeszelPassword = SecretStr
 
 
-class ConfigBeszel(ConfigLookbackSource):
-    type: Literal[SourceType.BESZEL] = SourceType.BESZEL
+class ConfigBeszelUsage(BaseModel):
+    type: Literal["beszel"] = "beszel"
     url: str = Field(min_length=1)
     email: str = Field(min_length=1)
     password: SecretStr | None = None
@@ -161,13 +161,21 @@ class ConfigBeszel(ConfigLookbackSource):
         return SecretStr(value)
 
 
+ConfigDockerUsage = Annotated[ConfigBeszelUsage, Field(discriminator="type")]
+
+
+class ConfigDocker(ConfigLookbackSource):
+    type: Literal[SourceType.DOCKER] = SourceType.DOCKER
+    cost: ConfigDockerCost
+    usage: ConfigDockerUsage
+
+
 ConfigSource = Annotated[
     ConfigJsonPlaceholder
     | ConfigVercel
     | ConfigAnthropic
-    | ConfigBeszel
+    | ConfigDocker
     | ConfigOpenAI
-    | ConfigSelfHosted
     | ConfigUmami,
     Field(discriminator="type"),
 ]

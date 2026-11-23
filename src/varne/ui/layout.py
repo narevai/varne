@@ -26,6 +26,7 @@ def create_layout() -> Column:
         "breakpoint=768"
     ) as drawer:
         nav_item("Dashboard", "menu", "/")
+        nav_item("Self-hosted", "dns", "/selfhosted")
         nav_item("Integrations", "extension", "/integrations")
         nav_item("Settings", "settings", "/settings")
         nav_item("Documentation", "menu_book", DOCS_URL, external=True)

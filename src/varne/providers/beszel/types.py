@@ -33,6 +33,16 @@ class BeszelSystems(BaseModel):
     items: list[BeszelSystem]
 
 
+class BeszelContainerInfo(BaseModel):
+    """What a container currently is; the stats records only carry its name."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
+
+    name: str
+    image: str
+    system: str
+
+
 class BeszelContainer(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
@@ -51,11 +61,12 @@ class BeszelContainerStats(BaseModel):
 
 
 class BeszelSystemValues(BaseModel):
-    """Whole-machine figures; memory and disk are in GiB, `la` is the load average."""
+    """Whole-machine figures; memory (`m` total, `mu` used) and disk are in GiB."""
 
     model_config: ClassVar[ConfigDict] = ConfigDict(extra="ignore")
 
     cpu: float = Field(ge=0)
+    m: float = Field(ge=0)
     mu: float = Field(ge=0)
     du: float = Field(ge=0)
     la: list[float] = Field(min_length=1)

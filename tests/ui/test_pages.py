@@ -1,13 +1,18 @@
 from datetime import UTC, datetime
+from decimal import Decimal
 from pathlib import Path
+from typing import cast
 
 import pytest
 from nicegui import ui
 from nicegui.testing import User
+from tests.beszel import recorded_hub
 
 from varne.config import SourceType
 from varne.db.schema import TableName
-from varne.dependencies import get_db
+from varne.dependencies import get_db, get_http
+from varne.providers.docker.rates import CostLine
+from varne.providers.docker.service import DockerService
 from varne.providers.types import RowFactUsage
 
 
@@ -133,3 +138,65 @@ async def test_dashboard_shows_usage_of_a_source_without_billing(
 
     await user.should_see("No billing data available")
     await user.should_see("Usage (visitors)")
+
+
+DOCKER_STACK = """
+stacks:
+  - id: stack_a
+    name: Stack A
+    sources:
+      - id: lab
+        name: Lab
+        type: docker
+        cost:
+          hourly_cost: 1
+        usage:
+          type: beszel
+          url: http://hub:8090
+          email: me@example.com
+          password: secret
+"""
+
+
+def pull_recorded_hub() -> None:
+    """Pull the docker source of the stack from the recorded hub.
+
+    The hub is only there during the pull, the page is opened after it.
+    """
+    with recorded_hub(get_http()) as usage:
+        DockerService(
+            get_db(),
+            usage,
+            "stack_a",
+            "lab",
+            [CostLine("Hosting", Decimal(1), Decimal(1), "hours")],
+            lookback_days=1,
+            now=lambda: datetime(2026, 11, 20, 15, tzinfo=UTC),
+        ).fetch_source_data()
+
+
+async def test_selfhosted_without_docker_data_says_what_to_do(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text(DOCKER_STACK)
+
+    await user.open("/selfhosted")
+
+    await user.should_see("No Docker data yet")
+
+
+async def test_selfhosted_shows_the_return_on_the_machine(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text(DOCKER_STACK)
+    pull_recorded_hub()
+
+    await user.open("/selfhosted")
+
+    await user.should_see("$730.00")  # the machine for 39 hours, as a month
+    table = user.find(kind=ui.table).elements.pop()
+    assert isinstance(table, ui.table)
+    rows = cast(list[dict[str, str]], table.rows)
+    assert rows[0]["app"] == "Elasticsearch"
+    assert rows[0]["containers"] == "compose-lab-elastic-search-1"
+    assert rows[0]["icon"] == "/ui-assets/icons/elasticsearch.svg"

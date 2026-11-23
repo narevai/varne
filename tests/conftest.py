@@ -1,11 +1,15 @@
+from collections.abc import Generator
 from pathlib import Path
 
+import httpx2 as httpx
 import pytest
 from fastapi.testclient import TestClient
+from tests.beszel import recorded_hub
 
 from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.http import create_http_client
+from varne.providers.beszel.usage import BeszelUsage
 
 
 @pytest.fixture
@@ -50,3 +54,9 @@ stacks:
     )
 
     return path
+
+
+@pytest.fixture
+def beszel_usage(http_client: httpx.Client) -> Generator[BeszelUsage]:
+    with recorded_hub(http_client) as usage:
+        yield usage

@@ -3,21 +3,16 @@ from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from varne.config import SourceId, SourceType, StackId
 from varne.providers.beszel.types import (
     INTERVALS,
     BeszelContainerStats,
     BeszelSystemStats,
 )
-from varne.providers.types import RowFactUsage
+from varne.providers.docker.usage import PERCENT_FACTOR, SYSTEM_ENTITY, HourlyUsage
 
 # Beszel reports container memory in MiB and whole-machine memory/disk in GiB.
 MIB = 1024**2
 GIB = 1024**3
-PERCENT_FACTOR = 100
-
-# Whole-machine figures live under this stand-in for the container name.
-SYSTEM_ENTITY = "system"
 
 type Period = tuple[datetime, datetime]
 type Values = dict[tuple[str, str], float]
@@ -60,6 +55,7 @@ def system_sample(record: BeszelSystemStats) -> Sample:
         {
             (SYSTEM_ENTITY, "cpu"): stats.cpu * PERCENT_FACTOR,
             (SYSTEM_ENTITY, "memory"): stats.mu * GIB,
+            (SYSTEM_ENTITY, "memory_total"): stats.m * GIB,
             (SYSTEM_ENTITY, "disk"): stats.du * GIB,
             (SYSTEM_ENTITY, "load"): stats.la[0] * PERCENT_FACTOR,
         },
@@ -127,15 +123,12 @@ def hour_overlaps(segment: Segment) -> Iterator[tuple[datetime, float]]:
         hour += timedelta(hours=1)
 
 
-def hourly_rows(
-    stack_id: StackId,
-    source_id: SourceId,
-    extracted_at: datetime,
+def hourly_usage(
     samples: Sequence[Sample],
     systems: Mapping[str, str],
     date_from: datetime,
-) -> list[RowFactUsage]:
-    rows: list[RowFactUsage] = []
+) -> list[HourlyUsage]:
+    rows: list[HourlyUsage] = []
 
     for system_id in sorted({sample.system for sample in samples}):
         observed: dict[datetime, float] = defaultdict(float)
@@ -154,14 +147,12 @@ def hourly_rows(
         name = systems.get(system_id, system_id)
 
         rows.extend(
-            RowFactUsage(
-                stack_id=stack_id,
-                source_id=source_id,
-                source_type=SourceType.BESZEL,
-                extracted_at=extracted_at,
-                event_time=hour,
-                usage_name=f"{name}/{entity}/{metric}",
-                usage=round(total / observed[hour]),
+            HourlyUsage(
+                hour=hour,
+                system=name,
+                entity=entity,
+                metric=metric,
+                value=round(total / observed[hour]),
             )
             for (hour, entity, metric), total in sorted(sums.items())
         )
@@ -170,15 +161,12 @@ def hourly_rows(
 
 
 def transform_stats(
-    stack_id: StackId,
-    source_id: SourceId,
-    extracted_at: datetime,
     containers: Sequence[BeszelContainerStats],
     machines: Sequence[BeszelSystemStats],
     systems: Mapping[str, str],
     date_from: datetime,
-) -> list[RowFactUsage]:
-    """Average usage in every hour, as `system/container/metric`.
+) -> list[HourlyUsage]:
+    """Average usage in every hour, per system, container and metric.
 
     The average is taken over the time Beszel actually observed in that hour,
     so a container missing from a record counts as idle for that stretch.
@@ -186,20 +174,10 @@ def transform_stats(
     is averaged over its own observed time.
     """
     return [
-        *hourly_rows(
-            stack_id,
-            source_id,
-            extracted_at,
-            [container_sample(record) for record in containers],
-            systems,
-            date_from,
+        *hourly_usage(
+            [container_sample(record) for record in containers], systems, date_from
         ),
-        *hourly_rows(
-            stack_id,
-            source_id,
-            extracted_at,
-            [system_sample(record) for record in machines],
-            systems,
-            date_from,
+        *hourly_usage(
+            [system_sample(record) for record in machines], systems, date_from
         ),
     ]
