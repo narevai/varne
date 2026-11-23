@@ -17,6 +17,7 @@ from varne.dependencies import get_config_manager, get_db, get_service
 from varne.ui.components.application_costs import application_costs
 from varne.ui.components.bar_chart import bar_chart
 from varne.ui.components.confirm import confirm
+from varne.ui.components.empty_state import no_sources, no_stacks
 from varne.ui.components.stack_select import create_stack_select
 from varne.ui.layout import create_layout
 
@@ -278,6 +279,10 @@ async def page_dashboard() -> None:
             if stack is None:
                 return
 
+            if not stack.sources:
+                no_sources()
+                return
+
             configured = {source.id for source in stack.sources}
             stored = await run.io_bound(stored_source_ids, db, stack.id)
             rows = [
@@ -327,7 +332,8 @@ async def page_dashboard() -> None:
         ui.html("<h1>Dashboard</h1>")
 
         if config_manager.config is None or not config_manager.config.stacks:
-            ui.label("No stacks found, define in Settings")
+            no_stacks()
+            return
 
         with ui.row():
             stack_select = create_stack_select(config_manager.config)

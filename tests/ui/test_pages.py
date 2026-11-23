@@ -286,3 +286,36 @@ async def test_settings_form_suggests_the_id_of_a_new_stack(
     await asyncio.sleep(0.3)  # bindings are refreshed on a timer
 
     assert id_input.value == "my_product_2"
+
+
+async def test_dashboard_without_stacks_says_what_to_do(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text("stacks: []\n")
+
+    await user.open("/")
+
+    await user.should_see("No stacks yet")
+    await user.should_see("Open Settings")
+    await user.should_see("Read the documentation")
+    await user.should_not_see("Pull all")
+
+
+async def test_selfhosted_without_stacks_says_what_to_do(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text("stacks: []\n")
+
+    await user.open("/selfhosted")
+
+    await user.should_see("No stacks yet")
+
+
+async def test_a_stack_without_sources_says_what_to_do(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text("stacks:\n  - id: a\n    name: A\n")
+
+    await user.open("/")
+
+    await user.should_see("This stack has no sources")
