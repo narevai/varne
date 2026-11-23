@@ -11,6 +11,7 @@ from varne.db.lock import serialized
 from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db
 from varne.ui.components.container_names import container_label
+from varne.ui.components.empty_state import empty_state, no_stacks
 from varne.ui.components.stack_select import create_stack_select
 from varne.ui.layout import create_layout
 
@@ -148,19 +149,29 @@ async def page_selfhosted() -> None:
     with layout:
         ui.html("<h1>Self-hosted</h1>")
 
+        if config is None or not config.stacks:
+            no_stacks()
+            return
+
         stack_select = create_stack_select(config)
 
         @ui.refreshable
         async def result() -> None:
             stack_id = cast(StackId | None, stack_select.value)
             if stack_id is None:
-                ui.label("No stacks found, define in Settings")
+                no_stacks()
                 return
 
             costs = await run.io_bound(get_container_cost_rows, db, stack_id)
 
             if not costs:
-                ui.label("No Docker data yet, pull the docker source on the Dashboard")
+                empty_state(
+                    "dns",
+                    "No Docker data yet",
+                    "Pull a docker source on the Dashboard to see what its containers cost and what the subscriptions they replace would.",
+                    "Go to Dashboard",
+                    "/",
+                )
                 return
 
             selfhosted_view(compare(costs))
