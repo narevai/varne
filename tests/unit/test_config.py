@@ -19,9 +19,7 @@ from varne.config import (
 
 
 @pytest.fixture
-def config_single_jsonplaceholder(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> Path:
+def config_single_source(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.chdir(tmp_path)
     path = tmp_path / "config" / "varne.yaml"
     path.parent.mkdir(exist_ok=True)
@@ -34,7 +32,8 @@ stacks:
     sources:
       - id: source1
         name: Source 1
-        type: jsonplaceholder
+        type: anthropic
+        api_token: secret
 
 """
     )
@@ -89,8 +88,8 @@ stacks:
     return path
 
 
-def test_jsonplaceholder_load(config_single_jsonplaceholder: Path):
-    raw = yaml.safe_load(config_single_jsonplaceholder.read_text())  # pyright: ignore[reportAny]
+def test_config_load_source(config_single_source: Path):
+    raw = yaml.safe_load(config_single_source.read_text())  # pyright: ignore[reportAny]
     config = ConfigVarne.model_validate(raw or {})
 
     assert config.stacks != []
@@ -99,11 +98,11 @@ def test_jsonplaceholder_load(config_single_jsonplaceholder: Path):
     assert config.stacks[0].sources != []
     assert config.stacks[0].sources[0].id == "source1"
     assert config.stacks[0].sources[0].name == "Source 1"
-    assert config.stacks[0].sources[0].type == SourceType.JSONPLACEHOLDER
+    assert config.stacks[0].sources[0].type == SourceType.ANTHROPIC
 
 
-def test_config_json_placeholder(config_single_jsonplaceholder: Path):
-    manager = ConfigManager(path=config_single_jsonplaceholder)
+def test_config_manager_load_source(config_single_source: Path):
+    manager = ConfigManager(path=config_single_source)
     manager.load()
 
     config = manager.config
@@ -115,7 +114,7 @@ def test_config_json_placeholder(config_single_jsonplaceholder: Path):
     assert config.stacks[0].sources != []
     assert config.stacks[0].sources[0].id == "source1"
     assert config.stacks[0].sources[0].name == "Source 1"
-    assert config.stacks[0].sources[0].type == SourceType.JSONPLACEHOLDER
+    assert config.stacks[0].sources[0].type == SourceType.ANTHROPIC
 
 
 def test_vercel_load_token_missing(config_single_vercel_token_missing: Path):
@@ -144,29 +143,29 @@ def test_config_vercel(config_single_vercel: Path):
     assert config.stacks[0].sources[0].type == SourceType.VERCEL
 
 
-def test_config_save_text_valid(config_single_jsonplaceholder: Path):
-    manager = ConfigManager(path=config_single_jsonplaceholder)
+def test_config_save_text_valid(config_single_source: Path):
+    manager = ConfigManager(path=config_single_source)
     manager.load()
 
     text = "# my comment\nstacks:\n  - id: stack_new\n    name: New\n"
     error = manager.save_text(text)
 
     assert error is None
-    assert config_single_jsonplaceholder.read_text() == text
+    assert config_single_source.read_text() == text
     assert manager.config is not None
     assert manager.config.stacks[0].id == "stack_new"
     assert manager.error is None
 
 
-def test_config_save_text_invalid_keeps_file(config_single_jsonplaceholder: Path):
-    manager = ConfigManager(path=config_single_jsonplaceholder)
+def test_config_save_text_invalid_keeps_file(config_single_source: Path):
+    manager = ConfigManager(path=config_single_source)
     manager.load()
-    before = config_single_jsonplaceholder.read_text()
+    before = config_single_source.read_text()
 
     error = manager.save_text("stacks:\n  - id: stack_new\n")
 
     assert error == "stacks.0.name: Field required"
-    assert config_single_jsonplaceholder.read_text() == before
+    assert config_single_source.read_text() == before
     assert manager.config is not None
     assert manager.config.stacks[0].id == "stack_id1"
 
@@ -193,10 +192,10 @@ def test_config_missing_file_not_creatable_reports_error(tmp_path: Path):
     assert config.stacks == []
 
 
-def test_config_existing_file_is_not_overwritten(config_single_jsonplaceholder: Path):
-    before = config_single_jsonplaceholder.read_text()
-    ConfigManager(path=config_single_jsonplaceholder).load()
-    assert config_single_jsonplaceholder.read_text() == before
+def test_config_existing_file_is_not_overwritten(config_single_source: Path):
+    before = config_single_source.read_text()
+    ConfigManager(path=config_single_source).load()
+    assert config_single_source.read_text() == before
 
 
 def test_vercel_source_needs_a_team_id():

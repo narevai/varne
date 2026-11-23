@@ -301,3 +301,8 @@ section {display:flex;flex-direction:column;width:100%}
  .q-circular-progress {color:var(--primary)!important}
 }
 @media(max-width:768px) {:root {--nicegui-default-padding:.75rem;--nicegui-default-gap:.75rem}.q-header,.q-footer {padding:.75rem}section,.q-card {padding:1rem}}
+
+/* Logos drawn in black only: light ink on the dark theme. */
+body.body--dark .logo-mono {
+	filter: invert(1);
+}
