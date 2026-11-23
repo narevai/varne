@@ -160,9 +160,7 @@ async def page_selfhosted() -> None:
             costs = await run.io_bound(get_container_cost_rows, db, stack_id)
 
             if not costs:
-                ui.label(
-                    "No Docker data yet, pull billing of a docker source on the Dashboard"
-                )
+                ui.label("No Docker data yet, pull the docker source on the Dashboard")
                 return
 
             selfhosted_view(compare(costs))

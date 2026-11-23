@@ -15,7 +15,7 @@ class FakeService(ProviderService):
     @property
     @override
     def provider(self) -> SourceType:
-        return SourceType.JSONPLACEHOLDER
+        return SourceType.ANTHROPIC
 
     @override
     def fetch_source_meta(self) -> None:

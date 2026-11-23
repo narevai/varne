@@ -13,7 +13,6 @@ type SourceId = str
 class SourceType(StrEnum):
     ANTHROPIC = "anthropic"
     DOCKER = "docker"
-    JSONPLACEHOLDER = "jsonplaceholder"
     OPENAI = "openai"
     UMAMI = "umami"
     VERCEL = "vercel"
@@ -22,10 +21,6 @@ class SourceType(StrEnum):
 class ConfigSourceBase(BaseModel):
     id: SourceId
     name: str
-
-
-class ConfigJsonPlaceholder(ConfigSourceBase):
-    type: Literal[SourceType.JSONPLACEHOLDER] = SourceType.JSONPLACEHOLDER
 
 
 DEFAULT_LOOKBACK_DAYS = 30
@@ -171,12 +166,7 @@ class ConfigDocker(ConfigLookbackSource):
 
 
 ConfigSource = Annotated[
-    ConfigJsonPlaceholder
-    | ConfigVercel
-    | ConfigAnthropic
-    | ConfigDocker
-    | ConfigOpenAI
-    | ConfigUmami,
+    ConfigVercel | ConfigAnthropic | ConfigDocker | ConfigOpenAI | ConfigUmami,
     Field(discriminator="type"),
 ]
 

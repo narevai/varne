@@ -58,6 +58,16 @@ def test_cost_per_day_without_a_stack_still_covers_everything(db: DatabaseBacken
     assert sorted(cast(list[str], df["stack_id"].tolist())) == ["other_stack", "stack"]
 
 
+def test_cost_per_day_can_be_limited_to_some_sources(db: DatabaseBackend):
+    rows = [billing("stack", "kept", "5"), billing("stack", "removed", "100")]
+    db.insert(TableName.FACT_BILLING, [row.model_dump() for row in rows])
+
+    df = get_billing_per_day(db, "stack", ["kept"]).to_pandas()
+
+    assert cast(list[str], df["source_id"].tolist()) == ["kept"]
+    assert get_billing_per_day(db, "stack", []).to_pandas().empty
+
+
 def test_source_billing_sums_all_rows_not_just_a_page(db: DatabaseBackend):
     rows = [billing("stack", "a", "0") for _ in range(1500)]
     rows += [billing("stack", "a", "2"), billing("stack", "a", "3")]

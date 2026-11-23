@@ -7,7 +7,6 @@ import httpx2 as httpx
 from varne.config import (
     ConfigAnthropic,
     ConfigDocker,
-    ConfigJsonPlaceholder,
     ConfigManager,
     ConfigOpenAI,
     ConfigSource,
@@ -26,8 +25,6 @@ from varne.providers.beszel.client import BeszelClient
 from varne.providers.beszel.usage import BeszelUsage
 from varne.providers.docker.rates import cost_lines
 from varne.providers.docker.service import DockerService
-from varne.providers.jsonplaceholder.client import JsonPlaceholderClient
-from varne.providers.jsonplaceholder.service import JsonPlaceholderService
 from varne.providers.openai.client import OpenAIClient
 from varne.providers.openai.service import OpenAIService
 from varne.providers.umami.client import UmamiClient
@@ -76,13 +73,6 @@ def get_cassette_manager() -> CassetteManager:
 
 def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
     match source:
-        case ConfigJsonPlaceholder():
-            return JsonPlaceholderService(
-                db=get_db(),
-                client=JsonPlaceholderClient(http=get_http()),
-                stack_id=stack_id,
-                source_id=source.id,
-            )
         case ConfigVercel():
             return VercelService(
                 db=get_db(),

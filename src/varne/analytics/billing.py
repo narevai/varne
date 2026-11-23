@@ -1,3 +1,5 @@
+from collections.abc import Collection
+
 import ibis
 from ibis.expr.types.relations import Table
 
@@ -28,11 +30,23 @@ def get_source_billing(
     )
 
 
-def get_billing_per_day(db: DatabaseBackend, stack_id: StackId | None = None) -> Table:
+def get_billing_per_day(
+    db: DatabaseBackend,
+    stack_id: StackId | None = None,
+    source_ids: Collection[SourceId] | None = None,
+) -> Table:
+    """Cost of every source per day, of the given sources only when they are given."""
     staging = db.table(TableFactBilling().name)
 
     if stack_id is not None:
         staging = staging.filter(staging.stack_id == stack_id)
+
+    if source_ids is not None:
+        staging = staging.filter(
+            staging.source_id.isin(
+                [ibis.literal(source_id) for source_id in source_ids]
+            )
+        )
 
     records = (
         latest_per_day(staging, "charge_period_start")

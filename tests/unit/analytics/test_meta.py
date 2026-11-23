@@ -12,7 +12,7 @@ def test_get_source_meta(db: DatabaseBackend):
 
     stack_id: StackId = "stack_test"
     source_id: SourceId = "source_test"
-    source_type: SourceType = SourceType.JSONPLACEHOLDER
+    source_type: SourceType = SourceType.ANTHROPIC
 
     db.insert(
         TableName.DIM_SOURCE_META,
@@ -23,7 +23,7 @@ def test_get_source_meta(db: DatabaseBackend):
                 "source_type": source_type,
                 "extracted_at": now,
                 "value_name": "id",
-                "value": SourceType.JSONPLACEHOLDER,
+                "value": SourceType.ANTHROPIC,
             },
             {
                 "stack_id": stack_id,
@@ -39,7 +39,7 @@ def test_get_source_meta(db: DatabaseBackend):
                 "source_type": source_type,
                 "extracted_at": now,
                 "value_name": "id",
-                "value": SourceType.JSONPLACEHOLDER,
+                "value": SourceType.ANTHROPIC,
             },
             {
                 "stack_id": stack_id,
@@ -74,10 +74,10 @@ def test_has_source_meta(db: DatabaseBackend):
             {
                 "stack_id": stack_id,
                 "source_id": source_id,
-                "source_type": SourceType.JSONPLACEHOLDER,
+                "source_type": SourceType.ANTHROPIC,
                 "extracted_at": datetime.now(UTC),
                 "value_name": "id",
-                "value": SourceType.JSONPLACEHOLDER,
+                "value": SourceType.ANTHROPIC,
             },
         ],
     )
