@@ -1,6 +1,5 @@
 from datetime import UTC, datetime, timedelta
 
-from varne.config import SourceType
 from varne.providers.beszel.transform import transform_stats
 from varne.providers.beszel.types import (
     BeszelContainer,
@@ -8,10 +7,9 @@ from varne.providers.beszel.types import (
     BeszelSystemStats,
     BeszelSystemValues,
 )
-from varne.providers.types import RowFactUsage
+from varne.providers.docker.usage import HourlyUsage
 
 MIB = 1024 * 1024
-EXTRACTED_AT = datetime(2026, 11, 19, 12, tzinfo=UTC)
 WINDOW_START = datetime(2026, 11, 19, tzinfo=UTC)
 
 
@@ -40,10 +38,10 @@ def minutes(start: datetime, count: int, cpu: float, memory: float):
 def transform(
     records: list[BeszelContainerStats], date_from: datetime = WINDOW_START
 ) -> dict[tuple[datetime, str], int]:
-    rows: list[RowFactUsage] = transform_stats(
-        "stack", "source", EXTRACTED_AT, records, [], {"sys1": "lab"}, date_from
-    )
-    return {(row.event_time, row.usage_name): row.usage for row in rows}
+    rows: list[HourlyUsage] = transform_stats(records, [], {"sys1": "lab"}, date_from)
+    return {
+        (row.hour, f"{row.system}/{row.entity}/{row.metric}"): row.value for row in rows
+    }
 
 
 def test_hour_is_the_average_of_its_samples():
@@ -57,20 +55,13 @@ def test_hour_is_the_average_of_its_samples():
     assert usage[at(10), "lab/web/memory"] == 200 * MIB
 
 
-def test_rows_carry_the_source_and_pull_metadata():
-    rows = transform_stats(
-        "stack",
-        "source",
-        EXTRACTED_AT,
-        minutes(at(10), 60, 1, 1),
-        [],
-        {"sys1": "lab"},
-        at(0),
-    )
+def test_rows_are_named_by_system_container_and_metric():
+    rows = transform_stats(minutes(at(10), 60, 1, 1), [], {"sys1": "lab"}, at(0))
 
-    assert {r.source_type for r in rows} == {SourceType.BESZEL}
-    assert {r.extracted_at for r in rows} == {EXTRACTED_AT}
-    assert {r.usage_name for r in rows} == {"lab/web/cpu", "lab/web/memory"}
+    assert {(r.system, r.entity, r.metric) for r in rows} == {
+        ("lab", "web", "cpu"),
+        ("lab", "web", "memory"),
+    }
 
 
 def test_finer_samples_win_over_coarser_ones_for_the_same_time():
@@ -111,11 +102,9 @@ def test_hours_before_the_window_are_dropped():
 
 
 def test_unknown_system_falls_back_to_its_id():
-    rows = transform_stats(
-        "stack", "source", EXTRACTED_AT, minutes(at(10), 1, 1, 1), [], {}, at(0)
-    )
+    rows = transform_stats(minutes(at(10), 1, 1, 1), [], {}, at(0))
 
-    assert {r.usage_name for r in rows} == {"sys1/web/cpu", "sys1/web/memory"}
+    assert {r.system for r in rows} == {"sys1"}
 
 
 def test_nothing_recorded_gives_no_rows():
@@ -127,18 +116,17 @@ def test_whole_machine_figures_are_stored_under_system():
         created=at(10, 1),
         system="sys1",
         type="1m",
-        stats=BeszelSystemValues(cpu=5.5, mu=2, du=10, la=[1.5, 2, 3]),
+        stats=BeszelSystemValues(cpu=5.5, m=16, mu=2, du=10, la=[1.5, 2, 3]),
     )
 
-    rows = transform_stats(
-        "stack", "source", EXTRACTED_AT, [], [machine], {"sys1": "lab"}, at(0)
-    )
+    rows = transform_stats([], [machine], {"sys1": "lab"}, at(0))
 
-    assert {row.usage_name: row.usage for row in rows} == {
-        "lab/system/cpu": 550,
-        "lab/system/memory": 2 * 1024**3,
-        "lab/system/disk": 10 * 1024**3,
-        "lab/system/load": 150,
+    assert {(row.entity, row.metric): row.value for row in rows} == {
+        ("system", "cpu"): 550,
+        ("system", "memory"): 2 * 1024**3,
+        ("system", "memory_total"): 16 * 1024**3,
+        ("system", "disk"): 10 * 1024**3,
+        ("system", "load"): 150,
     }
 
 
@@ -147,14 +135,12 @@ def test_machine_records_do_not_change_the_container_average():
         created=at(10, 1),
         system="sys1",
         type="1m",
-        stats=BeszelSystemValues(cpu=50, mu=1, du=1, la=[1]),
+        stats=BeszelSystemValues(cpu=50, m=1, mu=1, du=1, la=[1]),
     )
     records = minutes(at(10), 1, cpu=10, memory=100)
 
-    rows = transform_stats(
-        "stack", "source", EXTRACTED_AT, records, [machine], {"sys1": "lab"}, at(0)
-    )
+    rows = transform_stats(records, [machine], {"sys1": "lab"}, at(0))
 
-    usage = {row.usage_name: row.usage for row in rows}
+    usage = {f"{row.system}/{row.entity}/{row.metric}": row.value for row in rows}
     assert usage["lab/web/cpu"] == 1000
     assert usage["lab/system/cpu"] == 5000

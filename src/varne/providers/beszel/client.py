@@ -58,6 +58,16 @@ class BeszelClient(ProviderClient):
 
         return response
 
+    def fetch_containers(self, page: int) -> httpx.Response:
+        response = self.http.get(
+            url=self.base_url.join("api/collections/containers/records"),
+            headers=self.headers,
+            params={"perPage": PER_PAGE, "page": page},
+        )
+        self.raise_for_status(response)
+
+        return response
+
     def fetch_stats(
         self, collection: str, interval: str, date_from: datetime, page: int
     ) -> httpx.Response:

@@ -10,6 +10,7 @@ from varne.config import BeszelPassword
 from varne.providers.beszel.client import BeszelClient
 from varne.providers.beszel.transform import transform_stats
 from varne.providers.beszel.types import (
+    BeszelContainerInfo,
     BeszelContainerStats,
     BeszelPage,
     BeszelSystems,
@@ -21,7 +22,7 @@ policy_beszel = SanitizePolicy(
     fields=(
         FieldPolicy(
             field="items",
-            keep=("id", "name", "status", "created", "system", "type", "stats"),
+            keep=("id", "name", "image", "created", "system", "type", "stats"),
         ),
     ),
 )
@@ -75,20 +76,22 @@ def test_fetch_container_stats(
     date_from = datetime(2026, 11, 1, tzinfo=UTC)
 
     systems_response = client.fetch_systems()
+    containers_response = client.fetch_containers(page=1)
     stats_response = client.fetch_container_stats("1m", date_from, page=1)
     system_response = client.fetch_system_stats("1m", date_from, page=1)
 
     assert systems_response.is_success
+    assert containers_response.is_success
     assert stats_response.is_success
     assert system_response.is_success
 
     systems = BeszelSystems.model_validate_json(systems_response.text)
+    containers = BeszelPage[BeszelContainerInfo].model_validate_json(
+        containers_response.text
+    )
     page = BeszelPage[BeszelContainerStats].model_validate_json(stats_response.text)
     machine = BeszelPage[BeszelSystemStats].model_validate_json(system_response.text)
     rows = transform_stats(
-        "stack",
-        "source",
-        datetime(2026, 11, 20, tzinfo=UTC),
         page.items,
         machine.items,
         {system.id: system.name for system in systems.items},
@@ -96,9 +99,12 @@ def test_fetch_container_stats(
     )
 
     assert rows
-    assert {row.usage_name.split("/")[-1] for row in rows} == {
+    assert containers.items
+    assert all(info.image and info.name for info in containers.items)
+    assert {row.metric for row in rows} == {
         "cpu",
         "memory",
+        "memory_total",
         "disk",
         "load",
     }

@@ -8,10 +8,9 @@ from pydantic import ValidationError
 from varne.config import (
     DEFAULT_LOOKBACK_DAYS,
     ConfigAnthropic,
-    ConfigBeszel,
+    ConfigDocker,
     ConfigManager,
     ConfigOpenAI,
-    ConfigSelfHosted,
     ConfigUmami,
     ConfigVarne,
     SourceType,
@@ -372,7 +371,15 @@ stacks:
         )
 
 
-def selfhosted(fields: str) -> str:
+USAGE = """        usage:
+          type: beszel
+          url: http://hub:8090
+          email: me@example.com
+          password: secret
+"""
+
+
+def docker(cost_fields: str, usage: str = USAGE) -> str:
     return f"""
 stacks:
   - id: s
@@ -380,130 +387,126 @@ stacks:
     sources:
       - id: lab
         name: Lab
-        type: selfhosted
-{fields}
-"""
+        type: docker
+        cost:
+{cost_fields}
+{usage}"""
 
 
-def test_selfhosted_machine_cost_with_electricity():
+def test_docker_machine_cost_with_electricity():
     config = parse_config(
-        selfhosted(
+        docker(
             "\n".join(
                 [
-                    "        machine_cost: 5000",
-                    "        power_draw_watts: 120",
-                    "        electricity_price_per_kwh: 0.9",
+                    "          machine_cost: 5000",
+                    "          power_draw_watts: 120",
+                    "          electricity_price_per_kwh: 0.9",
                 ]
             )
         )
     )
     source = config.stacks[0].sources[0]
 
-    assert isinstance(source, ConfigSelfHosted)
-    assert source.machine_cost == 5000
-    assert source.amortization_years == 6
-    assert source.power_draw_watts == 120
-    assert source.electricity_price_per_kwh == Decimal("0.9")
-    assert source.lookback_days == 30
+    assert isinstance(source, ConfigDocker)
+    assert source.cost.machine_cost == 5000
+    assert source.cost.amortization_years == 6
+    assert source.cost.power_draw_watts == 120
+    assert source.cost.electricity_price_per_kwh == Decimal("0.9")
+    assert source.lookback_days == DEFAULT_LOOKBACK_DAYS
+    assert source.usage.url == "http://hub:8090"
+    assert source.usage.get_password().get_secret_value() == "secret"
 
 
-def test_selfhosted_hourly_cost():
-    config = parse_config(selfhosted("        hourly_cost: 0.35"))
+def test_docker_hourly_cost():
+    config = parse_config(docker("          hourly_cost: 0.35"))
     source = config.stacks[0].sources[0]
 
-    assert isinstance(source, ConfigSelfHosted)
-    assert source.hourly_cost == Decimal("0.35")
+    assert isinstance(source, ConfigDocker)
+    assert source.cost.hourly_cost == Decimal("0.35")
 
 
-def test_selfhosted_amortization_years_can_be_changed():
+def test_docker_amortization_years_can_be_changed():
     config = parse_config(
-        selfhosted("        machine_cost: 5000\n        amortization_years: 4")
+        docker("          machine_cost: 5000\n          amortization_years: 4")
     )
     source = config.stacks[0].sources[0]
 
-    assert isinstance(source, ConfigSelfHosted)
-    assert source.amortization_years == 4
+    assert isinstance(source, ConfigDocker)
+    assert source.cost.amortization_years == 4
 
 
 @pytest.mark.parametrize(
     "fields",
     [
-        "        lookback_days: 7",
-        "        machine_cost: 5000\n        hourly_cost: 0.35",
+        "          amortization_years: 6",
+        "          machine_cost: 5000\n          hourly_cost: 0.35",
     ],
 )
-def test_selfhosted_needs_exactly_one_of_machine_cost_and_hourly_cost(fields: str):
+def test_docker_needs_exactly_one_of_machine_cost_and_hourly_cost(fields: str):
     with pytest.raises(ValueError, match="Exactly one of hourly_cost or machine_cost"):
-        parse_config(selfhosted(fields))
+        parse_config(docker(fields))
 
 
 @pytest.mark.parametrize(
     "fields",
     [
-        "        machine_cost: 5000\n        power_draw_watts: 120",
-        "        machine_cost: 5000\n        electricity_price_per_kwh: 0.9",
+        "          machine_cost: 5000\n          power_draw_watts: 120",
+        "          machine_cost: 5000\n          electricity_price_per_kwh: 0.9",
     ],
 )
-def test_selfhosted_power_and_electricity_price_come_together(fields: str):
+def test_docker_power_and_electricity_price_come_together(fields: str):
     with pytest.raises(ValueError, match="must be provided together"):
-        parse_config(selfhosted(fields))
+        parse_config(docker(fields))
 
 
 @pytest.mark.parametrize(
     "extra",
     [
-        "        amortization_years: 6",
-        "        power_draw_watts: 120\n        electricity_price_per_kwh: 0.9",
+        "          amortization_years: 6",
+        "          power_draw_watts: 120\n          electricity_price_per_kwh: 0.9",
     ],
 )
-def test_selfhosted_hourly_cost_excludes_the_hardware_options(extra: str):
+def test_docker_hourly_cost_excludes_the_hardware_options(extra: str):
     with pytest.raises(ValueError, match="cannot be used with hourly_cost"):
-        parse_config(selfhosted("        hourly_cost: 0.35\n" + extra))
+        parse_config(docker("          hourly_cost: 0.35\n" + extra))
 
 
 @pytest.mark.parametrize("value", ["0", "-5"])
-def test_selfhosted_costs_must_be_positive(value: str):
+def test_docker_costs_must_be_positive(value: str):
     with pytest.raises(ValueError, match="greater than 0"):
-        parse_config(selfhosted(f"        machine_cost: {value}"))
+        parse_config(docker(f"          machine_cost: {value}"))
 
 
-def test_beszel_source_uses_the_default_lookback():
-    config = parse_config(
-        """
-stacks:
-  - id: s
-    name: S
-    sources:
-      - id: b
-        name: Beszel
-        type: beszel
-        url: http://hub:8090
-        email: me@example.com
-        password: secret
-"""
-    )
-
-    source = config.stacks[0].sources[0]
-    assert isinstance(source, ConfigBeszel)
-    assert source.lookback_days == DEFAULT_LOOKBACK_DAYS
-    assert source.get_password().get_secret_value() == "secret"
-
-
-def test_beszel_password_comes_from_exactly_one_place():
+def test_docker_needs_cost_and_usage():
     text = """
 stacks:
   - id: s
     name: S
     sources:
-      - id: b
-        name: Beszel
-        type: beszel
-        url: http://hub:8090
-        email: me@example.com
+      - id: lab
+        name: Lab
+        type: docker
 """
 
-    with pytest.raises(ValueError, match="Exactly one of password or password_env"):
+    with pytest.raises(ValueError, match="cost"):
         parse_config(text)
 
+    with pytest.raises(ValueError, match="usage"):
+        parse_config(text + "        cost:\n          hourly_cost: 1\n")
+
+
+def test_beszel_password_comes_from_exactly_one_place():
+    usage = """        usage:
+          type: beszel
+          url: http://hub:8090
+          email: me@example.com
+"""
+    cost = "          hourly_cost: 1"
+
     with pytest.raises(ValueError, match="Exactly one of password or password_env"):
-        parse_config(text + "        password: a\n        password_env: B\n")
+        parse_config(docker(cost, usage))
+
+    with pytest.raises(ValueError, match="Exactly one of password or password_env"):
+        parse_config(
+            docker(cost, usage + "          password: a\n          password_env: B\n")
+        )
