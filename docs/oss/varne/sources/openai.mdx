@@ -1,0 +1,47 @@
+---
+title: "OpenAI"
+description: "Pull the daily cost of your OpenAI organization into Varne with an Admin API key."
+---
+
+The OpenAI source reads the organization costs endpoint. You get the daily cost split by line item and project.
+
+## What you need
+
+- An OpenAI organization.
+- An **Admin API key**. Its name starts with `sk-admin`. A regular API key does not work, and OpenAI answers with an error. Only organization owners can create one.
+
+<Steps>
+  <Step title="Create an Admin API key">
+    Open [Admin keys](https://platform.openai.com/settings/organization/admin-keys) in the OpenAI platform and create a key. Copy it, because OpenAI shows it only once.
+  </Step>
+  <Step title="Add the source">
+    ```yaml
+    - id: openai_main
+      name: OpenAI
+      type: openai
+      api_token_env: OPENAI_ADMIN_KEY
+    ```
+  </Step>
+  <Step title="Pull">
+    On the **Dashboard**, click **Pull** next to the source.
+  </Step>
+</Steps>
+
+## Fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `api_token` or `api_token_env` | one of | The Admin API key |
+| `lookback_days` | no | Days of history per pull. Default 30 |
+
+## What you see
+
+A chart of cost per day with one series per line item, such as a model's input and output tokens. Each row also carries the project id when OpenAI reports one.
+
+## Troubleshooting
+
+| Message | Likely cause |
+| --- | --- |
+| `401`, `403`, or `404` | The key is a regular API key. Create an Admin API key |
+| `Environment variable ... is not set` | `api_token_env` names a variable the container does not have |
+| Empty chart after a pull | No cost in the last `lookback_days` days |

@@ -12,7 +12,7 @@
     "tabs": [
       {
         "tab": "Open Source",
-        "groups":[
+        "groups": [
           {
             "group": "narevai/varne",
             "icon": "docker",
@@ -21,25 +21,53 @@
                 "group": "Overview",
                 "pages": [
                   "oss/varne/index"
-                ]
+                ],
+                "icon": "compass"
               },
               {
-                "group": "Getting Started",
+                "group": "Getting started",
                 "pages": [
-                  "oss/varne/getting-started/deployment",
-                  "oss/varne/getting-started/sync-providers",
-                  "oss/varne/focus-specification"
-                ]
+                  "oss/varne/getting-started/quickstart",
+                  "oss/varne/getting-started/deployment"
+                ],
+                "icon": "rocket"
               },
               {
-                "group": "Connect Providers",
+                "group": "Docker and self-hosting",
                 "pages": [
-                  "oss/varne/connect-providers/index",
-                  "oss/varne/connect-providers/aws",
-                  "oss/varne/connect-providers/azure",
-                  "oss/varne/connect-providers/gcp",
-                  "oss/varne/connect-providers/openai"
-                ]
+                  "oss/varne/sources/docker",
+                  "oss/varne/sources/beszel",
+                  "oss/varne/self-hosted/index",
+                  "oss/varne/self-hosted/supported-apps"
+                ],
+                "icon": "docker"
+              },
+              {
+                "group": "Configuration",
+                "pages": [
+                  "oss/varne/configuration/index",
+                  "oss/varne/configuration/reference"
+                ],
+                "icon": "gear"
+              },
+              {
+                "group": "Guides",
+                "pages": [
+                  "oss/varne/guides/dashboard",
+                  "oss/varne/troubleshooting"
+                ],
+                "icon": "book-open"
+              },
+              {
+                "group": "More sources",
+                "pages": [
+                  "oss/varne/sources/index",
+                  "oss/varne/sources/vercel",
+                  "oss/varne/sources/anthropic",
+                  "oss/varne/sources/openai",
+                  "oss/varne/sources/umami"
+                ],
+                "icon": "plug"
               }
             ]
           }

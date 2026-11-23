@@ -1,0 +1,84 @@
+---
+title: "Configuration"
+description: "Describe your stacks and sources in one YAML file, edit it as text or in the form in Settings, and keep API tokens out of the file."
+---
+
+Varne reads one file, `config/varne.yaml` (or the path in `CONFIG_PATH`). It lists your **stacks** and their **sources**. You can edit it as text, or with the form in **Settings**.
+
+## The file
+
+```yaml config/varne.yaml
+stacks:
+  - id: homelab
+    name: Homelab
+    sources:
+      - id: server
+        name: Server
+        type: docker
+        cost:
+          hourly_cost: 0.05
+        usage:
+          type: beszel
+          url: http://beszel:8090
+          email: you@example.com
+          password_env: BESZEL_PASSWORD
+        lookback_days: 14
+```
+
+| Field | Where | What it is |
+| --- | --- | --- |
+| `id` | stack, source | A short, unique name Varne stores with the data. Use lowercase letters, digits, and underscores |
+| `name` | stack, source | The name you see in the interface |
+| `type` | source | One of `docker`, `vercel`, `anthropic`, `openai`, `umami` |
+| `lookback_days` | source | How many days of history each pull fetches. From 1 to 365, default 30 |
+
+The other fields depend on the type. Each [source](/oss/varne/sources/index) page lists its fields, and the [reference](/oss/varne/configuration/reference) lists all of them.
+
+<Warning>
+  Do not change an `id` after you pulled data. Varne stores data under the stack and source ids, so a new id starts an empty history and leaves the old data behind. You can remove the old data on the **Dashboard**.
+</Warning>
+
+## Edit in Settings
+
+**Settings** has two tabs.
+
+- **YAML** is a text editor for the file. **Save** checks the file and writes it only if it is valid. **Reset** brings back the saved text.
+- **Form** is the same configuration as fields. Add stacks and sources, pick a source type from the menu, and fill in the fields. Varne suggests an id from the name for new items.
+
+Things to know about the form:
+
+- **Saving from the form rewrites the whole file, and comments in it are lost.** If you keep notes in the YAML, edit it in the **YAML** tab.
+- The id of a saved stack or source is read only. To rename it, edit the YAML.
+- Secrets have a switch between **Value** and **Environment variable**. Exactly one of them goes into the file.
+- Fields you leave empty are not written, so Varne uses its defaults.
+- A source with an unknown `type` is shown as a notice with a delete button. Fix it in the YAML.
+
+Both tabs check the configuration before writing, and show the first error. A file that is not valid is never saved.
+
+## Keep secrets out of the file
+
+Every secret accepts two forms. Use exactly one of them. The Docker source takes the Beszel password as `password` or `password_env`:
+
+```yaml
+password: my-beszel-password   # the secret itself, stored in the file
+password_env: BESZEL_PASSWORD  # the name of an environment variable
+```
+
+With `password_env`, Varne reads the variable when it pulls. Set it where Varne runs:
+
+```yaml compose.yaml
+services:
+  varne:
+    environment:
+      BESZEL_PASSWORD: ${BESZEL_PASSWORD}
+```
+
+If the variable is not set, the pull fails with `Environment variable 'BESZEL_PASSWORD' is not set`. Sources that use an API key take it as `api_token` or `api_token_env` in the same way.
+
+## When changes take effect
+
+- **Save in Settings** writes the file and loads it straight away.
+- Editing the file outside Varne works too. Varne reads the file again each time you open the **Dashboard**.
+- Changes to the environment variables of the container need a restart of the container.
+
+When you remove a source from the configuration, its stored data stays in the database. The **Dashboard** lists it greyed out as **Not in the configuration**, and you can delete its data there. See [Use the dashboard](/oss/varne/guides/dashboard).

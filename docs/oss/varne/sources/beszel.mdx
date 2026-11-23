@@ -1,0 +1,61 @@
+---
+title: "Connect Beszel"
+description: "Give the Docker source a Beszel hub to read container usage from: what Varne needs, how to point it at the hub, and how to check the connection."
+---
+
+The [Docker source](/oss/varne/sources/docker) needs to know how much of a machine each container used. It reads that from [Beszel](https://beszel.dev), a lightweight monitoring hub with an agent on each machine. Varne only reads from the hub. It never changes anything in it.
+
+## What you need
+
+- A running **Beszel hub**, with an agent on every machine you want to cover. Follow the [Beszel installation guide](https://beszel.dev/guide/getting-started) to set one up.
+- The machine added in the hub, and its **Docker containers** visible in Beszel. If you do not see containers in the Beszel interface, Varne will not see them either.
+- A Beszel **user**: the email and password of an account that can sign in to the hub.
+
+## Point Varne at the hub
+
+Add the connection to the `usage` part of the Docker source.
+
+```yaml
+usage:
+  type: beszel
+  url: http://beszel:8090
+  email: you@example.com
+  password_env: BESZEL_PASSWORD
+```
+
+| Field | What it is |
+| --- | --- |
+| `url` | The address of the hub, as the **Varne container** reaches it |
+| `email` | The email of the Beszel user |
+| `password` / `password_env` | The password, or the name of an environment variable that holds it. Use exactly one |
+
+In **Settings**, the **Form** tab shows the same fields under the Docker source.
+
+### Choose the right `url`
+
+The address has to work from inside the Varne container, which is not always the address you open in your browser.
+
+| Where Beszel runs | Use |
+| --- | --- |
+| In a container on the same Docker network as Varne | `http://beszel:8090`, with the name of the Beszel service |
+| On the same machine, outside that network | `http://host.docker.internal:8090` (add `extra_hosts: ["host.docker.internal:host-gateway"]` to Varne on Linux) |
+| On another machine | The public or private address of the hub, for example `https://beszel.example.com` |
+
+## Check the connection
+
+1. Pull the Docker source on the **Dashboard**.
+2. If it works, the status becomes **Pulled** and the **Dashboard** shows a chart of cost per application.
+3. If it does not, the **Dashboard** shows the error. These are the usual ones:
+
+| Message | Likely cause |
+| --- | --- |
+| Authentication error | Wrong `email` or `password` |
+| Connection error | `url` is not reachable from the Varne container |
+| No containers | The hub has no Docker data for the machine yet |
+| Everything is **Idle** | Beszel has no usage for the period. Pull again after the agent has reported |
+
+## How much history you get
+
+Varne reads the usage the hub has stored. A pull fetches the last `lookback_days` days (30 by default), but the hub can only return what its agents reported. A machine you added to Beszel yesterday has one day of history. Hours without data count as **Idle**.
+
+See [Docker](/oss/varne/sources/docker#how-the-cost-is-split) for how that usage becomes cost per container.

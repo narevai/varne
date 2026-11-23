@@ -1,0 +1,39 @@
+---
+title: "Sources"
+description: "The sources Varne can pull, what each one provides, and what you need to connect it."
+---
+
+A source is one connection to a provider. You add sources to a stack in **Settings** or in `varne.yaml`, then pull them on the **Dashboard**.
+
+The main source is [Docker](/oss/varne/sources/docker): it splits the cost of a machine across its containers, using usage from a [Beszel](/oss/varne/sources/beszel) hub.
+
+| Source | Costs | Usage | You need |
+| --- | --- | --- | --- |
+| [Docker](/oss/varne/sources/docker) | Machine cost split across containers | Container CPU and memory | Cost of the machine, a [Beszel hub](/oss/varne/sources/beszel) |
+
+## Other sources
+
+Varne can also pull the billing of services you pay for, so their cost sits next to the cost of your own machines.
+
+| Source | Costs | Usage | You need |
+| --- | --- | --- | --- |
+| [Vercel](/oss/varne/sources/vercel) | Billing charges per day and service | Visitors and pageviews | Access token, team id |
+| [Anthropic](/oss/varne/sources/anthropic) | Daily cost by line item and workspace | None | Admin API key |
+| [OpenAI](/oss/varne/sources/openai) | Daily cost by line item and project | None | Admin API key |
+| [Umami](/oss/varne/sources/umami) | None | Pageviews and sessions | Umami Cloud API key, website ids |
+
+## What a pull does
+
+Pulling a source fetches the last `lookback_days` days (30 by default), stores the provider's raw response, and turns it into rows of cost and usage. A pull also refreshes the source's metadata, so you do not run a separate sync.
+
+- You can pull as often as you like. For each day, Varne uses the newest pull, so pulling again never counts a day twice.
+- Pull a source whenever you want fresh numbers. Varne does not pull on a schedule.
+- If a pull fails, the **Dashboard** shows the provider's error. A failed source does not stop **Pull all** from pulling the others.
+
+## Currency
+
+Costs keep the currency the provider reports, and charts show it in their title. Varne does not convert between currencies. The Docker source always works in USD.
+
+## Keys and permissions
+
+Give Varne keys that can only read costs or analytics where the provider allows it. Store them in environment variables and reference them with `api_token_env`. See [Keep secrets out of the file](/oss/varne/configuration/index#keep-secrets-out-of-the-file).

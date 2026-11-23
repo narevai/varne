@@ -1,0 +1,50 @@
+---
+title: "Troubleshooting"
+description: "Fix common problems with starting Varne, saving the configuration, and pulling sources."
+---
+
+## Varne does not start or the page does not open
+
+- Check the logs with `docker logs varne`. Set `LOG_LEVEL=DEBUG` for more detail.
+- Check that the port is free and mapped, for example `-p 8000:8000`.
+- Check the container's health at `http://localhost:8000/api/v1/health`.
+
+## My configuration disappears after I recreate the container
+
+You did not mount the configuration folder. Add `-v $(pwd)/config:/app/config`, and mount `/app/data` too, or Varne loses its database. See [Deploy with Docker](/oss/varne/getting-started/deployment#what-lives-where).
+
+## "Configuration failed to load"
+
+Varne shows this when `varne.yaml` is not valid, together with the first error and the file's path. Open **Settings**, fix the text in the **YAML** tab, and save. Until the file is valid, Varne works with an empty configuration. It does not overwrite your file.
+
+Typical errors:
+
+| Message | Fix |
+| --- | --- |
+| `Exactly one of api_token or api_token_env must be provided` | Give a token, or the name of a variable, not both and not neither |
+| `Exactly one of hourly_cost or machine_cost must be provided` | A Docker source costs a rented rate or hardware, not both |
+| `power_draw_watts and electricity_price_per_kwh must be provided together` | Give both, or neither |
+| `stacks.0.sources.1.type: ...` | The source has no `type`, or an unknown one |
+
+## A pull fails
+
+The message tells you the source and the reason. Common reasons:
+
+- **401 or 403.** The key is wrong, expired, or lacks access. Anthropic and OpenAI need Admin API keys. See [Anthropic](/oss/varne/sources/anthropic) and [OpenAI](/oss/varne/sources/openai).
+- **Environment variable is not set.** The variable named in `api_token_env` or `password_env` is not passed to the container. Add it to `environment` and restart the container.
+- **Connection errors on a Docker source.** The Beszel `url` must be reachable from inside the Varne container. `localhost` there means the Varne container itself.
+
+## A chart is empty
+
+- Pull the source first. A new source has the status **Not pulled yet**.
+- The provider may have no cost in the last `lookback_days` days. Raise `lookback_days` and pull again.
+- A source with no `project_ids` (Vercel) has no usage charts.
+
+## The Self-hosted page is empty or everything is Idle
+
+- Pull a Docker source on the **Dashboard** first.
+- If everything is **Idle**, Beszel had no capacity data for the period. Check that the Beszel agent runs, and pull again.
+
+## I removed a source but it is still on the dashboard
+
+Removed sources stay in the **Sources** table, greyed out, until you delete their data. See [Use the dashboard](/oss/varne/guides/dashboard#remove-the-data-of-a-source).

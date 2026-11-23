@@ -1,0 +1,46 @@
+---
+title: "Umami"
+description: "Pull pageviews and sessions of your Umami Cloud websites into Varne."
+---
+
+The Umami source pulls daily pageviews and sessions of your websites from **Umami Cloud**. It has no costs of its own. Use it to see traffic next to the costs of your other sources.
+
+<Note>
+  Varne talks to the Umami Cloud API. A self-hosted Umami server is not supported yet.
+</Note>
+
+## What you need
+
+- An Umami Cloud account and an **API key**. Create one under your account's **API keys**. See the [Umami documentation](https://docs.umami.is/docs/cloud/api-key).
+- The **website ids**. Each website's id is on its settings page in Umami.
+
+## Add the source
+
+```yaml
+- id: umami_main
+  name: Umami
+  type: umami
+  api_token_env: UMAMI_API_KEY
+  website_ids: ["e7c44d9e-0000-0000-0000-000000000000"]
+```
+
+## Fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `api_token` or `api_token_env` | one of | The Umami Cloud API key |
+| `website_ids` | yes | At least one website id |
+| `lookback_days` | no | Days of history per pull. Default 30 |
+
+## What you see
+
+A chart of usage per day with the series `pageviews` and `sessions`, summed over all websites of the source.
+
+Umami's API limits each key to 50 calls every 15 seconds. A source with many websites makes one call per website, so keep `website_ids` to the sites you need.
+
+## Troubleshooting
+
+| Message | Likely cause |
+| --- | --- |
+| `401` or `403` | The API key is wrong, or it belongs to another account than the website |
+| `Environment variable ... is not set` | `api_token_env` names a variable the container does not have |

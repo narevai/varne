@@ -1,85 +1,57 @@
 ---
-title: 'Open source FOCUS translator'
-description: "Deploy the open source Varne translator to unify cloud and AI provider billing data into the FOCUS specification for FinOps reporting."
+title: "What your self-hosting costs"
+sidebarTitle: "Introduction"
+description: "Free, open source, self-hosted. See what each container on your machines costs, which applications they are, and what self-hosting saves you compared to paid subscriptions."
 ---
 
-<Tip>
-  The team donates a portion of development time to an open source package that unifies cloud billing data into FOCUS
-  format defined by the [FinOps Foundation](https://focus.finops.org/). This work helps accelerate the adoption
-  of the FOCUS reporting across the Cloud and AI providers.
-</Tip>
+Varne is a free, open source, self-hosted app that shows what your own infrastructure costs. You tell it what a machine costs and connect a [Beszel](https://beszel.dev) hub. Varne splits the cost across your Docker containers, recognises the applications, and compares them with the subscriptions they replace.
 
-## What's `narevai/varne`?
+<Info>
+  This page documents **Varne v1**. If you run Varne 0.x, read the [Varne v0 documentation](https://www.narev.ai/docs/varne/v0/index) instead. The two versions use different configuration, images, and screens.
+</Info>
 
-This project allows you to connect with cloud, AI, and SaaS vendors and unify your billing data. It helps with:
+## What Varne does
 
-- Extracting Cloud, AI and SaaS costs
-- Exporting costs in a FOCUS format
-- Providing a dashboard visualizing the spending by type
+<CardGroup cols={2}>
+  <Card title="Cost per container" icon="server" href="/oss/varne/sources/docker">
+    Describe a server by its hourly rate, or by its price, lifetime, and power use. Varne splits the cost across the containers running on it, and charges what nobody used to **Idle**.
+  </Card>
+  <Card title="Self-hosting return" icon="piggy-bank" href="/oss/varne/self-hosted/index">
+    Varne recognises the applications behind your containers and compares what they cost you with the subscriptions they replace.
+  </Card>
+  <Card title="Beszel for usage" icon="gauge" href="/oss/varne/sources/beszel">
+    Container CPU and memory come from your own Beszel hub. Varne only reads from it.
+  </Card>
+  <Card title="Yours to keep" icon="lock" href="/oss/varne/getting-started/deployment">
+    Everything Varne pulls is stored in a single DuckDB file on your own machine, next to your configuration.
+  </Card>
+</CardGroup>
 
----
+## How it works
 
-## Getting started
+1. **Configure.** You list your stacks and sources in `config/varne.yaml`, or fill in the form in **Settings**.
+2. **Pull.** On the **Dashboard** you pull a source. Varne reads the container usage from Beszel and turns it into cost per container.
+3. **Read.** The **Dashboard** shows the cost per application, and **Self-hosted** compares your machines with the subscriptions they replace.
 
-### Demo mode
+A **stack** groups the sources of one product or one place. A **source** is one connection, such as a Docker host.
 
-If you want to explore the feature set with sample data, start with demo mode:
+Varne can also pull billing of services you pay for, such as Vercel, Anthropic, OpenAI, and Umami. See [more sources](/oss/varne/sources/index).
 
-```bash
-docker run -d \
-  --name varne-demo \
-  -p 8000:8000 \
-  -v $(pwd)/data:/app/data \
-  -e DEMO="true" \
-  ghcr.io/narevai/varne:latest
-```
+## Where to go next
 
-`narevai/varne` runs at `http://localhost:8000`
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/oss/varne/getting-started/quickstart">
+    Run Varne, connect Beszel, and see what your containers cost.
+  </Card>
+  <Card title="Deploy with Docker" icon="docker" href="/oss/varne/getting-started/deployment">
+    Volumes, environment variables, and how to keep Varne private.
+  </Card>
+  <Card title="Configuration" icon="gear" href="/oss/varne/configuration/index">
+    The YAML file and the form in **Settings**.
+  </Card>
+  <Card title="Self-hosted costs" icon="server" href="/oss/varne/self-hosted/index">
+    How container costs and return on investment are calculated.
+  </Card>
+</CardGroup>
 
-**Demo mode includes:**
-
-- Sample billing data from AWS, Azure, and GCP
-- Realistic usage patterns and cost data
-- Pipeline run history
-- **No encryption key needed!** Demo mode automatically generates one for you.
-
-### Production Setup
-
-For production, you will need to generate your own encryption key:
-
-#### 1. Generate the encryption key
-
-```bash
-python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-```
-
-#### 2. Run the container with the generated key:
-
-```bash
-docker run -d \
-  --name varne \
-  -p 8000:8000 \
-  -v $(pwd)/data:/app/data \
-  -e ENCRYPTION_KEY="gAAAAABhZ_your_actual_generated_key_here" \
-  -e ENVIRONMENT="production" \
-  ghcr.io/narevai/varne:latest
-```
-
-#### 3. Connect your providers
-
-Now that the Docker is running, add your cloud providers:
-**[Connect providers Guide](/oss/varne/connect-providers)**
-
-#### 4. Import billing data
-
-Sync your historical cost data:
-**[Sync providers Guide](/oss/varne/getting-started/sync-providers)**
-
-#### 5. Advanced Deployment
-
-For production environments see advanced configuration: [Deployment Guide](/oss/varne/getting-started/deployment)
-
-## Need Help?
-
-Get community support and ask questions:
-**[GitHub Discussions](https://github.com/narevai/varne/discussions)**
+Varne is licensed under the [GNU Affero General Public License v3.0](https://github.com/narevai/varne/blob/main/LICENSE). The source is on [GitHub](https://github.com/narevai/varne).
