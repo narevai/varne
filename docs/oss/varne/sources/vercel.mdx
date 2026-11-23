@@ -1,0 +1,54 @@
+---
+title: "Vercel"
+description: "Pull Vercel billing charges and web analytics visits into Varne, and see the cost per visitor."
+---
+
+The Vercel source pulls the [billing charges](https://vercel.com/docs/rest-api/reference/endpoints/billing/list-focus-billing-charges) of a team, and optionally the web analytics visits of projects.
+
+## What you need
+
+- A Vercel **access token** that can read the team.
+- The **team id**. It starts with `team_` and is on the team's **Settings** page, under **General**.
+- Optional: the **project ids**, which start with `prj_` and are on each project's **Settings** page. You need them for web analytics, and only for projects that have Web Analytics enabled.
+
+<Steps>
+  <Step title="Create a token">
+    In your Vercel account settings, open **Tokens** and create a token with access to the team.
+  </Step>
+  <Step title="Add the source">
+    ```yaml
+    - id: vercel_web
+      name: Vercel web
+      type: vercel
+      team_id: team_abc123
+      project_ids: [prj_abc123]
+      api_token_env: VERCEL_TOKEN
+    ```
+  </Step>
+  <Step title="Pull">
+    On the **Dashboard**, click **Pull** next to the source.
+  </Step>
+</Steps>
+
+## Fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `api_token` or `api_token_env` | one of | The access token |
+| `team_id` | yes | The team whose charges you pull |
+| `project_ids` | no | Projects whose web analytics you pull. Leave it out to skip analytics |
+| `lookback_days` | no | Days of history per pull. Default 30 |
+
+## What you see
+
+- **Billing:** cost per day, with one series for each Vercel service. Varne keeps the charges as Vercel reports them in the FOCUS format.
+- **Usage:** visitors and pageviews per day, for the projects in `project_ids`.
+- **Cost per visitor:** when a source has both billing and visitors, the chart divides each day's cost by that day's visitors.
+
+## Troubleshooting
+
+| Message | Likely cause |
+| --- | --- |
+| `401` or `403` | The token does not have access to the team, or the team id is wrong |
+| No usage chart | `project_ids` is empty, or Web Analytics is off for the project |
+| `Environment variable ... is not set` | `api_token_env` names a variable the container does not have |

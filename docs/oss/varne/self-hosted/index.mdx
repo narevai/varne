@@ -1,0 +1,62 @@
+---
+title: "Self-hosted costs"
+description: "How Varne finds the applications behind your containers, what they cost to run, and how it works out the return on your machine."
+---
+
+The **Self-hosted** page shows what each application on your [Docker source](/oss/varne/sources/docker) costs to run, and what the paid subscription it replaces would cost instead.
+
+## From containers to applications
+
+Containers have names like `compose-lab-immich-server-1`. You think in applications, such as Immich. Varne reads the **image** of each container, such as `ghcr.io/immich-app/immich-server:release`, and matches it to an application, the way [Dozzle](https://dozzle.dev) matches images to icons.
+
+- The match uses the name of the image, without the registry, the owner, and the tag.
+- Several containers can belong to one application. Their costs add up, and the application lists its containers, the one that costs most first.
+- A container Varne does not recognise is counted as **Other**.
+- Unused capacity is shown as **Idle**.
+
+For the applications Varne knows, see [Supported applications](/oss/varne/self-hosted/supported-apps). Applications with no entry there are still listed with their cost and, when there is a logo, with it.
+
+## The page
+
+At the top are four figures, for one month of 730 hours.
+
+| Figure | Meaning |
+| --- | --- |
+| **Machine cost** | Everything the machine costs in a month: applications, unrecognised containers, and idle capacity |
+| **Idle capacity** | The part of the machine cost that no container used |
+| **Avoided cost** | What the subscriptions that your applications replace cost in a month |
+| **Return on investment** | How much more the subscriptions would cost than your machine, as a percentage |
+
+Below is a table with one row per application:
+
+| Column | Meaning |
+| --- | --- |
+| **Application** | Its logo, name, and the containers it runs in. Hover to see all of them |
+| **Cost of self-hosting** | What running it costs in a month |
+| **Replaces** | The subscription it stands in for, if there is one |
+| **Avoided cost** | The monthly price of that subscription |
+
+Use the stack selector to switch between stacks. If you have not pulled a Docker source yet, the page asks you to do it on the **Dashboard**.
+
+## How the numbers are worked out
+
+**Costs per month.** Varne divides the cost it has by the hours the machine was observed, and multiplies by 730. A source with 10 days of data is scaled to a month, so the figures are comparable with monthly prices.
+
+**Avoided cost.** Every catalog application has one subscription it stands in for. The price is the **most popular plan, for one seat, in USD per month**, as listed on the provider's pricing page. When several of your applications stand in for the same subscription, it counts once. For example, Ollama and Open WebUI both replace ChatGPT Plus, and you would pay for ChatGPT Plus once.
+
+**Return on investment.**
+
+```
+ROI = (avoided cost − machine cost) ÷ machine cost
+```
+
+The investment is the **whole machine**, not only the applications that have a subscription to compare with. Idle capacity and applications with no paid equivalent weigh on the return, as they do in reality. A positive return means the subscriptions would cost more than the machine.
+
+If you monitor several machines, their costs add up, and the observed period is the longest of them.
+
+## Limits
+
+- The comparison is a guide. A subscription and a self-hosted application rarely do exactly the same, and a plan may cover several people or features that you do not use.
+- Prices are list prices at the time the catalog was written, and they change. The catalog notes where each price comes from.
+- Only USD is supported.
+- Containers that support an application, such as its database or cache, show up as separate containers. They count towards the cost, but not towards the savings.

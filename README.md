@@ -16,6 +16,10 @@
 | [Basic UI 1](https://youtube.com/live/50ahIxMfuJU?feature=share) | [#207](https://github.com/narevai/varne/pull/207) |
 | [Intro and plans for V1](https://youtube.com/live/obq8IIN0epY)   | N/A                                               |
 
+## Documentation
+
+Read the [Varne v1 documentation](https://www.narev.ai/docs/varne/v1/index). Its source is in [`docs/`](./docs). The [narevai/docs](https://github.com/narevai/docs) repository imports it with `node scripts/pull-varne-v1.js`.
+
 ## Run
 
 ```bash
@@ -23,6 +27,7 @@ docker run -d \
   --name varne \
   -p 8000:8000 \
   -v $(pwd)/data:/app/data \
+  -v $(pwd)/config:/app/config \
   ghcr.io/narevai/varne:latest
 ```
 
@@ -39,6 +44,7 @@ services:
       - "8000:8000"
     volumes:
       - ./data:/app/data
+      - ./config:/app/config
     restart: unless-stopped
 ```
 

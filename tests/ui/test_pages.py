@@ -66,7 +66,7 @@ async def test_sidebar_links_to_the_documentation(user: User) -> None:
     await user.should_see("Documentation")
     link = user.find("Documentation").elements.pop()
     item = next(parent for parent in link.ancestors() if parent.props.get("href"))
-    assert item.props["href"] == "https://www.narev.ai/docs/varne"
+    assert item.props["href"] == "https://www.narev.ai/docs/varne/v1/index"
     assert item.props["target"] == "_blank"
 
 

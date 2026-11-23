@@ -7,7 +7,7 @@ from varne.settings import get_settings
 from varne.ui import theme  # noqa: F401
 from varne.ui.components.nav_item import nav_item
 
-DOCS_URL = "https://www.narev.ai/docs/varne"
+DOCS_URL = "https://www.narev.ai/docs/varne/v1/index"
 
 
 def create_layout() -> Column:

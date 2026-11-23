@@ -1,0 +1,122 @@
+---
+title: "Configuration reference"
+description: "Every field of varne.yaml, for each source type, with defaults and rules."
+---
+
+## Top level
+
+```yaml
+stacks:
+  - id: ...
+    name: ...
+    sources: []
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `stacks` | yes | List of stacks. Use `stacks: []` for an empty configuration |
+| `stacks[].id` | yes | Id of the stack |
+| `stacks[].name` | yes | Display name |
+| `stacks[].sources` | no | List of sources. Default: none |
+
+## Fields every source has
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `id` | yes | Id of the source |
+| `name` | yes | Display name |
+| `type` | yes | `vercel`, `anthropic`, `openai`, `umami`, or `docker` |
+| `lookback_days` | no | Days of history per pull, 1 to 365. Default 30 |
+
+## Docker
+
+```yaml
+- id: homelab
+  name: Homelab
+  type: docker
+  cost:
+    machine_cost: 1200
+    amortization_years: 6
+    power_draw_watts: 40
+    electricity_price_per_kwh: 0.2
+  usage:
+    type: beszel
+    url: http://beszel:8090
+    email: you@example.com
+    password_env: BESZEL_PASSWORD
+```
+
+### `cost`
+
+Set `hourly_cost`, or set `machine_cost`. Not both.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `hourly_cost` | one of | USD per hour for a rented machine. Must be above 0 |
+| `machine_cost` | one of | USD you paid for the hardware. Must be above 0 |
+| `amortization_years` | no | Years the hardware lasts, above 0 and up to 50. Default 6. Only with `machine_cost` |
+| `power_draw_watts` | no | Average power draw in watts. Give it together with `electricity_price_per_kwh`. Only with `machine_cost` |
+| `electricity_price_per_kwh` | no | USD per kWh. Give it together with `power_draw_watts`. Only with `machine_cost` |
+
+### `usage`
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `type` | yes | `beszel`. It is the only usage backend today |
+| `url` | yes | Address of your Beszel hub |
+| `email` | yes | Email of a Beszel user |
+| `password` or `password_env` | one of | Password of that user, or the name of the environment variable that holds it |
+
+## Anthropic and OpenAI
+
+```yaml
+- id: anthropic_main
+  name: Anthropic
+  type: anthropic        # or openai
+  api_token_env: ANTHROPIC_ADMIN_KEY
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `api_token` | one of | The admin key |
+| `api_token_env` | one of | Name of the environment variable that holds the admin key |
+
+## Vercel
+
+```yaml
+- id: vercel_web
+  name: Vercel web
+  type: vercel
+  team_id: team_abc123
+  project_ids: [prj_abc123]
+  api_token_env: VERCEL_TOKEN
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `api_token` or `api_token_env` | one of | Vercel access token |
+| `team_id` | yes | The team whose charges you pull |
+| `project_ids` | no | Projects whose web analytics you pull. Without it, analytics are skipped |
+
+## Umami
+
+```yaml
+- id: umami_main
+  name: Umami
+  type: umami
+  api_token_env: UMAMI_API_KEY
+  website_ids: ["e7c44d9e-0000-0000-0000-000000000000"]
+```
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `api_token` or `api_token_env` | one of | Umami Cloud API key |
+| `website_ids` | yes | At least one website id |
+
+## Rules Varne checks
+
+- Exactly one of `api_token` and `api_token_env`, and exactly one of `password` and `password_env`.
+- Exactly one of `hourly_cost` and `machine_cost`.
+- `power_draw_watts` and `electricity_price_per_kwh` together or not at all.
+- With `hourly_cost`, none of `amortization_years`, `power_draw_watts`, or `electricity_price_per_kwh`.
+- A file that breaks a rule is not saved, and Varne shows the first error with the field it concerns.

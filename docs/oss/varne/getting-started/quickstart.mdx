@@ -1,0 +1,73 @@
+---
+title: "Quickstart"
+description: "Run Varne with Docker, connect a Beszel hub, and see what each of your containers costs."
+---
+
+This guide takes you from nothing to a dashboard that shows what every container on your machine costs. You need Docker and a running [Beszel](https://beszel.dev) hub with an agent on the machine. See [Connect Beszel](/oss/varne/sources/beszel) if you have not set one up.
+
+<Steps>
+  <Step title="Start Varne">
+    Run the container. It keeps its data and its configuration in two folders next to where you run the command.
+
+    ```bash
+    docker run -d \
+      --name varne \
+      -p 8000:8000 \
+      -v $(pwd)/data:/app/data \
+      -v $(pwd)/config:/app/config \
+      ghcr.io/narevai/varne:nightly
+    ```
+
+    Open [http://localhost:8000](http://localhost:8000). On first start Varne creates an empty `config/varne.yaml`, so the **Dashboard** asks you to add a stack.
+
+    <Warning>
+      Varne has no login. Run it on `localhost` or on a private network, not on the public internet. See [Deploy with Docker](/oss/varne/getting-started/deployment#keep-varne-private).
+    </Warning>
+  </Step>
+
+  <Step title="Add a stack and a Docker source">
+    1. Open **Settings** and choose the **Form** tab.
+    2. Click **Add stack** and name it, for example **Homelab**. Varne fills in the id for you.
+    3. In the stack, click **Add source** and choose **docker**.
+    4. Say what the machine costs: switch to **Rented, per hour** and enter the hourly price, or to **Own hardware** and enter its price. See [how the machine cost is built](/oss/varne/sources/docker#how-the-machine-cost-is-built).
+    5. Under **Usage**, enter the **URL** of your Beszel hub and the **email** and **password** of a Beszel user.
+    6. Click **Save**.
+
+    Prefer YAML? Open the **YAML** tab and paste this instead:
+
+    ```yaml config/varne.yaml
+    stacks:
+      - id: homelab
+        name: Homelab
+        sources:
+          - id: server
+            name: Server
+            type: docker
+            cost:
+              hourly_cost: 0.05
+            usage:
+              type: beszel
+              url: http://beszel:8090
+              email: you@example.com
+              password_env: BESZEL_PASSWORD
+    ```
+
+    The `password_env` form reads the password from an environment variable, so it never sits in the file. Pass it to the container with `-e BESZEL_PASSWORD=...`. The `url` has to work from inside the Varne container. See [choose the right url](/oss/varne/sources/beszel#choose-the-right-url).
+  </Step>
+
+  <Step title="Pull the source">
+    Open the **Dashboard**. Your source is in the **Sources** table with the status **Not pulled yet**. Click **Pull**.
+
+    Varne reads the last 30 days of container usage from Beszel, splits the cost of the machine across your containers, and draws the cost per application per day.
+  </Step>
+
+  <Step title="See what self-hosting saves you">
+    Open **Self-hosted**. Varne recognises the applications behind your containers and compares their cost with the subscriptions they replace. See [Self-hosted costs](/oss/varne/self-hosted/index).
+  </Step>
+</Steps>
+
+## What next
+
+- Learn how the cost is split: [Docker source](/oss/varne/sources/docker).
+- Learn how the file works: [Configuration](/oss/varne/configuration/index).
+- Add billing of services you pay for: [more sources](/oss/varne/sources/index).

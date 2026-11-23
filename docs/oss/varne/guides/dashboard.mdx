@@ -1,0 +1,54 @@
+---
+title: "Use the dashboard"
+description: "Pull your sources, read the charts, and remove the data of sources you no longer use."
+---
+
+The **Dashboard** is where you pull sources and read their costs. The menu on the left leads to **Dashboard**, **Self-hosted**, **Settings**, and the documentation.
+
+## Pick a stack
+
+The selector at the top lists the stacks of your configuration. Everything below shows the selected stack. Without a stack, the page asks you to add one in **Settings**. A stack without sources asks you to add one.
+
+## Pull data
+
+The **Sources** table lists every source of the stack, with its type and a status:
+
+| Status | Meaning |
+| --- | --- |
+| **Pulled** | The source has been pulled at least once |
+| **Not pulled yet** | Nothing is stored for it |
+| **Not in the configuration** | Data is stored, but the source is no longer in the configuration |
+
+- Click **Pull** in a row to pull that source.
+- Click **Pull all** to pull every source of the stack, one after another.
+
+A pull fetches the source's metadata and its data together, for the last `lookback_days` days. See [Sources](/oss/varne/sources/index#what-a-pull-does). When it finishes, the page refreshes and shows how many sources were pulled. If a source fails, you get a message with the reason, and the other sources carry on.
+
+## Read the charts
+
+Below the table you see:
+
+- **Cost per day** for the whole stack, with one series for each source.
+- A card for each source:
+  - **Billing** of the source per day and service, and **Usage** such as visitors, pageviews, or sessions.
+  - **Cost per visitor** when a source has both billing and visitors.
+  - For a [Docker source](/oss/varne/sources/docker), the **cost per application per day**, with **Idle** as its own series.
+
+Sources that you have removed from the configuration are not part of any chart.
+
+## Remove the data of a source
+
+When you remove a source from the configuration, its data stays in the database. It appears in the **Sources** table greyed out, with the status **Not in the configuration** and a trash button instead of **Pull**.
+
+1. Click the trash button.
+2. Confirm. Varne deletes everything it stored for that source: the raw responses, the metadata, the costs, and the usage.
+
+<Warning>
+  Deleting is permanent. The data of other sources is not touched. If you only renamed or re-added a source, pull it again instead of deleting.
+</Warning>
+
+Data of a whole stack that you removed from the configuration cannot be removed in the interface, because the stack selector lists only configured stacks.
+
+## The Self-hosted page
+
+For Docker sources, open **Self-hosted** to see each application's cost and the return on your machine. See [Self-hosted costs](/oss/varne/self-hosted/index).
