@@ -17,10 +17,11 @@ from varne.config import (
 from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.db.types import DatabaseBackend
+from varne.demo import DEMO_NOW
 from varne.http import create_http_client
 from varne.providers.anthropic.client import AnthropicClient
 from varne.providers.anthropic.service import AnthropicService
-from varne.providers.base import ProviderService
+from varne.providers.base import ProviderService, utc_now
 from varne.providers.beszel.client import BeszelClient
 from varne.providers.beszel.usage import BeszelUsage
 from varne.providers.docker.rates import cost_lines
@@ -56,7 +57,7 @@ def get_http() -> httpx.Client:
 def get_config_manager() -> ConfigManager:
     settings = get_settings()
 
-    manager = ConfigManager(path=settings.config_path)
+    manager = ConfigManager(path=settings.config_path, read_only=settings.demo_mode)
     manager.load()
 
     return manager
@@ -131,4 +132,5 @@ def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
                     electricity_price_per_kwh=source.cost.electricity_price_per_kwh,
                 ),
                 lookback_days=source.lookback_days,
+                now=(lambda: DEMO_NOW) if get_settings().demo_mode else utc_now,
             )

@@ -9,7 +9,7 @@ from nicegui import ui
 from nicegui.testing import User
 from tests.beszel import recorded_hub
 
-from varne.config import SourceType
+from varne.config import READ_ONLY_MESSAGE, SourceType
 from varne.db.schema import TableName
 from varne.dependencies import get_db, get_http
 from varne.providers.docker.rates import CostLine
@@ -420,3 +420,21 @@ async def test_a_stack_without_sources_says_what_to_do(
     await user.open("/")
 
     await user.should_see("This stack has no sources")
+
+
+async def test_the_demo_cannot_be_edited(
+    user: User, config_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from varne.settings import get_settings
+
+    monkeypatch.setenv("DEMO_MODE", "true")
+    get_settings.cache_clear()
+    demo = config_path.parent / "demo.yaml"
+    demo.write_text(DOCKER_STACK)
+
+    await user.open("/integrations")
+
+    await user.should_see(READ_ONLY_MESSAGE)
+    await user.should_not_see(kind=ui.tab)
+    await user.should_not_see(kind=ui.codemirror)
+    assert demo.read_text() == DOCKER_STACK

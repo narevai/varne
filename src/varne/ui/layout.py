@@ -46,6 +46,8 @@ def create_layout(title: str = "") -> Column:
             "flat dense round"
         )
         ui.label(title).classes("header-title")
+        if get_settings().demo_mode:
+            ui.label("Demo").classes("app-count")
         ui.space()
         ui.button(icon="contrast", on_click=lambda: dark.toggle()).props(
             "flat dense round"

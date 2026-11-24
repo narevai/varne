@@ -107,3 +107,4 @@ dev = [
 
 [tool.setuptools.package-data]
 "varne.ui" = ["static/*.css", "static/*.txt", "static/fonts/*"]
+"varne.demo" = ["*.yaml"]

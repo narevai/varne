@@ -54,6 +54,20 @@ docker compose up -d
 
 Open http://localhost:8000.
 
+## Telemetry
+
+When Varne starts, it sends one anonymous event to [Umami](https://umami.is): the Varne version, the environment, whether it is a demo, and a random instance id. It sends nothing about your stacks, your sources, your costs, or your keys. As with any request, Umami sees the server's IP address. It is skipped in development.
+
+Turn it off with `ENABLE_TELEMETRY=false`.
+
+## Demo mode
+
+`DEMO_MODE=true` runs a sample stack on a database and a configuration of its own (`demo.duckdb` and `demo.yaml` next to yours), filled in from a recording once the app is up. Nothing of yours is touched, its configuration cannot be changed, and every start puts the demo back as it was.
+
+```bash
+docker run -p 8000:8000 -e DEMO_MODE=true ghcr.io/narevai/varne:nightly
+```
+
 ## License
 
 GNU Affero General Public License v3.0. See [LICENSE](./LICENSE).

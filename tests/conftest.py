@@ -1,3 +1,4 @@
+import os
 from collections.abc import Generator
 from pathlib import Path
 
@@ -10,6 +11,11 @@ from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.http import create_http_client
 from varne.providers.beszel.usage import BeszelUsage
+
+
+def pytest_configure() -> None:
+    """The tests start the app, and the app must not report to anyone."""
+    os.environ["ENABLE_TELEMETRY"] = "false"
 
 
 @pytest.fixture
