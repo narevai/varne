@@ -1,8 +1,9 @@
 from decimal import Decimal
-from typing import cast
+from typing import NamedTuple, cast
 
 from nicegui import run, ui
 
+from varne.catalog.apps import ALTERNATIVE_ICONS
 from varne.catalog.comparison import (
     OTHER,
     AppComparison,
@@ -40,9 +41,6 @@ ROW_WITH_LOGO = """
 DIFFERENCE_CELL = """
 <q-td :props="props" :class="props.row.tone"><b>{{ props.value }}</b></q-td>
 """
-
-# A segment of a bar is named only when it is wide enough to read the name.
-MIN_SHARE_FOR_TEXT = Decimal("0.06")
 
 
 def dollars(amount: Decimal | None) -> str:
@@ -91,20 +89,59 @@ def figure(label: str, amount: Decimal) -> None:
             ui.label("/ mo").classes("text-sm opacity-60")
 
 
-def bar(segments: list[tuple[Decimal, str, str, str]], scale: Decimal) -> None:
-    """One bar on a scale shared with the other, as (amount, kind, text, tip) parts."""
-    with ui.element("div").classes("bar"):
-        for amount, kind, text, tip in segments:
-            if amount <= 0 or scale <= 0:
+class Segment(NamedTuple):
+    """One part of a bar: what it is worth, what it says, and what it is."""
+
+    amount: Decimal
+    kind: str
+    tip: str
+    # Written on it when there is room: the logo if there is one, else the text.
+    text: str = ""
+    logo: str = ""
+
+
+def bar(segments: list[Segment], scale: Decimal, ordered: bool = False) -> None:
+    """One bar, on a scale that it shares with the other.
+
+    What is written on a segment is shown where it fits, see theme.py. On an ordered
+    bar it stops at the first segment that has nothing to write or no room for it: no
+    segment to its right is written on.
+    """
+    stopped = False
+    with ui.element("div").classes("bar bar-ordered" if ordered else "bar"):
+        for segment in segments:
+            if segment.amount <= 0 or scale <= 0:
                 continue
 
-            width = f"{float(amount / scale * 100):.2f}%"
-            with ui.element("div").classes(f"bar-seg {kind}").style(f"width: {width}"):
-                if text and amount / scale >= MIN_SHARE_FOR_TEXT:
-                    # theme.py hides it where it would be cut short
+            if ordered and not (segment.logo or segment.text):
+                stopped = True
+
+            width = f"{float(segment.amount / scale * 100):.2f}%"
+            with (
+                ui.element("div")
+                .classes(f"bar-seg {segment.kind}")
+                .style(f"width: {width}")
+            ):
+                if (segment.logo or segment.text) and not stopped:
                     with ui.element("div").classes("seg-text"):
-                        ui.label(text)
-                ui.tooltip(tip).style("white-space: pre-line")
+                        if segment.logo:
+                            ui.element("img").props(f"src={segment.logo}").classes(
+                                "seg-logo"
+                            )
+                        else:
+                            ui.label(segment.text)
+                # a mouse hovers over it, a finger taps it and the tip stays until the next tap
+                ui.tooltip(segment.tip).classes("seg-tip").style(
+                    "white-space: pre-line"
+                )
+                with (
+                    ui.menu()
+                    .classes("seg-menu")
+                    .props("anchor='top middle' self='bottom middle'")
+                ):
+                    ui.label(segment.tip).classes("px-3 py-2 text-sm").style(
+                        "white-space: pre-line"
+                    )
 
 
 def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
@@ -169,6 +206,13 @@ def dashboard_view(comparison: Comparison, name: str) -> None:
         for app in comparison.apps
         if app.alternative is not None and app.avoided_cost is not None
     }
+    # the logo of the subscription, or else of the first application that stands in
+    # for it
+    logos: dict[str, str] = {}
+    for app in comparison.apps:
+        icon = ALTERNATIVE_ICONS.get(app.alternative or "") or app.icon
+        if app.alternative and icon and app.alternative not in logos:
+            logos[app.alternative] = f"/ui-assets/icons/{ICON_FILES[icon]}"
     apps = sum(
         len(app.containers) if app.app == OTHER else 1 for app in comparison.apps
     )
@@ -185,39 +229,39 @@ def dashboard_view(comparison: Comparison, name: str) -> None:
         figure("Hosted alternatives", comparison.avoided_cost)
         bar(
             [
-                (
+                Segment(
                     price,
                     "seg-hosted",
-                    "",
                     f"{alternative}\n{dollars(price)} / mo",
+                    logo=logos.get(alternative, ""),
                 )
                 for alternative, price in sorted(
                     hosted.items(), key=lambda item: item[1], reverse=True
                 )
             ],
             scale,
+            ordered=True,
         )
 
         figure("Self-hosted total", comparison.machine_cost)
         bar(
             [
-                (
+                Segment(
                     used,
                     "seg-used",
-                    "",
                     f"Applications: {dollars(used)} / mo\nWhat the containers cost to run",
                 ),
-                (
+                Segment(
                     comparison.idle,
                     "seg-idle",
-                    "Idle",
                     f"Idle: {dollars(comparison.idle)} / mo\nCapacity that no container used",
+                    text="Idle",
                 ),
-                (
+                Segment(
                     comparison.avoided_cost - comparison.machine_cost,
                     "seg-avoided",
-                    f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided",
                     f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided\nWhat the subscriptions would cost beyond your machine",
+                    text=f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided",
                 ),
             ],
             scale,

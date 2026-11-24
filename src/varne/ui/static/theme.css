@@ -409,3 +409,9 @@ body.body--dark .cm-editor .cm-selectionBackground {background:var(--accent)!imp
 /* A section of a page: apart from what is above it, under a title of its own. */
 .config-section {width:100%;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);gap:1rem}
 .section-title {font-size:1.25rem;font-weight:600;letter-spacing:-.02em}
+.seg-text {align-items:center}
+.seg-logo {width:24px;height:24px;flex:none;object-fit:contain}
+
+/* What a segment of a bar is: hovered with a mouse, tapped with a finger. */
+@media (hover: hover) {.seg-menu {display:none!important}}
+@media (hover: none) {.seg-tip {display:none!important}}

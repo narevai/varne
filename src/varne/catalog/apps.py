@@ -16,6 +16,10 @@ class App:
     icon: str | None = None
 
 
+# The logo of a subscription, by its name, where there is one. A subscription without
+# one is shown by the logo of the first application that stands in for it.
+ALTERNATIVE_ICONS: dict[str, str] = {"YNAB": "ynab"}
+
 # Prices checked on 2026-11-20 on the pricing pages given next to them.
 APPS: tuple[App, ...] = (
     App(

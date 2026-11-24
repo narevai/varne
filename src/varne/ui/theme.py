@@ -16,9 +16,19 @@ ui.add_head_html(
 (() => {
   let pending = 0;
   const fit = () => {
-    document.querySelectorAll(".bar-seg > .seg-text").forEach((text) => {
-      text.style.visibility = "visible";
-      if (text.scrollWidth > text.clientWidth) text.style.visibility = "hidden";
+    document.querySelectorAll(".bar").forEach((bar) => {
+      // on an ordered bar, nothing is shown to the right of what does not fit
+      const ordered = bar.classList.contains("bar-ordered");
+      let stopped = false;
+      bar.querySelectorAll(":scope > .bar-seg > .seg-text").forEach((text) => {
+        text.style.visibility = "visible";
+        if (stopped) {
+          text.style.visibility = "hidden";
+        } else if (text.scrollWidth > text.clientWidth) {
+          text.style.visibility = "hidden";
+          if (ordered) stopped = true;
+        }
+      });
     });
   };
   const schedule = () => {
