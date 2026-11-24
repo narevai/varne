@@ -7,6 +7,7 @@ from varne.ui.components.config_form import (
     form_to_yaml,
     yaml_to_form,
 )
+from varne.ui.components.page_header import page_header
 from varne.ui.layout import create_layout
 
 YAML_TAB = "YAML"
@@ -67,7 +68,9 @@ def page_settings() -> None:
                 # what was done in the form is what the file will say
                 editor.set_value(form_to_yaml(form_data))
 
-        ui.html("<h1>Settings</h1>")
+        page_header(
+            "Settings", "The stacks and sources Varne reads, as a form or as YAML."
+        )
 
         try:
             form_data: Data = yaml_to_form(config_manager.path.read_text())

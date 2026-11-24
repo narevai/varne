@@ -5,22 +5,30 @@ description: "The sources Varne can pull, what each one provides, and what you n
 
 A source is one connection to a provider. You add sources to a stack in **Settings** or in `varne.yaml`, then pull them on the **Dashboard**.
 
-The main source is [Docker](/oss/varne/sources/docker): it splits the cost of a machine across its containers, using usage from a [Beszel](/oss/varne/sources/beszel) hub.
-
-| Source | Costs | Usage | You need |
-| --- | --- | --- | --- |
-| [Docker](/oss/varne/sources/docker) | Machine cost split across containers | Container CPU and memory | Cost of the machine, a [Beszel hub](/oss/varne/sources/beszel) |
+<CardGroup cols={1}>
+  <Card title="Docker" icon="docker" href="/oss/varne/sources/docker">
+    Splits the cost of a machine across its containers, using usage from a [Beszel hub](/oss/varne/sources/beszel). You need the cost of the machine and a Beszel user.
+  </Card>
+</CardGroup>
 
 ## Other sources
 
 Varne can also pull the billing of services you pay for, so their cost sits next to the cost of your own machines.
 
-| Source | Costs | Usage | You need |
-| --- | --- | --- | --- |
-| [Vercel](/oss/varne/sources/vercel) | Billing charges per day and service | Visitors and pageviews | Access token, team id |
-| [Anthropic](/oss/varne/sources/anthropic) | Daily cost by line item and workspace | None | Admin API key |
-| [OpenAI](/oss/varne/sources/openai) | Daily cost by line item and project | None | Admin API key |
-| [Umami](/oss/varne/sources/umami) | None | Pageviews and sessions | Umami Cloud API key, website ids |
+<CardGroup cols={2}>
+  <Card title="Vercel" icon="triangle" href="/oss/varne/sources/vercel">
+    Billing charges per day and service, plus visitors and pageviews. Needs an access token and a team id.
+  </Card>
+  <Card title="Anthropic" icon="brain" href="/oss/varne/sources/anthropic">
+    Daily cost by line item and workspace. Needs an Admin API key.
+  </Card>
+  <Card title="OpenAI" icon="sparkles" href="/oss/varne/sources/openai">
+    Daily cost by line item and project. Needs an Admin API key.
+  </Card>
+  <Card title="Umami" icon="chart-simple" href="/oss/varne/sources/umami">
+    Pageviews and sessions per day. Needs an Umami Cloud API key and website ids.
+  </Card>
+</CardGroup>
 
 ## What a pull does
 

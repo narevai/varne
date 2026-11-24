@@ -23,22 +23,28 @@ def create_layout() -> Column:
         logger.error(message)
 
     with ui.left_drawer(top_corner=True, bottom_corner=True, value=True).props(
-        "breakpoint=768"
+        "breakpoint=768 width=248"
     ) as drawer:
-        nav_item("Dashboard", "menu", "/")
+        with ui.row().classes("brand"):
+            ui.label("V").classes("brand-mark")
+            ui.label("Varne").classes("brand-name")
+
+        ui.label("Monitor").classes("nav-label")
+        nav_item("Dashboard", "space_dashboard", "/")
         nav_item("Self-hosted", "dns", "/selfhosted")
-        nav_item("Settings", "settings", "/settings")
+
+        ui.label("Configure").classes("nav-label")
+        nav_item("Settings", "tune", "/settings")
+
+        ui.space()
         nav_item("Documentation", "menu_book", DOCS_URL, external=True)
 
         if get_settings().environment == "development":
             nav_item("Components", "widgets", "/dev/components")
 
-        # ui.link("Dashboard", "/")
-        # ui.link("Settings", "/settings")
-
-    with ui.header():
-        ui.button(icon="menu", on_click=lambda: drawer.toggle())
-        ui.label("Varne")
+    with ui.header().classes("mobile-header"):
+        ui.button(icon="menu", on_click=lambda: drawer.toggle()).props("flat dense")
+        ui.label("Varne").classes("brand-name")
 
     with context.client.layout:
         with ui.page_scroller(position="bottom-right", x_offset=20, y_offset=20):

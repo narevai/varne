@@ -6,8 +6,10 @@ from varne.config import ConfigVarne
 
 def create_stack_select(config: ConfigVarne | None) -> Select:
     if config is None or not config.stacks:
-        return ui.select(options={}, label="stack", value=None)
+        return ui.select(options={}, label="Stack", value=None).props("outlined dense")
 
     stack_options = {stack.id: stack.name for stack in config.stacks}
 
-    return ui.select(options=stack_options, label="stack", value=config.stacks[0].id)
+    return ui.select(
+        options=stack_options, label="Stack", value=config.stacks[0].id
+    ).props("outlined dense")

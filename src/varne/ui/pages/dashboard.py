@@ -18,6 +18,7 @@ from varne.ui.components.application_costs import application_costs
 from varne.ui.components.bar_chart import bar_chart
 from varne.ui.components.confirm import confirm
 from varne.ui.components.empty_state import no_sources, no_stacks
+from varne.ui.components.page_header import page_header
 from varne.ui.components.stack_select import create_stack_select
 from varne.ui.layout import create_layout
 
@@ -329,7 +330,9 @@ async def page_dashboard() -> None:
             await total_cost()
             await source_detail()
 
-        ui.html("<h1>Dashboard</h1>")
+        page_header(
+            "Dashboard", "What your sources cost, and when you last pulled them."
+        )
 
         if config_manager.config is None or not config_manager.config.stacks:
             no_stacks()
@@ -338,7 +341,9 @@ async def page_dashboard() -> None:
         with ui.row():
             stack_select = create_stack_select(config_manager.config)
             button_pull = ui.button(
-                "Pull all", on_click=lambda: pull(selected_stack_sources())
+                "Pull all",
+                icon="sync",
+                on_click=lambda: pull(selected_stack_sources()),
             )
 
         stack_select.on_value_change(lambda _: content.refresh())

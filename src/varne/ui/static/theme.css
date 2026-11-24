@@ -124,8 +124,8 @@ body.body--dark {
 	--card-foreground: oklch(0.985 0 0);
 	--popover: oklch(0.21 0.006 285.885);
 	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.92 0.004 286.32);
-	--primary-foreground: oklch(0.21 0.006 285.885);
+	--primary: oklch(0.72 0.14 166);
+	--primary-foreground: oklch(0.15 0.02 166);
 	--secondary: oklch(0.274 0.006 286.033);
 	--secondary-foreground: oklch(0.985 0 0);
 	--muted: oklch(0.274 0.006 286.033);
@@ -306,3 +306,60 @@ section {display:flex;flex-direction:column;width:100%}
 body.body--dark .logo-mono {
 	filter: invert(1);
 }
+
+/* Application shell: brand, grouped navigation, page container. */
+:root {
+	--primary-tint: color-mix(in oklch, var(--primary) 12%, transparent);
+}
+.q-drawer__content {display:flex;flex-direction:column}
+.q-drawer .nicegui-column,.q-drawer__content>.nicegui-column {flex:1;gap:0;width:100%}
+.brand {display:flex;align-items:center;gap:.65rem;padding:.25rem .5rem 1.25rem;flex-wrap:nowrap}
+.brand-mark {
+	display:grid;place-items:center;width:32px;height:32px;border-radius:9px;
+	background:var(--primary);color:var(--primary-foreground);font-weight:700;font-size:16px;letter-spacing:-.02em
+}
+.brand-name {font-size:17px;font-weight:600;letter-spacing:-.03em}
+.nav-label {
+	font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+	color:var(--muted-foreground);opacity:.8;padding:1rem .75rem .4rem
+}
+.q-drawer .q-item {padding:0 .75rem;font-weight:500;transition:background .15s ease,color .15s ease}
+.q-drawer .q-item .q-item__section--side {min-width:0;padding-right:.75rem;color:inherit}
+.q-drawer .q-item .q-icon {font-size:20px}
+.q-drawer .q-item[aria-current=page] {background:var(--primary-tint);color:var(--primary)}
+.q-drawer .q-item[aria-current=page] .q-icon {color:var(--primary)}
+.q-drawer .q-item:hover:not([aria-current=page]) {background:var(--accent)}
+.mobile-header {display:none}
+@media(max-width:768px) {.mobile-header {display:flex;align-items:center}}
+@media(min-width:769px) {.q-header.mobile-header {display:none}}
+
+.q-page {padding:0}
+.nicegui-content {padding:2rem 2.5rem;max-width:1280px;margin:0 auto;gap:1.25rem}
+@media(max-width:768px) {.nicegui-content {padding:1rem}}
+.page-header {gap:.25rem;margin-bottom:.5rem}
+.page-header h1 {font-size:1.625rem}
+.page-subtitle {color:var(--muted-foreground);font-size:14px;max-width:60ch}
+
+/* Cards and figures. */
+.q-card,section {border-radius:12px;box-shadow:0 1px 2px #0000000a}
+.stat-card {gap:.35rem;padding:1.1rem 1.25rem}
+.stat-label {font-size:12px;font-weight:500;color:var(--muted-foreground)}
+.stat-value {font-size:1.875rem;font-weight:600;letter-spacing:-.03em;line-height:1.15;font-variant-numeric:tabular-nums}
+
+/* Tables: quiet headers, tabular figures, a hover row. */
+.q-table__container {border-radius:12px;box-shadow:0 1px 2px #0000000a}
+.q-table th {
+	font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+	background:transparent;border-bottom:1px solid var(--border)
+}
+.q-table tbody td {font-variant-numeric:tabular-nums;border-color:color-mix(in oklch,var(--border) 60%,transparent)}
+.q-table tbody tr:hover {background:var(--accent)}
+.q-table tbody tr:last-child td {border-bottom:none}
+.q-table__top {padding:1rem 1rem .25rem}
+
+/* Controls. */
+.q-btn:not(.q-btn--flat):not(.q-btn--outline) {box-shadow:0 1px 2px #00000014}
+.q-field--outlined .q-field__control:before {border-color:var(--input)}
+.q-tabs {border-bottom:1px solid var(--border)}
+.q-tab-panels {background:transparent}
+.q-tab-panel {padding:1rem 0}

@@ -12,6 +12,7 @@ from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db
 from varne.ui.components.container_names import container_label
 from varne.ui.components.empty_state import empty_state, no_stacks
+from varne.ui.components.page_header import page_header
 from varne.ui.components.stack_select import create_stack_select
 from varne.ui.layout import create_layout
 
@@ -77,9 +78,9 @@ def percent(value: Decimal | None) -> str:
 
 
 def stat(label: str, value: str, tone: str = "") -> None:
-    with ui.card():
-        ui.label(label).classes("text-sm opacity-70")
-        ui.label(value).classes(f"text-3xl {tone}")
+    with ui.card().classes("stat-card"):
+        ui.label(label).classes("stat-label")
+        ui.label(value).classes(f"stat-value {tone}")
 
 
 def tone(amount: Decimal | None) -> str:
@@ -147,7 +148,10 @@ async def page_selfhosted() -> None:
     config = config_manager.config
 
     with layout:
-        ui.html("<h1>Self-hosted</h1>")
+        page_header(
+            "Self-hosted",
+            "What each application on your machines costs, and what the subscription it replaces would cost.",
+        )
 
         if config is None or not config.stacks:
             no_stacks()

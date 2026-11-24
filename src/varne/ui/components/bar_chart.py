@@ -6,16 +6,16 @@ from nicegui import ui
 
 FONT = "Geist, ui-sans-serif, system-ui, sans-serif"
 PALETTE = [
+    "#10a37f",
     "#5188cd",
+    "#9274c3",
+    "#d6a23a",
+    "#4fb3a9",
     "#b5689d",
     "#669649",
-    "#9274c3",
     "#0094bc",
-    "#3f9b65",
-    "#d6a23a",
-    "#cf5c5c",
-    "#4fb3a9",
     "#8c6d4f",
+    "#cf5c5c",
 ]
 MAX_SERIES = len(PALETTE)
 OTHER = "Other"

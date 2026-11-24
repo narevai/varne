@@ -73,6 +73,14 @@ Costs are in USD.
 
 Varne works hour by hour, on the hours that have passed.
 
+```mermaid
+flowchart TB
+    M["Cost of the hour<br/>from the machine cost"] --> S{"Split by share<br/>of CPU and memory"}
+    S --> C1["Container A"]
+    S --> C2["Container B"]
+    S --> I["Idle<br/>what nobody used"]
+```
+
 1. For every container, Varne asks how much of the machine it used in that hour: its CPU, and its memory.
 2. A container's **share of the hour** is half its CPU use as a part of the machine's CPU, plus half its memory use as a part of the machine's memory. If several machines are monitored, their capacities are added up.
 3. The container is charged that share of the hour's cost.
