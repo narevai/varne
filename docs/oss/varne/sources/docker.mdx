@@ -53,7 +53,7 @@ See [Connect Beszel](/oss/varne/sources/beszel) for how to point Varne at the hu
   </Tab>
 </Tabs>
 
-In **Settings**, the **Form** tab has a switch between **Rented, per hour** and **Own hardware** that shows the matching fields. All fields are in the [reference](/oss/varne/configuration/reference#docker).
+On **Integrations**, the **Form** tab has a switch between **Rented, per hour** and **Own hardware** that shows the matching fields. All fields are in the [reference](/oss/varne/configuration/reference#docker).
 
 ## How the machine cost is built
 
@@ -73,6 +73,14 @@ Costs are in USD.
 
 Varne works hour by hour, on the hours that have passed.
 
+```mermaid
+flowchart TB
+    M["Cost of the hour<br/>from the machine cost"] --> S{"Split by share<br/>of CPU and memory"}
+    S --> C1["Container A"]
+    S --> C2["Container B"]
+    S --> I["Idle<br/>what nobody used"]
+```
+
 1. For every container, Varne asks how much of the machine it used in that hour: its CPU, and its memory.
 2. A container's **share of the hour** is half its CPU use as a part of the machine's CPU, plus half its memory use as a part of the machine's memory. If several machines are monitored, their capacities are added up.
 3. The container is charged that share of the hour's cost.
@@ -84,8 +92,7 @@ Each container is stored with the machine it ran on and its image name. That ima
 
 ## What you see
 
-- On the **Dashboard**, a chart of **cost per application per day**, with **Idle** as its own series.
-- On the **Self-hosted** page, the cost of each application and the return on your machine. See [Self-hosted costs](/oss/varne/self-hosted/index).
+- On the **Dashboard**, the cost of each application, the return on your machine, and charts of **cost per application** and **idle capacity** per day. See [Self-hosted costs](/oss/varne/self-hosted/index).
 
 ## Things to know
 

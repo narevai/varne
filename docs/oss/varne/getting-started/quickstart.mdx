@@ -18,7 +18,7 @@ This guide takes you from nothing to a dashboard that shows what every container
       ghcr.io/narevai/varne:nightly
     ```
 
-    Open [http://localhost:8000](http://localhost:8000). On first start Varne creates an empty `config/varne.yaml`, so the **Dashboard** asks you to add a stack.
+    Open [http://localhost:8000](http://localhost:8000). On first start Varne creates an empty `config/varne.yaml`, so the **Dashboard** asks you to add a stack on the **Integrations** page.
 
     <Warning>
       Varne has no login. Run it on `localhost` or on a private network, not on the public internet. See [Deploy with Docker](/oss/varne/getting-started/deployment#keep-varne-private).
@@ -26,7 +26,7 @@ This guide takes you from nothing to a dashboard that shows what every container
   </Step>
 
   <Step title="Add a stack and a Docker source">
-    1. Open **Settings** and choose the **Form** tab.
+    1. Open **Integrations**. The editor at the bottom opens on the **Form** tab.
     2. Click **Add stack** and name it, for example **Homelab**. Varne fills in the id for you.
     3. In the stack, click **Add source** and choose **docker**.
     4. Say what the machine costs: switch to **Rented, per hour** and enter the hourly price, or to **Own hardware** and enter its price. See [how the machine cost is built](/oss/varne/sources/docker#how-the-machine-cost-is-built).
@@ -55,14 +55,14 @@ This guide takes you from nothing to a dashboard that shows what every container
     The `password_env` form reads the password from an environment variable, so it never sits in the file. Pass it to the container with `-e BESZEL_PASSWORD=...`. The `url` has to work from inside the Varne container. See [choose the right url](/oss/varne/sources/beszel#choose-the-right-url).
   </Step>
 
-  <Step title="Pull the source">
-    Open the **Dashboard**. Your source is in the **Sources** table with the status **Not pulled yet**. Click **Pull**.
+  <Step title="Sync the source">
+    On **Integrations**, your source is in the table with **Never** under **Last synced**. Click **Sync**.
 
-    Varne reads the last 30 days of container usage from Beszel, splits the cost of the machine across your containers, and draws the cost per application per day.
+    Varne reads the last 30 days of container usage from Beszel, splits the cost of the machine across your containers, and shows the date of the sync.
   </Step>
 
-  <Step title="See what self-hosting saves you">
-    Open **Self-hosted**. Varne recognises the applications behind your containers and compares their cost with the subscriptions they replace. See [Self-hosted costs](/oss/varne/self-hosted/index).
+  <Step title="Read the dashboard">
+    Open **Dashboard**. Varne recognises the applications behind your containers and compares their cost with the subscriptions they replace. See [Self-hosted costs](/oss/varne/self-hosted/index).
   </Step>
 </Steps>
 
@@ -70,4 +70,4 @@ This guide takes you from nothing to a dashboard that shows what every container
 
 - Learn how the cost is split: [Docker source](/oss/varne/sources/docker).
 - Learn how the file works: [Configuration](/oss/varne/configuration/index).
-- Add billing of services you pay for: [more sources](/oss/varne/sources/index).
+- See which other sources are on the way: [Sources](/oss/varne/sources/index).

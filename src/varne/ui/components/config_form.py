@@ -6,7 +6,7 @@ from typing import Literal, cast
 import yaml
 from nicegui import ui
 
-from varne.config import DEFAULT_LOOKBACK_DAYS, SourceType
+from varne.config import DEFAULT_LOOKBACK_DAYS, SUPPORTED_SOURCES, SourceType
 from varne.ui.components.confirm import confirm
 
 type Data = dict[str, object]
@@ -393,10 +393,17 @@ def config_form(data: Data, on_save: Callable[[], None]) -> None:
                     ),
                 )
 
-            with ui.button("Add source", icon="add").props("outline no-caps"):
-                with ui.menu():
-                    for source_type in SourceType:
-                        ui.menu_item(source_type.value, adder(sources, source_type))
+            if len(SUPPORTED_SOURCES) == 1:
+                ui.button(
+                    "Add source",
+                    icon="add",
+                    on_click=adder(sources, SUPPORTED_SOURCES[0]),
+                ).props("outline no-caps")
+            else:
+                with ui.button("Add source", icon="add").props("outline no-caps"):
+                    with ui.menu():
+                        for source_type in SUPPORTED_SOURCES:
+                            ui.menu_item(source_type.value, adder(sources, source_type))
 
     def adder(sources: list[Data], source_type: SourceType) -> Callable[[], None]:
         def add() -> None:

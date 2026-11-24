@@ -29,7 +29,7 @@ usage:
 | `email` | The email of the Beszel user |
 | `password` / `password_env` | The password, or the name of an environment variable that holds it. Use exactly one |
 
-In **Settings**, the **Form** tab shows the same fields under the Docker source.
+On **Integrations**, the **Form** tab shows the same fields under the Docker source.
 
 ### Choose the right `url`
 
@@ -43,19 +43,19 @@ The address has to work from inside the Varne container, which is not always the
 
 ## Check the connection
 
-1. Pull the Docker source on the **Dashboard**.
-2. If it works, the status becomes **Pulled** and the **Dashboard** shows a chart of cost per application.
-3. If it does not, the **Dashboard** shows the error. These are the usual ones:
+1. Sync the Docker source on **Integrations**.
+2. If it works, **Last synced** shows the date and the **Dashboard** shows a chart of cost per application.
+3. If it does not, **Integrations** shows the error. These are the usual ones:
 
 | Message | Likely cause |
 | --- | --- |
 | Authentication error | Wrong `email` or `password` |
 | Connection error | `url` is not reachable from the Varne container |
 | No containers | The hub has no Docker data for the machine yet |
-| Everything is **Idle** | Beszel has no usage for the period. Pull again after the agent has reported |
+| Everything is **Idle** | Beszel has no usage for the period. Sync again after the agent has reported |
 
 ## How much history you get
 
-Varne reads the usage the hub has stored. A pull fetches the last `lookback_days` days (30 by default), but the hub can only return what its agents reported. A machine you added to Beszel yesterday has one day of history. Hours without data count as **Idle**.
+Varne reads the usage the hub has stored. A sync fetches the last `lookback_days` days (30 by default), but the hub can only return what its agents reported. A machine you added to Beszel yesterday has one day of history. Hours without data count as **Idle**.
 
 See [Docker](/oss/varne/sources/docker#how-the-cost-is-split) for how that usage becomes cost per container.

@@ -3,7 +3,7 @@ title: "Self-hosted costs"
 description: "How Varne finds the applications behind your containers, what they cost to run, and how it works out the return on your machine."
 ---
 
-The **Self-hosted** page shows what each application on your [Docker source](/oss/varne/sources/docker) costs to run, and what the paid subscription it replaces would cost instead.
+The **Dashboard** shows what each application on your [Docker source](/oss/varne/sources/docker) costs to run, and what the paid subscription it replaces would cost instead.
 
 ## From containers to applications
 
@@ -16,27 +16,28 @@ Containers have names like `compose-lab-immich-server-1`. You think in applicati
 
 For the applications Varne knows, see [Supported applications](/oss/varne/self-hosted/supported-apps). Applications with no entry there are still listed with their cost and, when there is a logo, with it.
 
-## The page
+## The dashboard
 
-At the top are four figures, for one month of 730 hours.
+At the top is the **Monthly cost statement**, for one month of 730 hours. It has two bars on one scale:
 
-| Figure | Meaning |
+| Bar | Meaning |
 | --- | --- |
-| **Machine cost** | Everything the machine costs in a month: applications, unrecognised containers, and idle capacity |
-| **Idle capacity** | The part of the machine cost that no container used |
-| **Avoided cost** | What the subscriptions that your applications replace cost in a month |
-| **Return on investment** | How much more the subscriptions would cost than your machine, as a percentage |
+| **Hosted alternatives** | What the subscriptions your applications replace would cost in a month. One segment for each subscription, named after it when it is wide enough. Hover a segment for its name and price |
+| **Self-hosted total** | What your machine costs in a month: the applications, and the **Idle** capacity that no container used. When the subscriptions would cost more than the machine, the rest of the bar shows the difference as **avoided** |
 
-Below is a table with one row per application:
+Below the statement is a table with one row per application:
 
 | Column | Meaning |
 | --- | --- |
-| **Application** | Its logo, name, and the containers it runs in. Hover to see all of them |
-| **Cost of self-hosting** | What running it costs in a month |
-| **Replaces** | The subscription it stands in for, if there is one |
-| **Avoided cost** | The monthly price of that subscription |
+| **Self-hosted app** | Its logo, name, and the containers it runs in. Hover to see all of them |
+| **Self-hosted cost** | What running it costs in a month |
+| **Hosted alternative** | The subscription it stands in for, if there is one |
+| **Hosted cost** | The monthly price of that subscription |
+| **Cost difference** | The hosted cost minus the self-hosted cost, in green when you save |
 
-Use the stack selector to switch between stacks. If you have not pulled a Docker source yet, the page asks you to do it on the **Dashboard**.
+Applications with no subscription to compare with are grouped into one row, **other apps**, and unused capacity is its own row, **Idle**. At the end is the **net per month**: what the subscriptions would cost, minus what the whole machine costs, with the return on your investment as a percentage.
+
+Use the stack selector to switch between stacks. If you have not synced a Docker source yet, the page asks you to do it on **Integrations**.
 
 ## How the numbers are worked out
 

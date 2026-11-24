@@ -117,15 +117,15 @@
 
 body.body--dark {
 	color-scheme: dark;
-	--color-ink-900: oklch(0.141 0.005 285.823);
+	--color-ink-900: oklch(0.135 0.002 286);
 	--background: var(--color-ink-900);
 	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.21 0.006 285.885);
+	--card: oklch(0.18 0.003 286);
 	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.21 0.006 285.885);
+	--popover: oklch(0.2 0.003 286);
 	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.92 0.004 286.32);
-	--primary-foreground: oklch(0.21 0.006 285.885);
+	--primary: oklch(0.72 0.14 166);
+	--primary-foreground: oklch(0.15 0.02 166);
 	--secondary: oklch(0.274 0.006 286.033);
 	--secondary-foreground: oklch(0.985 0 0);
 	--muted: oklch(0.274 0.006 286.033);
@@ -133,8 +133,8 @@ body.body--dark {
 	--accent: oklch(0.274 0.006 286.033);
 	--accent-foreground: oklch(0.985 0 0);
 	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
+	--border: oklch(1 0 0 / 8%);
+	--input: oklch(1 0 0 / 12%);
 	--ring: oklch(0.552 0.016 285.938);
 	/* Same hues, lightness re-anchored: the teal ramp inverts so brightest is
 	   largest, and the two darkest categoricals lift. */
@@ -306,3 +306,107 @@ section {display:flex;flex-direction:column;width:100%}
 body.body--dark .logo-mono {
 	filter: invert(1);
 }
+
+/* Application shell, after the layout of a dark operations console:
+   a brand and slim navigation on the left, a top bar with the page title,
+   cards one step lighter than the page, hairline borders, no shadows. */
+:root {--shell-bar:56px}
+.q-drawer__content {display:flex;flex-direction:column;padding:0}
+.q-drawer .nicegui-column,.q-drawer__content>.nicegui-column {flex:1;gap:0;width:100%}
+.q-drawer {padding:0 .75rem 1rem}
+.brand {display:flex;align-items:center;gap:.6rem;height:var(--shell-bar);padding:0 .5rem;margin-bottom:.5rem;flex-wrap:nowrap}
+.brand-mark {
+	display:grid;place-items:center;width:28px;height:28px;border-radius:7px;
+	background:var(--primary);color:var(--primary-foreground);font-weight:700;font-size:15px
+}
+.brand-name {font-size:20px;font-weight:600;letter-spacing:-.04em}
+.q-drawer .q-item {padding:0 .75rem;min-height:36px;font-weight:500;font-size:13.5px;transition:background .12s ease,color .12s ease}
+.q-drawer .q-item .q-item__section--side {min-width:0;padding-right:.7rem;color:inherit}
+.q-drawer .q-item .q-icon {font-size:18px}
+.q-drawer .q-item[aria-current=page] {background:var(--accent);color:var(--foreground)}
+.q-drawer .q-item:hover:not([aria-current=page]) {background:color-mix(in oklch,var(--accent) 60%,transparent);color:var(--foreground)}
+.nav-version {font-size:11px;color:var(--muted-foreground);opacity:.7;padding:.5rem .75rem 0}
+
+.app-header {height:var(--shell-bar);padding:0 1rem;display:flex;align-items:center;gap:.5rem;flex-wrap:nowrap}
+.header-title {font-size:15px;font-weight:600;letter-spacing:-.01em}
+.app-header .q-btn {color:var(--muted-foreground)}
+.app-header .q-btn:hover {color:var(--foreground);background:var(--accent)}
+
+.q-page {padding:0}
+.nicegui-content {padding:1.25rem 1.5rem 2rem;max-width:1400px;margin:0 auto;gap:1rem}
+@media(max-width:768px) {.nicegui-content {padding:1rem}}
+.chart-grid {display:grid;grid-template-columns:minmax(0,1fr);gap:1rem;width:100%}
+.chart-grid>* {min-width:0}
+
+/* Cards and figures. */
+.q-card,section {border-radius:10px;box-shadow:none;padding:1rem 1.25rem}
+.stat-card {gap:.3rem;padding:1rem 1.25rem}
+.stat-label {font-size:12px;font-weight:500;color:var(--muted-foreground)}
+.stat-value {font-size:1.75rem;font-weight:600;letter-spacing:-.03em;line-height:1.15;font-variant-numeric:tabular-nums}
+
+/* Tables: quiet headers, tabular figures, a hover row. */
+.q-table__container {border-radius:10px;box-shadow:none}
+.q-table th {
+	font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+	background:transparent;border-bottom:1px solid var(--border)
+}
+.q-table tbody td {font-variant-numeric:tabular-nums;border-color:color-mix(in oklch,var(--border) 70%,transparent)}
+.q-table tbody tr:hover {background:var(--accent)}
+.q-table tbody tr:last-child td {border-bottom:none}
+.q-table__top {padding:1rem 1rem .25rem}
+
+/* Controls. */
+.q-field--outlined .q-field__control:before {border-color:var(--input)}
+.q-tabs {background:var(--muted);padding:3px;border-radius:8px;border:none;max-width:fit-content;min-height:0}
+.q-tab {border-radius:6px;min-height:32px;padding:0 14px;color:var(--muted-foreground)}
+.q-tab__indicator {display:none}
+.q-tab--active {background:var(--card);color:var(--foreground)!important;box-shadow:0 0 0 1px var(--border)}
+.q-tab-panels {background:transparent}
+.q-tab-panel {padding:1rem 0}
+
+/* The code editor and the top bar follow the theme. */
+body.body--dark .cm-editor {background:var(--background);color:var(--foreground)}
+body.body--dark .cm-editor .cm-gutters {background:var(--card);color:var(--muted-foreground);border-right:1px solid var(--border)}
+body.body--dark .cm-editor .cm-activeLine,body.body--dark .cm-editor .cm-activeLineGutter {background:var(--accent)}
+body.body--dark .cm-editor .cm-cursor {border-left-color:var(--foreground)}
+body.body--dark .cm-editor .cm-selectionBackground {background:var(--accent)!important}
+@layer theme {
+ .app-header .q-btn--flat {color:var(--muted-foreground)!important}
+ .app-header .q-btn--flat:hover {color:var(--foreground)!important}
+}
+.chart-grid .q-card {overflow:hidden}
+
+/* Self-hosted: the monthly cost statement. */
+.stack-title {font-size:1.75rem;font-weight:700;letter-spacing:-.03em;line-height:1.2}
+.statement {gap:.75rem;padding:1.5rem}
+.statement-title {font-size:1.5rem;font-weight:600;letter-spacing:-.03em}
+.statement-figure {font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums}
+.bar {display:flex;gap:2px;width:100%;height:44px;border-radius:8px;overflow:hidden;margin-bottom:.75rem}
+.bar-seg {height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;font-size:13px;min-width:2px}
+.bar-seg>div {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 .6rem}
+.seg-hosted {background:color-mix(in oklch,var(--foreground) 24%,var(--card))}
+.seg-used {background:var(--primary)}
+.seg-idle,.seg-avoided {
+	background:repeating-linear-gradient(135deg,transparent 0 5px,color-mix(in oklch,var(--foreground) 14%,transparent) 5px 6px);
+	color:var(--muted-foreground)
+}
+.seg-idle {background-color:color-mix(in oklch,var(--primary) 14%,transparent)}
+.seg-idle>div,.seg-avoided>div {font-size:14px;color:var(--foreground)}
+.seg-hosted>div {color:var(--foreground)}
+.statement-total {padding:.25rem 1rem 0;align-items:baseline}
+
+/* Charts stacked in one card breathe. */
+.chart-block + .chart-block {margin-top:2.5rem}
+.app-count {
+	font-size:12px;font-weight:500;padding:2px 10px;border-radius:999px;
+	background:var(--muted);color:var(--muted-foreground);border:1px solid var(--border)
+}
+
+/* The cost per application and the idle capacity, side by side. */
+.chart-pair {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:2rem;width:100%}
+.chart-pair>* {min-width:0}
+.chart-pair .chart-block + .chart-block {margin-top:0}
+
+/* A section of a page: apart from what is above it, under a title of its own. */
+.config-section {width:100%;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);gap:1rem}
+.section-title {font-size:1.25rem;font-weight:600;letter-spacing:-.02em}

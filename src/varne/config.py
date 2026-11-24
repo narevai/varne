@@ -18,6 +18,11 @@ class SourceType(StrEnum):
     VERCEL = "vercel"
 
 
+# The sources Varne offers today. The others are in development: they still work
+# from the file, but the app does not show or advertise them.
+SUPPORTED_SOURCES: tuple[SourceType, ...] = (SourceType.DOCKER,)
+
+
 class ConfigSourceBase(BaseModel):
     id: SourceId
     name: str
@@ -177,6 +182,11 @@ class ConfigStack(BaseModel):
     id: StackId
     name: str
     sources: list[ConfigSource] = Field(default_factory=list)
+
+
+def offered_sources(stack: ConfigStack) -> list[ConfigSource]:
+    """The sources of a stack that the app shows and pulls."""
+    return [source for source in stack.sources if source.type in SUPPORTED_SOURCES]
 
 
 class ConfigVarne(BaseModel):

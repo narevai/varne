@@ -14,7 +14,7 @@ from varne.db.schema import TableName
 from varne.dependencies import get_db, get_http
 from varne.providers.docker.rates import CostLine
 from varne.providers.docker.service import DockerService
-from varne.providers.types import RowDimSourceMeta, RowFactUsage
+from varne.providers.types import RowDimSourceMeta
 
 
 @pytest.mark.usefixtures("config_path")
@@ -24,9 +24,9 @@ async def test_page_dashboard(user: User) -> None:
 
 
 @pytest.mark.usefixtures("config_path")
-async def test_page_settings(user: User) -> None:
-    await user.open("/settings")
-    await user.should_see("Settings")
+async def test_page_integrations(user: User) -> None:
+    await user.open("/integrations")
+    await user.should_see("Integrations")
     await user.should_see("stack_test")
 
 
@@ -35,7 +35,7 @@ async def test_settings_form_shows_the_sources_of_the_file(
     user: User, config_path: Path
 ) -> None:
     config_path.write_text(TWO_SOURCES)
-    await user.open("/settings")
+    await user.open("/integrations")
 
     # the form is filled before it is opened
     inputs = user.find(kind=ui.input).elements
@@ -47,9 +47,46 @@ async def test_settings_form_shows_the_sources_of_the_file(
     await user.should_see("Third Source")
 
 
+async def test_settings_opens_on_the_form(user: User, config_path: Path) -> None:
+    config_path.write_text(TWO_SOURCES)
+
+    await user.open("/integrations")
+
+    tabs = user.find(kind=ui.tabs).elements.pop()
+    assert isinstance(tabs, ui.tabs)
+    assert isinstance(tabs.value, ui.tab)
+    assert tabs.value.props["label"] == "Form"
+
+
+async def test_settings_opens_on_the_text_when_the_form_cannot_read_it(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text("stacks: [")
+
+    await user.open("/integrations")
+
+    tabs = user.find(kind=ui.tabs).elements.pop()
+    assert isinstance(tabs, ui.tabs)
+    assert isinstance(tabs.value, ui.tab)
+    assert tabs.value.props["label"] == "YAML"
+
+
+async def test_settings_keeps_the_comments_when_the_form_changed_nothing(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text("# my notes\n" + TWO_SOURCES)
+    await user.open("/integrations")
+
+    user.find(kind=ui.tab, content="YAML").click()
+
+    editor = user.find(kind=ui.codemirror).elements.pop()
+    assert isinstance(editor, ui.codemirror)
+    assert "# my notes" in editor.value
+
+
 async def test_settings_form_saves_to_the_file(user: User, config_path: Path) -> None:
     config_path.write_text(TWO_SOURCES)
-    await user.open("/settings")
+    await user.open("/integrations")
     user.find(kind=ui.tab, content="Form").click()
     await user.should_see("First Source")
 
@@ -77,32 +114,49 @@ stacks:
     sources:
       - id: first
         name: First Source
-        type: anthropic
-        api_token: secret
+        type: docker
+        cost:
+          hourly_cost: 1
+        usage:
+          type: beszel
+          url: http://hub:8090
+          email: me@example.com
+          password: secret
       - id: second
         name: Second Source
-        type: anthropic
-        api_token: secret
+        type: docker
+        cost:
+          hourly_cost: 1
+        usage:
+          type: beszel
+          url: http://hub:8090
+          email: me@example.com
+          password: secret
   - id: stack_b
     name: Stack B
     sources:
       - id: third
         name: Third Source
-        type: anthropic
-        api_token: secret
+        type: docker
+        cost:
+          hourly_cost: 1
+        usage:
+          type: beszel
+          url: http://hub:8090
+          email: me@example.com
+          password: secret
 """
 
 
-async def test_dashboard_shows_a_card_for_every_source_of_the_stack(
+async def test_dashboard_without_synced_data_says_what_to_do(
     user: User, config_path: Path
 ) -> None:
     config_path.write_text(TWO_SOURCES)
 
     await user.open("/")
 
-    await user.should_see("First Source")
-    await user.should_see("Second Source")
-    await user.should_not_see("Third Source")  # another stack
+    await user.should_see("No Docker data yet")
+    await user.should_see("Go to Integrations")
 
 
 async def test_dashboard_reads_the_file_when_it_is_opened(
@@ -114,24 +168,52 @@ async def test_dashboard_reads_the_file_when_it_is_opened(
 
     await user.open("/")
 
-    await user.should_see("First Source")
+    await user.should_see("No Docker data yet")
 
 
-async def test_dashboard_has_one_way_to_pull(user: User, config_path: Path) -> None:
+async def test_integrations_syncs_one_source_or_all(
+    user: User, config_path: Path
+) -> None:
     config_path.write_text(TWO_SOURCES)
 
-    await user.open("/")
+    await user.open("/integrations")
 
-    await user.should_see("Pull all")
+    await user.should_see("Sync all")
     table = user.find(kind=ui.table).elements.pop()
     assert isinstance(table, ui.table)
-    statuses = [row["status"] for row in cast(list[dict[str, str]], table.rows)]
-    assert statuses == ["Not pulled yet", "Not pulled yet"]
-    await user.should_not_see("sync metadata")
+    rows = cast(list[dict[str, str]], table.rows)
+    assert [row["synced"] for row in rows] == ["Never", "Never"]
+    await user.should_not_see("Pull all")
     await user.should_not_see("reload config")
 
 
-async def test_dashboard_marks_a_stored_source_that_is_not_in_the_file(
+async def test_integrations_shows_when_a_source_was_last_synced(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text(TWO_SOURCES)
+    get_db().insert(
+        TableName.DIM_SOURCE_META,
+        [
+            RowDimSourceMeta(
+                stack_id="stack_a",
+                source_id="first",
+                source_type=SourceType.DOCKER,
+                extracted_at=datetime(2026, 11, 18, 12, 30, tzinfo=UTC),
+                value_name="x",
+                value="y",
+            ).model_dump()
+        ],
+    )
+
+    await user.open("/integrations")
+
+    table = user.find(kind=ui.table).elements.pop()
+    assert isinstance(table, ui.table)
+    rows = cast(list[dict[str, str]], table.rows)
+    assert [row["synced"] for row in rows] == ["Nov 18, 2026 12:30 UTC", "Never"]
+
+
+async def test_integrations_marks_a_stored_source_that_is_not_in_the_file(
     user: User, config_path: Path
 ) -> None:
     config_path.write_text(TWO_SOURCES)
@@ -141,7 +223,7 @@ async def test_dashboard_marks_a_stored_source_that_is_not_in_the_file(
             RowDimSourceMeta(
                 stack_id="stack_a",
                 source_id="removed",
-                source_type=SourceType.ANTHROPIC,
+                source_type=SourceType.DOCKER,
                 extracted_at=datetime(2026, 11, 18, 12, tzinfo=UTC),
                 value_name="x",
                 value="y",
@@ -149,9 +231,8 @@ async def test_dashboard_marks_a_stored_source_that_is_not_in_the_file(
         ],
     )
 
-    await user.open("/")
+    await user.open("/integrations")
 
-    await user.should_see("First Source")
     table = user.find(kind=ui.table).elements.pop()
     assert isinstance(table, ui.table)
     rows = cast(list[dict[str, str | bool]], table.rows)
@@ -160,40 +241,69 @@ async def test_dashboard_marks_a_stored_source_that_is_not_in_the_file(
         ("second", False),
         ("removed", True),
     ]
-    assert rows[-1]["status"] == "Not in the configuration"
+    assert rows[-1]["type"] == "Not in the configuration"
 
 
-ONE_SOURCE = """
+IN_DEVELOPMENT = """
 stacks:
   - id: stack_a
     name: Stack A
     sources:
-      - id: usage_only
-        name: Usage Only
-        type: anthropic
+      - id: lab
+        name: Lab
+        type: docker
+        cost:
+          hourly_cost: 1
+        usage:
+          type: beszel
+          url: http://hub:8090
+          email: me@example.com
+          password: secret
+      - id: web
+        name: Web Analytics
+        type: vercel
         api_token: secret
+        team_id: team_x
 """
 
 
-async def test_dashboard_shows_usage_of_a_source_without_billing(
+async def test_only_the_sources_that_are_offered_are_shown(
     user: User, config_path: Path
 ) -> None:
-    config_path.write_text(ONE_SOURCE)
-    row = RowFactUsage(
-        stack_id="stack_a",
-        source_id="usage_only",
-        source_type=SourceType.ANTHROPIC,
-        extracted_at=datetime(2026, 11, 18, 12, 0, tzinfo=UTC),
-        event_time=datetime(2026, 11, 17, tzinfo=UTC),
-        usage_name="visitors",
-        usage=84,
-    )
-    get_db().insert(TableName.FACT_USAGE, [row.model_dump()])
+    config_path.write_text(IN_DEVELOPMENT)
 
     await user.open("/")
+    await user.should_see("No Docker data yet")
+    await user.should_not_see("Web Analytics")
 
-    await user.should_see("No billing data available")
-    await user.should_see("Usage (visitors)")
+    await user.open("/integrations")
+    table = user.find(kind=ui.table).elements.pop()
+    assert isinstance(table, ui.table)
+    assert [row["id"] for row in cast(list[dict[str, str]], table.rows)] == ["lab"]
+
+
+async def test_integrations_without_stacks_says_what_to_do(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text("stacks: []\n")
+
+    await user.open("/integrations")
+
+    await user.should_see("No stacks yet")
+    await user.should_not_see("Sync all")
+
+
+async def test_settings_form_only_offers_docker(user: User, config_path: Path) -> None:
+    config_path.write_text("stacks:\n  - id: a\n    name: A\n")
+    await user.open("/integrations")
+    user.find(kind=ui.tab, content="Form").click()
+    await user.should_see("Add source")
+
+    user.find(kind=ui.button, content="Add source").click()
+
+    # one kind of source to add, so there is no menu to choose from
+    await user.should_not_see(kind=ui.menu_item)
+    await user.should_see("New source")
 
 
 DOCKER_STACK = """
@@ -231,25 +341,26 @@ def pull_recorded_hub() -> None:
         ).fetch_source_data()
 
 
-async def test_selfhosted_without_docker_data_says_what_to_do(
+async def test_dashboard_without_docker_data_says_what_to_do(
     user: User, config_path: Path
 ) -> None:
     config_path.write_text(DOCKER_STACK)
 
-    await user.open("/selfhosted")
+    await user.open("/")
 
     await user.should_see("No Docker data yet")
 
 
-async def test_selfhosted_shows_the_return_on_the_machine(
+async def test_dashboard_shows_the_return_on_the_machine(
     user: User, config_path: Path
 ) -> None:
     config_path.write_text(DOCKER_STACK)
     pull_recorded_hub()
 
-    await user.open("/selfhosted")
+    await user.open("/")
 
     await user.should_see("$730.00")  # the machine for 39 hours, as a month
+    await user.should_see("Cost per application (USD)")  # the charts of the source
     table = user.find(kind=ui.table).elements.pop()
     assert isinstance(table, ui.table)
     rows = cast(list[dict[str, str]], table.rows)
@@ -262,7 +373,7 @@ async def test_settings_form_locks_the_ids_of_saved_items(
     user: User, config_path: Path
 ) -> None:
     config_path.write_text(TWO_SOURCES)
-    await user.open("/settings")
+    await user.open("/integrations")
 
     ids = [i for i in user.find(kind=ui.input).elements if i.props.get("label") == "Id"]
 
@@ -274,7 +385,7 @@ async def test_settings_form_suggests_the_id_of_a_new_stack(
     user: User, config_path: Path
 ) -> None:
     config_path.write_text("stacks: []\n")
-    await user.open("/settings")
+    await user.open("/integrations")
     user.find(kind=ui.button, content="Add stack").click()
     await user.should_see("New stack")
 
@@ -296,19 +407,9 @@ async def test_dashboard_without_stacks_says_what_to_do(
     await user.open("/")
 
     await user.should_see("No stacks yet")
-    await user.should_see("Open Settings")
+    await user.should_see("Open Integrations")
     await user.should_see("Read the documentation")
     await user.should_not_see("Pull all")
-
-
-async def test_selfhosted_without_stacks_says_what_to_do(
-    user: User, config_path: Path
-) -> None:
-    config_path.write_text("stacks: []\n")
-
-    await user.open("/selfhosted")
-
-    await user.should_see("No stacks yet")
 
 
 async def test_a_stack_without_sources_says_what_to_do(

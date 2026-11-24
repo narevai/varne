@@ -4,53 +4,77 @@ sidebarTitle: "Introduction"
 description: "Free, open source, self-hosted. See what each container on your machines costs, which applications they are, and what self-hosting saves you compared to paid subscriptions."
 ---
 
-Varne is a free, open source, self-hosted app that shows what your own infrastructure costs. You tell it what a machine costs and connect a [Beszel](https://beszel.dev) hub. Varne splits the cost across your Docker containers, recognises the applications, and compares them with the subscriptions they replace.
+**See what every container on your machines costs, which applications they are, and what self-hosting saves you.**
+
+You tell Varne what a machine costs and connect a [Beszel](https://beszel.dev) hub. Varne splits the cost across your Docker containers, recognises the applications, and compares them with the subscriptions they replace.
 
 <Info>
   This page documents **Varne v1**. If you run Varne 0.x, read the [Varne v0 documentation](https://www.narev.ai/docs/varne/v0/index) instead. The two versions use different configuration, images, and screens.
 </Info>
 
+```mermaid
+flowchart LR
+    A["Your machine<br/>and its containers"] --> B["Beszel hub<br/>CPU and memory"]
+    B --> C["Varne<br/>cost per container"]
+    D["What the machine costs<br/>hourly, or price and power"] --> C
+    C --> E["Dashboard<br/>cost per application<br/>and return on investment"]
+```
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/oss/varne/getting-started/quickstart">
+    Run Varne, connect Beszel, and see what your containers cost in a few minutes.
+  </Card>
+  <Card title="Docker source" icon="docker" href="/oss/varne/sources/docker">
+    How the cost of a machine is built and split across its containers.
+  </Card>
+</CardGroup>
+
 ## What Varne does
 
 <CardGroup cols={2}>
   <Card title="Cost per container" icon="server" href="/oss/varne/sources/docker">
-    Describe a server by its hourly rate, or by its price, lifetime, and power use. Varne splits the cost across the containers running on it, and charges what nobody used to **Idle**.
+    Describe a server by its hourly rate, or by its price, lifetime, and power use. What no container used is charged to **Idle**.
   </Card>
   <Card title="Self-hosting return" icon="piggy-bank" href="/oss/varne/self-hosted/index">
-    Varne recognises the applications behind your containers and compares what they cost you with the subscriptions they replace.
+    Varne recognises the applications behind your containers and compares their cost with the subscriptions they replace.
   </Card>
-  <Card title="Beszel for usage" icon="gauge" href="/oss/varne/sources/beszel">
+  <Card title="Usage from Beszel" icon="gauge" href="/oss/varne/sources/beszel">
     Container CPU and memory come from your own Beszel hub. Varne only reads from it.
   </Card>
   <Card title="Yours to keep" icon="lock" href="/oss/varne/getting-started/deployment">
-    Everything Varne pulls is stored in a single DuckDB file on your own machine, next to your configuration.
+    Everything Varne pulls is stored in one DuckDB file on your own machine, next to your configuration.
   </Card>
 </CardGroup>
 
 ## How it works
 
-1. **Configure.** You list your stacks and sources in `config/varne.yaml`, or fill in the form in **Settings**.
-2. **Pull.** On the **Dashboard** you pull a source. Varne reads the container usage from Beszel and turns it into cost per container.
-3. **Read.** The **Dashboard** shows the cost per application, and **Self-hosted** compares your machines with the subscriptions they replace.
+<Steps>
+  <Step title="Configure">
+    List your stacks and sources in `config/varne.yaml`, or fill in the form on **Integrations**.
+  </Step>
+  <Step title="Sync">
+    On **Integrations**, sync a source. Varne reads the container usage from Beszel and turns it into cost per container.
+  </Step>
+  <Step title="Read">
+    The **Dashboard** shows the cost per application and compares your machines with the subscriptions they replace.
+  </Step>
+</Steps>
 
-A **stack** groups the sources of one product or one place. A **source** is one connection, such as a Docker host.
+A **stack** groups the sources of one product or one place. A **source** is one connection, such as a Docker host. Billing sources such as Vercel, Anthropic, OpenAI, and Umami are in development. See [Sources](/oss/varne/sources/index).
 
-Varne can also pull billing of services you pay for, such as Vercel, Anthropic, OpenAI, and Umami. See [more sources](/oss/varne/sources/index).
+## Keep exploring
 
-## Where to go next
-
-<CardGroup cols={2}>
-  <Card title="Quickstart" icon="rocket" href="/oss/varne/getting-started/quickstart">
-    Run Varne, connect Beszel, and see what your containers cost.
-  </Card>
-  <Card title="Deploy with Docker" icon="docker" href="/oss/varne/getting-started/deployment">
-    Volumes, environment variables, and how to keep Varne private.
-  </Card>
+<CardGroup cols={3}>
   <Card title="Configuration" icon="gear" href="/oss/varne/configuration/index">
-    The YAML file and the form in **Settings**.
+    The YAML file and the form on **Integrations**.
   </Card>
-  <Card title="Self-hosted costs" icon="server" href="/oss/varne/self-hosted/index">
-    How container costs and return on investment are calculated.
+  <Card title="Deploy with Docker" icon="cube" href="/oss/varne/getting-started/deployment">
+    Volumes, environment variables, and keeping Varne private.
+  </Card>
+  <Card title="Troubleshooting" icon="life-ring" href="/oss/varne/troubleshooting">
+    Fixes for the problems people meet first.
   </Card>
 </CardGroup>
 

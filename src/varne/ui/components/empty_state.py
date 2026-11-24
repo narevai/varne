@@ -22,9 +22,9 @@ def no_stacks() -> None:
     empty_state(
         "layers",
         "No stacks yet",
-        "A stack groups the sources of one product, such as its hosting, its AI providers and its analytics. Add one in Settings to see its costs here.",
-        "Open Settings",
-        "/settings",
+        "A stack groups the sources of one product, such as its hosting, its AI providers and its analytics. Add one on the Integrations page to see its costs here.",
+        "Open Integrations",
+        "/integrations",
     )
 
 
@@ -32,7 +32,7 @@ def no_sources() -> None:
     empty_state(
         "extension",
         "This stack has no sources",
-        "Add a source in Settings, then pull it here.",
-        "Open Settings",
-        "/settings",
+        "Add a source on the Integrations page, then sync it.",
+        "Open Integrations",
+        "/integrations",
     )
