@@ -183,15 +183,15 @@ async def page_integrations() -> None:
         if config_manager.config is None or not config_manager.config.stacks:
             ui.label("No stacks yet. Add one below.").classes("text-sm opacity-70")
         else:
-            with ui.row():
+            with layout.header_tools:
                 stack_select = create_stack_select(config_manager.config)
-                button_sync_all = ui.button(
-                    "Sync all",
-                    icon="sync",
-                    on_click=lambda: sync(
-                        offered_sources(stack) if (stack := selected_stack()) else []
-                    ),
-                )
+            button_sync_all = ui.button(
+                "Sync all",
+                icon="sync",
+                on_click=lambda: sync(
+                    offered_sources(stack) if (stack := selected_stack()) else []
+                ),
+            )
 
             stack_select.on_value_change(lambda _: content.refresh())
 

@@ -369,6 +369,36 @@ async def test_dashboard_shows_the_return_on_the_machine(
     assert rows[0]["icon"] == "/ui-assets/icons/elasticsearch.svg"
 
 
+async def test_dashboard_breaks_the_cost_down_and_says_when_the_hardware_pays_back(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text(
+        DOCKER_STACK.replace(
+            "hourly_cost: 1",
+            "machine_cost: 1200\n          power_draw_watts: 40\n          electricity_price_per_kwh: 0.2",
+        )
+    )
+    pull_recorded_hub()
+
+    await user.open("/")
+
+    await user.should_see("Cost of hardware")
+    await user.should_see("Cost of electricity")
+    await user.should_see("Payback period")
+
+
+async def test_dashboard_has_no_payback_period_for_a_machine_rented_by_the_hour(
+    user: User, config_path: Path
+) -> None:
+    config_path.write_text(DOCKER_STACK)
+    pull_recorded_hub()
+
+    await user.open("/")
+
+    await user.should_see("Cost of hosting")
+    await user.should_not_see("Payback period")
+
+
 async def test_settings_form_locks_the_ids_of_saved_items(
     user: User, config_path: Path
 ) -> None:
@@ -438,3 +468,12 @@ async def test_the_demo_cannot_be_edited(
     await user.should_not_see(kind=ui.tab)
     await user.should_not_see(kind=ui.codemirror)
     assert demo.read_text() == DOCKER_STACK
+
+
+def test_the_table_of_the_dashboard_has_templates_the_browser_can_read() -> None:
+    from varne.ui.pages.dashboard import HOSTED_CELL, ROW_WITH_LOGO
+
+    # a new line written into the string of a template ends the string in the browser
+    for template in (ROW_WITH_LOGO, HOSTED_CELL):
+        quoted = [line for line in template.splitlines() if "'" in line]
+        assert all(line.count("'") % 2 == 0 for line in quoted), quoted

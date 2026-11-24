@@ -10,13 +10,15 @@ from varne.catalog.comparison import (
     compare,
 )
 from varne.catalog.images import ICON_FILES
-from varne.config import StackId, offered_sources
+from varne.catalog.ownership import Ownership, duration, ownership, payback
+from varne.config import ConfigDocker, StackId, offered_sources
 from varne.dependencies import get_config_manager, get_db
 from varne.ui.components.application_costs import application_costs
 from varne.ui.components.container_costs import get_container_cost_rows
 from varne.ui.components.container_names import container_label
 from varne.ui.components.empty_state import empty_state, no_sources, no_stacks
 from varne.ui.components.stack_select import create_stack_select
+from varne.ui.components.tip import TIP_ATTRIBUTES, TIP_PROPS, Tip, tip_table
 from varne.ui.layout import create_layout
 
 ROW_WITH_LOGO = """
@@ -29,14 +31,19 @@ ROW_WITH_LOGO = """
             <div>{{ props.value }}</div>
             <div class="text-caption opacity-60" style="word-break: break-all">
                 {{ props.row.containers }}
-                <q-tooltip v-if="props.row.all_containers" style="white-space: pre-line">
-                    {{ props.row.all_containers }}
+                <q-tooltip v-if="props.row.all_containers" class="seg-tip" @tip-attributes>
+                    <table class="tip-table">
+                        <tr v-for="(name, index) in props.row.all_containers.split('\\n')" :key="name">
+                            <td class="key"><div>{{ index === 0 ? 'Containers' : '' }}</div></td>
+                            <td class="value"><div>{{ name }}</div></td>
+                        </tr>
+                    </table>
                 </q-tooltip>
             </div>
         </div>
     </div>
 </q-td>
-"""
+""".replace("@tip-attributes", TIP_ATTRIBUTES)
 HOSTED_CELL = """
 <q-td :props="props">
     <div class="row items-center no-wrap" style="gap: 10px">
@@ -93,12 +100,19 @@ def number_column(name: str, label: str) -> dict[str, str]:
     return {"name": name, "label": label, "field": name, "align": "right"}
 
 
-def figure(label: str, amount: Decimal) -> None:
-    with ui.row().classes("w-full justify-between items-baseline"):
+def figure(label: str, value: str, unit: str = "", apart: bool = False) -> None:
+    """One line of the profitability: what it is, and what it comes to, on the right.
+
+    A line that is `apart` has a little room above it, to set it off from those before.
+    """
+    with ui.row().classes(
+        "w-full justify-between items-baseline" + (" figure-apart" if apart else "")
+    ):
         ui.label(label).classes("text-sm")
         with ui.row().classes("items-baseline gap-1"):
-            ui.label(dollars(amount)).classes("statement-figure")
-            ui.label("/ mo").classes("text-sm opacity-60")
+            ui.label(value).classes("statement-figure")
+            if unit:
+                ui.label(unit).classes("text-sm opacity-60")
 
 
 class Segment(NamedTuple):
@@ -106,7 +120,9 @@ class Segment(NamedTuple):
 
     amount: Decimal
     kind: str
-    tip: str
+    # What is said of it when it is hovered or tapped, as the rows of a table: the name
+    # of a field and its value, the way the tooltips of the charts say it.
+    tip: Tip
     # Written on it when there is room: the logo, else the text, else the symbol that
     # stands in for a logo.
     text: str = ""
@@ -147,17 +163,14 @@ def bar(segments: list[Segment], scale: Decimal, ordered: bool = False) -> None:
                                 "opacity-40"
                             )
                 # a mouse hovers over it, a finger taps it and the tip stays until the next tap
-                ui.tooltip(segment.tip).classes("seg-tip").style(
-                    "white-space: pre-line"
-                )
+                with ui.tooltip().classes("seg-tip").props(TIP_PROPS):
+                    tip_table(segment.tip)
                 with (
                     ui.menu()
                     .classes("seg-menu")
-                    .props("anchor='top middle' self='bottom middle'")
+                    .props(f"anchor='top middle' self='bottom middle' {TIP_PROPS}")
                 ):
-                    ui.label(segment.tip).classes("px-3 py-2 text-sm").style(
-                        "white-space: pre-line"
-                    )
+                    tip_table(segment.tip)
 
 
 def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
@@ -227,31 +240,61 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
     return rows
 
 
-def dashboard_view(comparison: Comparison, name: str) -> None:
+def app_count(comparison: Comparison) -> int:
+    """How many applications run: the containers Varne cannot name count one by one."""
+    return sum(
+        len(app.containers) if app.app == OTHER else 1 for app in comparison.apps
+    )
+
+
+# What the lines of the cost of a machine are called on the page.
+LINE_LABELS = {
+    "Hardware amortization": "Cost of hardware",
+    "Electricity": "Cost of electricity",
+    "Hosting": "Cost of hosting",
+}
+
+
+def breakdown(owned: Ownership, avoided_cost: Decimal) -> None:
+    """What the cost of self-hosting is made of, and when the hardware pays back."""
+    with ui.column().classes("breakdown"):
+        for name, cost in owned.lines:
+            figure(LINE_LABELS.get(name, name), dollars(cost), "/ mo")
+
+        # only hardware that was bought can pay back, not a machine rented by the hour
+        result = payback(owned, avoided_cost)
+        if result is not None:
+            figure(
+                "Payback period",
+                "never, the subscriptions cost less than the machines"
+                if result.months is None
+                else duration(result.months),
+                apart=True,
+            )
+
+
+def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
     # one for each hosted service, however many applications stand in for it
     hosted = {
         app.hosted.id: app.hosted for app in comparison.apps if app.hosted is not None
     }
-    apps = sum(
-        len(app.containers) if app.app == OTHER else 1 for app in comparison.apps
-    )
     scale = max(comparison.avoided_cost, comparison.machine_cost)
     used = comparison.machine_cost - comparison.idle
 
-    with ui.row().classes("items-center gap-3"):
-        ui.label(name).classes("stack-title")
-        ui.label(plural(apps, "app")).classes("app-count")
+    # not in a card: it is what the page is about, and it stands out the more for it
+    with ui.column().classes("statement"):
+        ui.label("Homelab profitability").classes("statement-title")
 
-    with ui.card().classes("statement"):
-        ui.label("Monthly cost statement").classes("statement-title")
-
-        figure("Hosted alternatives", comparison.avoided_cost)
+        figure("Cost of hosted alternatives", dollars(comparison.avoided_cost), "/ mo")
         bar(
             [
                 Segment(
                     service.usd_per_month,
                     "seg-hosted",
-                    f"{service.label}\n{dollars(service.usd_per_month)} / mo",
+                    (
+                        ("Service", service.label),
+                        ("Price", f"{dollars(service.usd_per_month)} / mo"),
+                    ),
                     # the logo of the service, never that of the application
                     logo=(
                         f"/ui-assets/icons/{ICON_FILES[service.icon]}"
@@ -269,29 +312,44 @@ def dashboard_view(comparison: Comparison, name: str) -> None:
             ordered=True,
         )
 
-        figure("Self-hosted total", comparison.machine_cost)
+        figure("Cost of self-hosting", dollars(comparison.machine_cost), "/ mo")
         bar(
             [
                 Segment(
                     used,
                     "seg-used",
-                    f"Applications: {dollars(used)} / mo\nWhat the containers cost to run",
+                    (
+                        ("Applications", f"{dollars(used)} / mo"),
+                        ("Is", "what the containers cost to run"),
+                    ),
                 ),
                 Segment(
                     comparison.idle,
                     "seg-idle",
-                    f"Idle: {dollars(comparison.idle)} / mo\nCapacity that no container used",
+                    (
+                        ("Idle", f"{dollars(comparison.idle)} / mo"),
+                        ("Is", "capacity that no container used"),
+                    ),
                     text="Idle",
                 ),
                 Segment(
                     comparison.avoided_cost - comparison.machine_cost,
                     "seg-avoided",
-                    f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided\nWhat the subscriptions would cost beyond your machine",
+                    (
+                        (
+                            "Avoided",
+                            f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo",
+                        ),
+                        ("Is", "what the subscriptions would cost beyond your machine"),
+                    ),
                     text=f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided",
                 ),
             ],
             scale,
         )
+
+        if owned is not None:
+            breakdown(owned, comparison.avoided_cost)
 
     table = (
         ui.table(
@@ -344,10 +402,15 @@ async def page_dashboard() -> None:
             no_stacks()
             return
 
-        stack_select = create_stack_select(config)
+        # which stack it is about, and how many applications it has, live in the top bar
+        with layout.header_tools:
+            apps_badge = ui.label().classes("app-count")
+            apps_badge.set_visibility(False)
+            stack_select = create_stack_select(config)
 
         @ui.refreshable
         async def result() -> None:
+            apps_badge.set_visibility(False)
             stack_id = cast(StackId | None, stack_select.value)
             if stack_id is None:
                 no_stacks()
@@ -370,7 +433,11 @@ async def page_dashboard() -> None:
                 )
                 return
 
-            dashboard_view(compare(costs), stack.name)
+            comparison = compare(costs)
+            apps_badge.set_text(plural(app_count(comparison), "app"))
+            apps_badge.set_visibility(True)
+            docker = [x for x in offered_sources(stack) if isinstance(x, ConfigDocker)]
+            dashboard_view(comparison, ownership(docker, comparison.machine_cost))
 
             for source in offered_sources(stack):
                 with ui.card():
