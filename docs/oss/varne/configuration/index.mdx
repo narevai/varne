@@ -1,9 +1,9 @@
 ---
 title: "Configuration"
-description: "Describe your stacks and sources in one YAML file, edit it as text or in the form in Settings, and keep API tokens out of the file."
+description: "Describe your stacks and sources in one YAML file, edit it as text or in the form on Integrations, and keep API tokens out of the file."
 ---
 
-Varne reads one file, `config/varne.yaml` (or the path in `CONFIG_PATH`). It lists your **stacks** and their **sources**. You can edit it as text, or with the form in **Settings**.
+Varne reads one file, `config/varne.yaml` (or the path in `CONFIG_PATH`). It lists your **stacks** and their **sources**. You can edit it as text, or with the form on **Integrations**.
 
 ## The file
 
@@ -35,12 +35,12 @@ stacks:
 The other fields depend on the type. Each [source](/oss/varne/sources/index) page lists its fields, and the [reference](/oss/varne/configuration/reference) lists all of them.
 
 <Warning>
-  Do not change an `id` after you pulled data. Varne stores data under the stack and source ids, so a new id starts an empty history and leaves the old data behind. You can remove the old data on the **Dashboard**.
+  Do not change an `id` after you synced data. Varne stores data under the stack and source ids, so a new id starts an empty history and leaves the old data behind. You can remove the old data on the **Dashboard**.
 </Warning>
 
-## Edit in Settings
+## Edit on the Integrations page
 
-**Settings** has two tabs.
+The editor at the bottom of **Integrations** has two tabs.
 
 - **YAML** is a text editor for the file. **Save** checks the file and writes it only if it is valid. **Reset** brings back the saved text.
 - **Form** is the same configuration as fields. Add stacks and sources, pick a source type from the menu, and fill in the fields. Varne suggests an id from the name for new items.
@@ -77,8 +77,8 @@ If the variable is not set, the pull fails with `Environment variable 'BESZEL_PA
 
 ## When changes take effect
 
-- **Save in Settings** writes the file and loads it straight away.
-- Editing the file outside Varne works too. Varne reads the file again each time you open the **Dashboard**.
+- **Save** writes the file, loads it straight away, and reloads the page.
+- Editing the file outside Varne works too. Varne reads the file again each time you open the **Dashboard** or **Integrations**.
 - Changes to the environment variables of the container need a restart of the container.
 
-When you remove a source from the configuration, its stored data stays in the database. The **Dashboard** lists it greyed out as **Not in the configuration**, and you can delete its data there. See [Use the dashboard](/oss/varne/guides/dashboard).
+When you remove a source from the configuration, its stored data stays in the database. **Integrations** lists it greyed out as **Not in the configuration**, and you can delete its data there. See [Dashboard and integrations](/oss/varne/guides/dashboard).

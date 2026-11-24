@@ -1,9 +1,9 @@
 ---
 title: "Sources"
-description: "The sources Varne can pull, what each one provides, and what you need to connect it."
+description: "The sources Varne offers, what each one provides, and what you need to connect it."
 ---
 
-A source is one connection to a provider. You add sources to a stack in **Settings** or in `varne.yaml`, then pull them on the **Dashboard**.
+A source is one connection to a provider. You add sources to a stack on **Integrations** or in `varne.yaml`, then sync them there.
 
 <CardGroup cols={1}>
   <Card title="Docker" icon="docker" href="/oss/varne/sources/docker">
@@ -11,9 +11,9 @@ A source is one connection to a provider. You add sources to a stack in **Settin
   </Card>
 </CardGroup>
 
-## Other sources
+## In development
 
-Varne can also pull the billing of services you pay for, so their cost sits next to the cost of your own machines.
+Varne is getting sources for the services you pay for, so that their cost sits next to the cost of your own machines. The app does not offer them yet.
 
 <CardGroup cols={2}>
   <Card title="Vercel" icon="triangle" href="/oss/varne/sources/vercel">
@@ -30,13 +30,13 @@ Varne can also pull the billing of services you pay for, so their cost sits next
   </Card>
 </CardGroup>
 
-## What a pull does
+## What a sync does
 
-Pulling a source fetches the last `lookback_days` days (30 by default), stores the provider's raw response, and turns it into rows of cost and usage. A pull also refreshes the source's metadata, so you do not run a separate sync.
+Syncing a source fetches the last `lookback_days` days (30 by default), stores the provider's raw response, and turns it into rows of cost and usage. A sync also refreshes the source's metadata.
 
-- You can pull as often as you like. For each day, Varne uses the newest pull, so pulling again never counts a day twice.
-- Pull a source whenever you want fresh numbers. Varne does not pull on a schedule.
-- If a pull fails, the **Dashboard** shows the provider's error. A failed source does not stop **Pull all** from pulling the others.
+- You can sync as often as you like. For each day, Varne uses the newest sync, so syncing again never counts a day twice.
+- Sync a source whenever you want fresh numbers. Varne does not sync on a schedule.
+- If a sync fails, **Integrations** shows the provider's error. A failed source does not stop **Sync all** from syncing the others.
 
 ## Currency
 

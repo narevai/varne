@@ -59,7 +59,7 @@
                 "icon": "book-open"
               },
               {
-                "group": "More sources",
+                "group": "In development",
                 "pages": [
                   "oss/varne/sources/index",
                   "oss/varne/sources/vercel",

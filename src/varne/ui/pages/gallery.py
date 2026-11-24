@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from nicegui import ui
 
 from varne.settings import get_settings
+from varne.ui.components.in_development import in_development
 from varne.ui.layout import create_layout
 
 # Examples are trusted source constants, never user-supplied code. Keeping source
@@ -546,6 +547,7 @@ def page_gallery(component: str | None = None) -> None:
             with ui.element("section").props(f'id="ui-{name}"').classes("gallery-demo"):
                 ui.html(f"<h2>ui.{name}</h2>")
                 render_example(name)
+        in_development()
         if component is not None:
             ui.run_javascript(
                 f'document.getElementById("ui-{component}")?.scrollIntoView({{block: "start"}})'

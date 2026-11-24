@@ -11,6 +11,7 @@ from varne.catalog.comparison import application_of, image_of
 from varne.config import SourceId, StackId
 from varne.db.lock import serialized
 from varne.db.types import DatabaseBackend
+from varne.providers.docker.allocation import IDLE
 from varne.ui.components.bar_chart import bar_chart
 
 
@@ -66,11 +67,27 @@ async def application_costs(
         ui.label("No cost data available")
         return
 
-    bar_chart(
-        "Cost per application (USD)",
-        df,
-        x="day",
-        y="cost",
-        series="application",
-        value_format=".2~r",
-    )
+    is_idle = cast(pd.Series, df["application"] == IDLE)
+    applications = cast(pd.DataFrame, df[~is_idle])
+    idle = cast(pd.DataFrame, df[is_idle])
+
+    with ui.element("div").classes("chart-pair"):
+        if not applications.empty:
+            bar_chart(
+                "Cost per application (USD)",
+                applications,
+                x="day",
+                y="cost",
+                series="application",
+                value_format=".2~r",
+            )
+
+        if not idle.empty:
+            bar_chart(
+                "Idle (USD)",
+                idle,
+                x="day",
+                y="cost",
+                series="application",
+                value_format=".2~r",
+            )

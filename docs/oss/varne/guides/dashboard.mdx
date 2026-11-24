@@ -1,54 +1,52 @@
 ---
-title: "Use the dashboard"
-description: "Pull your sources, read the charts, and remove the data of sources you no longer use."
+title: "Dashboard and integrations"
+description: "Sync your sources, read the cost statement and the charts, and remove the data of sources you no longer use."
 ---
 
-The **Dashboard** is where you pull sources and read their costs. The menu on the left leads to **Dashboard**, **Self-hosted**, **Settings**, and the documentation.
+The menu on the left leads to **Dashboard**, **Integrations**, and the documentation. **Integrations** is where you set up and sync sources. **Dashboard** is where you read what they cost.
 
 ## Pick a stack
 
-The selector at the top lists the stacks of your configuration. Everything below shows the selected stack. Without a stack, the page asks you to add one in **Settings**. A stack without sources asks you to add one.
+The selector at the top of both pages lists the stacks of your configuration, and everything below shows the selected stack. Without a stack, **Integrations** asks you to add one in the editor at the bottom of the page.
 
-## Pull data
+## Sync your sources
 
-The **Sources** table lists every source of the stack, with its type and a status:
+The **Integrations** page lists every source of the stack, with its type and when it was last synced:
 
-| Status | Meaning |
+| Last synced | Meaning |
 | --- | --- |
-| **Pulled** | The source has been pulled at least once |
-| **Not pulled yet** | Nothing is stored for it |
-| **Not in the configuration** | Data is stored, but the source is no longer in the configuration |
+| A date, in UTC | When the source left something in the database last |
+| **Never** | Nothing is stored for it |
+| **Not in the configuration** (in the type column) | Data is stored, but the source is no longer in the configuration |
 
-- Click **Pull** in a row to pull that source.
-- Click **Pull all** to pull every source of the stack, one after another.
+- Click **Sync** in a row to sync that source.
+- Click **Sync all** to sync every source of the stack, one after another.
 
-A pull fetches the source's metadata and its data together, for the last `lookback_days` days. See [Sources](/oss/varne/sources/index#what-a-pull-does). When it finishes, the page refreshes and shows how many sources were pulled. If a source fails, you get a message with the reason, and the other sources carry on.
+A sync fetches the source's metadata and its data together, for the last `lookback_days` days. See [Sources](/oss/varne/sources/index#what-a-sync-does). When it finishes, the table refreshes with the new date. If a source fails, you get a message with the reason, and the other sources carry on.
 
-## Read the charts
+## Edit the configuration
 
-Below the table you see:
+Below the table is the editor of the configuration, with a **Form** tab and a **YAML** tab. See [Configuration](/oss/varne/configuration/index#edit-on-the-integrations-page). Saving reloads the page, so new stacks and sources show up right away.
 
-- **Cost per day** for the whole stack, with one series for each source.
-- A card for each source:
-  - **Billing** of the source per day and service, and **Usage** such as visitors, pageviews, or sessions.
-  - **Cost per visitor** when a source has both billing and visitors.
-  - For a [Docker source](/oss/varne/sources/docker), the **cost per application per day**, with **Idle** as its own series.
+## Read the dashboard
 
-Sources that you have removed from the configuration are not part of any chart.
+The **Dashboard** shows the selected stack:
+
+- The **Monthly cost statement**: two bars on one scale, what the subscriptions your applications replace would cost, and what your machine costs. Hover a segment to see what it is.
+- A table with each application, what it costs to run, the subscription it replaces, and the difference. See [Self-hosted costs](/oss/varne/self-hosted/index).
+- For each [Docker source](/oss/varne/sources/docker), the **cost per application per day** and the **idle capacity** per day, side by side.
+
+Without synced data, the page asks you to sync a Docker source on **Integrations**.
 
 ## Remove the data of a source
 
-When you remove a source from the configuration, its data stays in the database. It appears in the **Sources** table greyed out, with the status **Not in the configuration** and a trash button instead of **Pull**.
+When you remove a source from the configuration, its data stays in the database. It appears on **Integrations** greyed out, with **Not in the configuration** and a trash button instead of **Sync**.
 
 1. Click the trash button.
 2. Confirm. Varne deletes everything it stored for that source: the raw responses, the metadata, the costs, and the usage.
 
 <Warning>
-  Deleting is permanent. The data of other sources is not touched. If you only renamed or re-added a source, pull it again instead of deleting.
+  Deleting is permanent. The data of other sources is not touched. If you only renamed or re-added a source, sync it again instead of deleting.
 </Warning>
 
 Data of a whole stack that you removed from the configuration cannot be removed in the interface, because the stack selector lists only configured stacks.
-
-## The Self-hosted page
-
-For Docker sources, open **Self-hosted** to see each application's cost and the return on your machine. See [Self-hosted costs](/oss/varne/self-hosted/index).

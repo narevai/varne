@@ -15,7 +15,7 @@ description: "Fix common problems with starting Varne, saving the configuration,
   </Accordion>
 
   <Accordion title="&quot;Configuration failed to load&quot;">
-  Varne shows this when `varne.yaml` is not valid, together with the first error and the file's path. Open **Settings**, fix the text in the **YAML** tab, and save. Until the file is valid, Varne works with an empty configuration. It does not overwrite your file.
+  Varne shows this when `varne.yaml` is not valid, together with the first error and the file's path. Open **Integrations**, fix the text in the **YAML** tab of the editor, and save. Until the file is valid, Varne works with an empty configuration. It does not overwrite your file.
 
   Typical errors:
 
@@ -27,7 +27,7 @@ description: "Fix common problems with starting Varne, saving the configuration,
   | `stacks.0.sources.1.type: ...` | The source has no `type`, or an unknown one |
   </Accordion>
 
-  <Accordion title="A pull fails">
+  <Accordion title="A sync fails">
   The message tells you the source and the reason. Common reasons:
 
   - **401 or 403.** The key is wrong, expired, or lacks access. Anthropic and OpenAI need Admin API keys. See [Anthropic](/oss/varne/sources/anthropic) and [OpenAI](/oss/varne/sources/openai).
@@ -36,14 +36,14 @@ description: "Fix common problems with starting Varne, saving the configuration,
   </Accordion>
 
   <Accordion title="A chart is empty">
-  - Pull the source first. A new source has the status **Not pulled yet**.
-  - The provider may have no cost in the last `lookback_days` days. Raise `lookback_days` and pull again.
+  - Sync the source first. A new source shows **Never** under **Last synced**.
+  - The provider may have no cost in the last `lookback_days` days. Raise `lookback_days` and sync again.
   - A source with no `project_ids` (Vercel) has no usage charts.
   </Accordion>
 
-  <Accordion title="The Self-hosted page is empty or everything is Idle">
-  - Pull a Docker source on the **Dashboard** first.
-  - If everything is **Idle**, Beszel had no capacity data for the period. Check that the Beszel agent runs, and pull again.
+  <Accordion title="The Dashboard is empty or everything is Idle">
+  - Sync a Docker source on **Integrations** first.
+  - If everything is **Idle**, Beszel had no capacity data for the period. Check that the Beszel agent runs, and sync again.
   </Accordion>
 
   <Accordion title="I removed a source but it is still on the dashboard">

@@ -3,6 +3,10 @@ title: "OpenAI"
 description: "Pull the daily cost of your OpenAI organization into Varne with an Admin API key."
 ---
 
+<Warning>
+  This source is in development. The app does not offer it yet, so it does not show on **Integrations** or on the **Dashboard**. The page stays here for when it does.
+</Warning>
+
 The OpenAI source reads the organization costs endpoint. You get the daily cost split by line item and project.
 
 ## What you need
@@ -22,8 +26,8 @@ The OpenAI source reads the organization costs endpoint. You get the daily cost 
       api_token_env: OPENAI_ADMIN_KEY
     ```
   </Step>
-  <Step title="Pull">
-    On the **Dashboard**, click **Pull** next to the source.
+  <Step title="Sync">
+    On **Integrations**, click **Sync** next to the source.
   </Step>
 </Steps>
 
@@ -32,7 +36,7 @@ The OpenAI source reads the organization costs endpoint. You get the daily cost 
 | Field | Required | Description |
 | --- | --- | --- |
 | `api_token` or `api_token_env` | one of | The Admin API key |
-| `lookback_days` | no | Days of history per pull. Default 30 |
+| `lookback_days` | no | Days of history per sync. Default 30 |
 
 ## What you see
 
@@ -44,4 +48,4 @@ A chart of cost per day with one series per line item, such as a model's input a
 | --- | --- |
 | `401`, `403`, or `404` | The key is a regular API key. Create an Admin API key |
 | `Environment variable ... is not set` | `api_token_env` names a variable the container does not have |
-| Empty chart after a pull | No cost in the last `lookback_days` days |
+| Empty chart after a sync | No cost in the last `lookback_days` days |

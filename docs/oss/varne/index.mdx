@@ -17,8 +17,7 @@ flowchart LR
     A["Your machine<br/>and its containers"] --> B["Beszel hub<br/>CPU and memory"]
     B --> C["Varne<br/>cost per container"]
     D["What the machine costs<br/>hourly, or price and power"] --> C
-    C --> E["Dashboard<br/>cost per application"]
-    C --> F["Self-hosted<br/>return on investment"]
+    C --> E["Dashboard<br/>cost per application<br/>and return on investment"]
 ```
 
 ## Get started
@@ -53,23 +52,23 @@ flowchart LR
 
 <Steps>
   <Step title="Configure">
-    List your stacks and sources in `config/varne.yaml`, or fill in the form in **Settings**.
+    List your stacks and sources in `config/varne.yaml`, or fill in the form on **Integrations**.
   </Step>
-  <Step title="Pull">
-    On the **Dashboard**, pull a source. Varne reads the container usage from Beszel and turns it into cost per container.
+  <Step title="Sync">
+    On **Integrations**, sync a source. Varne reads the container usage from Beszel and turns it into cost per container.
   </Step>
   <Step title="Read">
-    The **Dashboard** shows the cost per application. **Self-hosted** compares your machines with the subscriptions they replace.
+    The **Dashboard** shows the cost per application and compares your machines with the subscriptions they replace.
   </Step>
 </Steps>
 
-A **stack** groups the sources of one product or one place. A **source** is one connection, such as a Docker host. Varne can also pull billing of services you pay for, such as Vercel, Anthropic, OpenAI, and Umami. See [more sources](/oss/varne/sources/index).
+A **stack** groups the sources of one product or one place. A **source** is one connection, such as a Docker host. Billing sources such as Vercel, Anthropic, OpenAI, and Umami are in development. See [Sources](/oss/varne/sources/index).
 
 ## Keep exploring
 
 <CardGroup cols={3}>
   <Card title="Configuration" icon="gear" href="/oss/varne/configuration/index">
-    The YAML file and the form in **Settings**.
+    The YAML file and the form on **Integrations**.
   </Card>
   <Card title="Deploy with Docker" icon="cube" href="/oss/varne/getting-started/deployment">
     Volumes, environment variables, and keeping Varne private.

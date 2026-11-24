@@ -3,6 +3,10 @@ title: "Vercel"
 description: "Pull Vercel billing charges and web analytics visits into Varne, and see the cost per visitor."
 ---
 
+<Warning>
+  This source is in development. The app does not offer it yet, so it does not show on **Integrations** or on the **Dashboard**. The page stays here for when it does.
+</Warning>
+
 The Vercel source pulls the [billing charges](https://vercel.com/docs/rest-api/reference/endpoints/billing/list-focus-billing-charges) of a team, and optionally the web analytics visits of projects.
 
 ## What you need
@@ -25,8 +29,8 @@ The Vercel source pulls the [billing charges](https://vercel.com/docs/rest-api/r
       api_token_env: VERCEL_TOKEN
     ```
   </Step>
-  <Step title="Pull">
-    On the **Dashboard**, click **Pull** next to the source.
+  <Step title="Sync">
+    On **Integrations**, click **Sync** next to the source.
   </Step>
 </Steps>
 
@@ -37,7 +41,7 @@ The Vercel source pulls the [billing charges](https://vercel.com/docs/rest-api/r
 | `api_token` or `api_token_env` | one of | The access token |
 | `team_id` | yes | The team whose charges you pull |
 | `project_ids` | no | Projects whose web analytics you pull. Leave it out to skip analytics |
-| `lookback_days` | no | Days of history per pull. Default 30 |
+| `lookback_days` | no | Days of history per sync. Default 30 |
 
 ## What you see
 
