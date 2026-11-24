@@ -1,16 +1,43 @@
+from types import TracebackType
+
 from loguru import logger
 from nicegui import context, ui
 from nicegui.elements.column import Column
+from nicegui.elements.row import Row
 
 from varne.dependencies import get_config_manager
 from varne.settings import get_settings
 from varne.ui import theme  # noqa: F401
 from varne.ui.components.nav_item import nav_item
+from varne.ui.components.tip import tip
 
 DOCS_URL = "https://www.narev.ai/docs/varne/v1/index"
 
 
-def create_layout(title: str = "") -> Column:
+class Layout:
+    """The shell of a page: the place for its content, and the place in the top bar for
+    what the page says of itself, such as which stack it is about.
+
+    `with layout:` puts what follows into the content.
+    """
+
+    def __init__(self, content: Column, header_tools: Row) -> None:
+        self.content: Column = content
+        self.header_tools: Row = header_tools
+
+    def __enter__(self) -> Column:
+        return self.content.__enter__()
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self.content.__exit__(exc_type, exc_value, traceback)
+
+
+def create_layout(title: str = "") -> Layout:
     dark = ui.dark_mode(True)
     config_manager = get_config_manager()
     if config_manager.error is not None:
@@ -49,9 +76,11 @@ def create_layout(title: str = "") -> Column:
         if get_settings().demo_mode:
             ui.label("Demo").classes("app-count")
         ui.space()
-        ui.button(icon="contrast", on_click=lambda: dark.toggle()).props(
+        header_tools = ui.row().classes("header-tools")
+        with ui.button(icon="contrast", on_click=lambda: dark.toggle()).props(
             "flat dense round"
-        ).tooltip("Switch theme")
+        ):
+            tip(("Theme", "switch between light and dark"))
 
     with context.client.layout:
         with ui.page_scroller(position="bottom-right", x_offset=20, y_offset=20):
@@ -59,4 +88,4 @@ def create_layout(title: str = "") -> Column:
 
     content = ui.column()
 
-    return content
+    return Layout(content, header_tools)

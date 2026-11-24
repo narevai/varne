@@ -18,14 +18,18 @@ For the applications Varne knows, see [Supported applications](/oss/varne/self-h
 
 ## The dashboard
 
-At the top is the **Monthly cost statement**, for one month of 730 hours. It has two bars on one scale:
+At the top is **Homelab profitability**, for one month of 730 hours. It has two bars on one scale:
 
 | Bar | Meaning |
 | --- | --- |
-| **Hosted alternatives** | What the subscriptions your applications replace would cost in a month. One segment for each subscription, named after it when it is wide enough. Hover a segment for its name and price |
-| **Self-hosted total** | What your machine costs in a month: the applications, and the **Idle** capacity that no container used. When the subscriptions would cost more than the machine, the rest of the bar shows the difference as **avoided** |
+| **Cost of hosted alternatives** | What the subscriptions your applications replace would cost in a month. One segment for each subscription, named after it when it is wide enough. Hover a segment for its name and price |
+| **Cost of self-hosting** | What your machine costs in a month: the applications, and the **Idle** capacity that no container used. When the subscriptions would cost more than the machine, the rest of the bar shows the difference as **avoided** |
 
-Below the statement is a table with one row per application:
+Under the **Cost of self-hosting** bar, the cost is broken down into its lines, as in your configuration: **Cost of hardware** (the price spread over the years you set, see [Docker](/oss/varne/sources/docker#how-the-machine-cost-is-built)) and **Cost of electricity**, which add up to the cost above them. A machine rented by the hour has one line, **Cost of hosting**.
+
+When the hardware was bought, **Payback period** says when it has paid for itself: the price of the hardware divided by what you save in a month, which is the cost of the hosted alternatives less the **Cost of self-hosting** (the number the bar calls **avoided**). A machine rented by the hour has nothing to pay back, so the line is not there. If the subscriptions would cost less than the machines, it says that it never does.
+
+Below that is a table with one row per application:
 
 | Column | Meaning |
 | --- | --- |
