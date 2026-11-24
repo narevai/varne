@@ -3,7 +3,6 @@ from typing import NamedTuple, cast
 
 from nicegui import run, ui
 
-from varne.catalog.apps import ALTERNATIVE_ICONS
 from varne.catalog.comparison import (
     OTHER,
     AppComparison,
@@ -35,6 +34,19 @@ ROW_WITH_LOGO = """
                 </q-tooltip>
             </div>
         </div>
+    </div>
+</q-td>
+"""
+HOSTED_CELL = """
+<q-td :props="props">
+    <div class="row items-center no-wrap" style="gap: 10px">
+        <template v-if="props.row.hosted">
+            <img v-if="props.row.hosted_icon" :src="props.row.hosted_icon"
+                 :class="props.row.hosted_mono ? 'logo-mono' : ''"
+                 style="width: 24px; height: 24px; flex: none; object-fit: contain" />
+            <q-icon v-else name="apps" size="24px" class="opacity-40" />
+        </template>
+        <span>{{ props.value }}</span>
     </div>
 </q-td>
 """
@@ -95,26 +107,26 @@ class Segment(NamedTuple):
     amount: Decimal
     kind: str
     tip: str
-    # Written on it when there is room: the logo if there is one, else the text.
+    # Written on it when there is room: the logo, else the text, else the symbol that
+    # stands in for a logo.
     text: str = ""
     logo: str = ""
+    # A logo drawn in black only, to be shown light on the dark theme.
+    mono: bool = False
+    placeholder: str = ""
 
 
 def bar(segments: list[Segment], scale: Decimal, ordered: bool = False) -> None:
     """One bar, on a scale that it shares with the other.
 
     What is written on a segment is shown where it fits, see theme.py. On an ordered
-    bar it stops at the first segment that has nothing to write or no room for it: no
-    segment to its right is written on.
+    bar it stops at the first segment where it does not fit: no segment to its right
+    is written on.
     """
-    stopped = False
     with ui.element("div").classes("bar bar-ordered" if ordered else "bar"):
         for segment in segments:
             if segment.amount <= 0 or scale <= 0:
                 continue
-
-            if ordered and not (segment.logo or segment.text):
-                stopped = True
 
             width = f"{float(segment.amount / scale * 100):.2f}%"
             with (
@@ -122,14 +134,18 @@ def bar(segments: list[Segment], scale: Decimal, ordered: bool = False) -> None:
                 .classes(f"bar-seg {segment.kind}")
                 .style(f"width: {width}")
             ):
-                if (segment.logo or segment.text) and not stopped:
+                if segment.logo or segment.text or segment.placeholder:
                     with ui.element("div").classes("seg-text"):
                         if segment.logo:
                             ui.element("img").props(f"src={segment.logo}").classes(
-                                "seg-logo"
+                                "seg-logo logo-mono" if segment.mono else "seg-logo"
                             )
-                        else:
+                        elif segment.text:
                             ui.label(segment.text)
+                        else:
+                            ui.icon(segment.placeholder, size="24px").classes(
+                                "opacity-40"
+                            )
                 # a mouse hovers over it, a finger taps it and the tip stays until the next tap
                 ui.tooltip(segment.tip).classes("seg-tip").style(
                     "white-space: pre-line"
@@ -164,6 +180,14 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
             else "",
             "self_hosted": dollars(app.self_hosted),
             "alternative": app.alternative or "",
+            # the logo of the service, never that of the application
+            "hosted": "yes" if app.hosted else "",
+            "hosted_icon": (
+                f"/ui-assets/icons/{ICON_FILES[app.hosted.icon]}"
+                if app.hosted and app.hosted.icon
+                else ""
+            ),
+            "hosted_mono": "yes" if app.hosted and app.hosted.mono else "",
             "avoided_cost": dollars(app.avoided_cost),
             "difference": money(difference),
             "tone": tone(difference),
@@ -178,6 +202,9 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
             "all_containers": "",
             "self_hosted": dollars(cost),
             "alternative": "Not compared",
+            "hosted": "",
+            "hosted_icon": "",
+            "hosted_mono": "",
             "avoided_cost": "—",
             "difference": f"({dollars(cost)})",
             "tone": "text-negative",
@@ -201,18 +228,10 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
 
 
 def dashboard_view(comparison: Comparison, name: str) -> None:
-    hosted: dict[str, Decimal] = {
-        app.alternative: app.avoided_cost
-        for app in comparison.apps
-        if app.alternative is not None and app.avoided_cost is not None
+    # one for each hosted service, however many applications stand in for it
+    hosted = {
+        app.hosted.id: app.hosted for app in comparison.apps if app.hosted is not None
     }
-    # the logo of the subscription, or else of the first application that stands in
-    # for it
-    logos: dict[str, str] = {}
-    for app in comparison.apps:
-        icon = ALTERNATIVE_ICONS.get(app.alternative or "") or app.icon
-        if app.alternative and icon and app.alternative not in logos:
-            logos[app.alternative] = f"/ui-assets/icons/{ICON_FILES[icon]}"
     apps = sum(
         len(app.containers) if app.app == OTHER else 1 for app in comparison.apps
     )
@@ -230,13 +249,20 @@ def dashboard_view(comparison: Comparison, name: str) -> None:
         bar(
             [
                 Segment(
-                    price,
+                    service.usd_per_month,
                     "seg-hosted",
-                    f"{alternative}\n{dollars(price)} / mo",
-                    logo=logos.get(alternative, ""),
+                    f"{service.label}\n{dollars(service.usd_per_month)} / mo",
+                    # the logo of the service, never that of the application
+                    logo=(
+                        f"/ui-assets/icons/{ICON_FILES[service.icon]}"
+                        if service.icon
+                        else ""
+                    ),
+                    mono=service.mono,
+                    placeholder="apps",
                 )
-                for alternative, price in sorted(
-                    hosted.items(), key=lambda item: item[1], reverse=True
+                for service in sorted(
+                    hosted.values(), key=lambda s: s.usd_per_month, reverse=True
                 )
             ],
             scale,
@@ -293,6 +319,7 @@ def dashboard_view(comparison: Comparison, name: str) -> None:
         .props("hide-bottom")
     )
     table.add_slot("body-cell-app", ROW_WITH_LOGO)
+    table.add_slot("body-cell-alternative", HOSTED_CELL)
     table.add_slot("body-cell-difference", DIFFERENCE_CELL)
 
     net = comparison.avoided_cost - comparison.machine_cost
