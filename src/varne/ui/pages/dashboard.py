@@ -3,21 +3,17 @@ from typing import cast
 
 from nicegui import run, ui
 
-from varne.analytics.comparison import get_container_costs
 from varne.catalog.comparison import (
     OTHER,
     AppComparison,
     Comparison,
-    ContainerCost,
     compare,
-    image_of,
 )
 from varne.catalog.images import ICON_FILES
 from varne.config import StackId, offered_sources
-from varne.db.lock import serialized
-from varne.db.types import DatabaseBackend
 from varne.dependencies import get_config_manager, get_db
 from varne.ui.components.application_costs import application_costs
+from varne.ui.components.container_costs import get_container_cost_rows
 from varne.ui.components.container_names import container_label
 from varne.ui.components.empty_state import empty_state, no_sources, no_stacks
 from varne.ui.components.stack_select import create_stack_select
@@ -47,31 +43,6 @@ DIFFERENCE_CELL = """
 
 # A segment of a bar is named only when it is wide enough to read the name.
 MIN_SHARE_FOR_TEXT = Decimal("0.06")
-
-
-@serialized
-def get_container_cost_rows(
-    db: DatabaseBackend, stack_id: StackId
-) -> list[ContainerCost]:
-    df = get_container_costs(db, stack_id).to_pandas()
-
-    return [
-        ContainerCost(
-            source_id=source_id,
-            name=name,
-            image=image_of(tags),
-            cost=Decimal(str(cost)),
-            hours=Decimal(str(hours)),
-        )
-        for source_id, name, tags, cost, hours in zip(
-            cast(list[str], df["source_id"].tolist()),
-            cast(list[str], df["service_name"].tolist()),
-            cast(list[str], df["tags"].tolist()),
-            cast(list[object], df["cost"].tolist()),
-            cast(list[object], df["hours"].tolist()),
-            strict=True,
-        )
-    ]
 
 
 def dollars(amount: Decimal | None) -> str:

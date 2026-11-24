@@ -17,6 +17,7 @@ from varne.config import (
 from varne.db.connection import create_connection
 from varne.db.schema import create_tables
 from varne.db.types import DatabaseBackend
+from varne.demo.usage import DemoUsage
 from varne.http import create_http_client
 from varne.providers.anthropic.client import AnthropicClient
 from varne.providers.anthropic.service import AnthropicService
@@ -56,7 +57,7 @@ def get_http() -> httpx.Client:
 def get_config_manager() -> ConfigManager:
     settings = get_settings()
 
-    manager = ConfigManager(path=settings.config_path)
+    manager = ConfigManager(path=settings.config_path, read_only=settings.demo_mode)
     manager.load()
 
     return manager
@@ -113,7 +114,10 @@ def get_service(stack_id: StackId, source: ConfigSource) -> ProviderService:
         case ConfigDocker():
             return DockerService(
                 db=get_db(),
-                usage=BeszelUsage(
+                # the demo has no hub to read, its host is made up
+                usage=DemoUsage()
+                if get_settings().demo_mode
+                else BeszelUsage(
                     BeszelClient(
                         http=get_http(),
                         url=source.usage.url,

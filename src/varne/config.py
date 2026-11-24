@@ -207,9 +207,15 @@ def parse_config(text: str) -> ConfigVarne:
         raise ValueError(f"{'.'.join(map(str, error['loc']))}: {error['msg']}") from exc
 
 
+READ_ONLY_MESSAGE = "This is a demo, its configuration cannot be changed."
+
+
 class ConfigManager:
-    def __init__(self, path: Path | str):
+    def __init__(self, path: Path | str, read_only: bool = False):
         self.path: Path = Path(path)
+        # a demo is looked at, not changed: anyone who opens it would change it for
+        # everyone
+        self.read_only: bool = read_only
         self.config: ConfigVarne | None = None
         self.error: str | None = None
 
@@ -231,6 +237,9 @@ class ConfigManager:
         return self.config
 
     def save_text(self, text: str) -> str | None:
+        if self.read_only:
+            return READ_ONLY_MESSAGE
+
         try:
             parse_config(text)
         except ValueError as exc:
@@ -244,7 +253,9 @@ class ConfigManager:
         self.load()
         return None
 
-    def save(self):
+    def save(self) -> None:
+        if self.read_only:
+            raise PermissionError(READ_ONLY_MESSAGE)
 
         if self.config is None:
             config_current = ConfigVarne(stacks=[]).model_dump(

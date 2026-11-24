@@ -50,7 +50,7 @@ docker compose up -d
 
 If you do not mount `/app/config`, Varne creates a new empty configuration each time you recreate the container.
 
-The database holds raw provider responses and the rows built from them. Pulling again replaces a day's rows with the newest pull, so you can pull as often as you like.
+The database holds raw provider responses and the rows built from them. Syncing again replaces a day's rows with the newest sync, so you can sync as often as you like.
 
 ## Environment variables
 
@@ -65,8 +65,25 @@ Varne reads these variables, or the same names from a `.env` file in its working
 | `LOG_LEVEL` | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR`, or `CRITICAL` |
 | `ENVIRONMENT` | `production` | Set to `development` to show an extra **Components** page |
 | `DEBUG` | `false` | Developer mode with auto reload. Leave it off |
+| `ENABLE_TELEMETRY` | `true` | Set to `false` to send no anonymous start event. See [Telemetry](#telemetry) |
+| `DEMO_MODE` | `false` | Set to `true` to run a sample stack on a database of its own. See [Demo mode](#demo-mode) |
 
 Secrets such as API tokens are not Varne settings. Put them in environment variables of your own and reference them from the configuration with `api_token_env` or `password_env`. See [Configuration](/oss/varne/configuration/index#keep-secrets-out-of-the-file).
+
+## Telemetry
+
+When Varne starts, it sends one anonymous event so that we know how many Varnes run. It holds the Varne version, the environment, whether it is a demo, and a random id that stays next to your database. It holds nothing about your stacks, your sources, your costs, or your keys. As with any request, the receiving service sees the address the request comes from. It is sent to [Umami](https://umami.is), under its own name and page for Varne 1, so it is not mixed up with the event of Varne 0.
+
+Nothing is sent when you run with `ENVIRONMENT=development`. To turn it off, set `ENABLE_TELEMETRY=false`.
+
+## Demo mode
+
+Set `DEMO_MODE=true` to look around without connecting anything. Varne then uses a sample stack, **Demo homelab**, on a database and a configuration of its own, `demo.duckdb` and `demo.yaml` next to your usual files, so nothing of yours is touched. The sample machine and its thirteen containers are made up, and their last ten days are generated after the app has started, so a few seconds pass before the dashboard fills in. **Sync** works too, and generates the days up to now again.
+
+The configuration of a demo cannot be changed: **Integrations** shows it, and saving is refused, because Varne has no login and anyone who opens the demo would change it for everyone. Syncing the sample source and deleting stored data still work, and every start of Varne puts the demo back as it was.
+
+The demo reads no real machine and calls no real service. Leave `DEMO_MODE` off for your own use.
+
 
 ## Health check
 

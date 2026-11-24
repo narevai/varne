@@ -7,6 +7,7 @@ from pydantic import ValidationError
 
 from varne.config import (
     DEFAULT_LOOKBACK_DAYS,
+    READ_ONLY_MESSAGE,
     ConfigAnthropic,
     ConfigDocker,
     ConfigManager,
@@ -155,6 +156,17 @@ def test_config_save_text_valid(config_single_source: Path):
     assert manager.config is not None
     assert manager.config.stacks[0].id == "stack_new"
     assert manager.error is None
+
+
+def test_a_read_only_config_cannot_be_changed(config_single_source: Path):
+    before = config_single_source.read_text()
+    manager = ConfigManager(config_single_source, read_only=True)
+
+    assert manager.save_text("stacks: []\n") == READ_ONLY_MESSAGE
+    with pytest.raises(PermissionError):
+        manager.save()
+
+    assert config_single_source.read_text() == before
 
 
 def test_config_save_text_invalid_keeps_file(config_single_source: Path):

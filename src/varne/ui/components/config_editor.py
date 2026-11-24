@@ -2,6 +2,7 @@ from collections.abc import Callable
 
 from nicegui import ui
 
+from varne.config import READ_ONLY_MESSAGE
 from varne.dependencies import get_config_manager
 from varne.ui.components.config_form import (
     Data,
@@ -17,6 +18,12 @@ FORM_TAB = "Form"
 def config_editor(on_saved: Callable[[], None]) -> None:
     """The configuration as a form and as text, saved to the file when it is valid."""
     config_manager = get_config_manager()
+
+    if config_manager.read_only:
+        # nothing to edit: it is shown, and the text says why it cannot be changed
+        ui.label(READ_ONLY_MESSAGE).classes("text-sm opacity-70")
+        ui.code(config_manager.path.read_text(), language="yaml").classes("w-full")
+        return
 
     def save_text(text: str) -> None:
         error = config_manager.save_text(text)
