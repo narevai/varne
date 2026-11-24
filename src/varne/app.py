@@ -7,8 +7,6 @@ from nicegui import app as nicegui_app
 from nicegui import ui
 
 from varne.api.v1 import router
-from varne.cassettes import CassetteManager
-from varne.demo import DEMO_CASSETTE
 from varne.demo.seed import reset_demo, seed_demo
 from varne.settings import get_settings
 from varne.telemetry import track_server_start
@@ -25,20 +23,14 @@ logger.add(sys.stderr, level=settings.log_level)
 app = nicegui_app
 app.include_router(router, prefix="/api/v1")
 cassette_manager = None
-demo_cassettes: CassetteManager | None = None
 background: asyncio.Task[None] | None = None
 
 
 async def after_start() -> None:
     """What waits until the app is up, so that it never holds the start back."""
-    global demo_cassettes
-
-    # first, because the demo plays back every request that comes after it
     await track_server_start(settings)
 
     if settings.demo_mode:
-        demo_cassettes = CassetteManager([DEMO_CASSETTE])
-        demo_cassettes.start()
         try:
             await asyncio.to_thread(seed_demo)
         except Exception as exc:
@@ -66,8 +58,6 @@ def shutdown() -> None:
     global cassette_manager
     if background is not None:
         _ = background.cancel()
-    if demo_cassettes is not None:
-        demo_cassettes.stop()
     if cassette_manager is not None:
         cassette_manager.stop()
 

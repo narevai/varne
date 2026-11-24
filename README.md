@@ -62,7 +62,7 @@ Turn it off with `ENABLE_TELEMETRY=false`.
 
 ## Demo mode
 
-`DEMO_MODE=true` runs a sample stack on a database and a configuration of its own (`demo.duckdb` and `demo.yaml` next to yours), filled in from a recording once the app is up. Nothing of yours is touched, its configuration cannot be changed, and every start puts the demo back as it was.
+`DEMO_MODE=true` runs a sample stack on a database and a configuration of its own (`demo.duckdb` and `demo.yaml` next to yours), filled in with made up data once the app is up. Nothing of yours is touched, its configuration cannot be changed, and every start puts the demo back as it was.
 
 ```bash
 docker run -p 8000:8000 -e DEMO_MODE=true ghcr.io/narevai/varne:nightly

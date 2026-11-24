@@ -1,16 +1,13 @@
 """A sample stack to look around in, on a database and a configuration of its own.
 
-The hub it reads is a recording of a real Beszel hub, played back, so the demo needs
-no machine and no network. The recording ends at `DEMO_NOW`, and so does the clock
-of the demo, or its days would be empty.
+The Docker host in it is made up, see `usage.py`, so the demo needs no machine and no
+network. Its days are the last ten, up to now.
 """
 
-from datetime import UTC, datetime
-from pathlib import Path
-
-DEMO_NOW = datetime(2026, 11, 20, 15, tzinfo=UTC)
-DEMO_CASSETTE = Path(__file__).with_name("beszel_hub.yaml")
 DEMO_STACK_ID = "demo"
+# The memory of the made up machine, in GiB. It is small, so that what the containers
+# use is most of it and only a third of the cost is idle.
+MEMORY_GIB = 14
 DEMO_CONFIG = """\
 stacks:
   - id: demo
@@ -26,8 +23,8 @@ stacks:
           electricity_price_per_kwh: 0.2
         usage:
           type: beszel
-          url: http://compose-lab:8090
-          email: me@example.com
-          password: secret
+          url: http://demo-hub:8090
+          email: demo@example.com
+          password: demo
         lookback_days: 10
 """
