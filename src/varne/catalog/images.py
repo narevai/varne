@@ -3,7 +3,9 @@ from decimal import Decimal
 from importlib.resources import files
 from pathlib import Path
 
-from varne.catalog.apps import APPS, App
+from varne.catalog.equivalents import equivalent_of
+from varne.catalog.hosted import HostedApp
+from varne.catalog.selfhosted import SELF_HOSTED, SelfHostedApp
 
 # Names that say what an image is for, not which application it is.
 GENERIC = frozenset(
@@ -45,7 +47,9 @@ ICON_ALIASES = {
 # `minecraft-bedrock-server`.
 MIN_ICON_NAME = 4
 
-INDEX: dict[str, App] = {slug: app for app in APPS for slug in app.slugs}
+INDEX: dict[str, SelfHostedApp] = {
+    slug: app for app in SELF_HOSTED for slug in app.slugs
+}
 
 
 def strip_suffix(name: str) -> str:
@@ -89,7 +93,7 @@ def image_names(image: str) -> list[str]:
     return list(dict.fromkeys(names))
 
 
-def find_app(image: str | None) -> App | None:
+def find_app(image: str | None) -> SelfHostedApp | None:
     if image is None:
         return None
 
@@ -116,12 +120,20 @@ def find_icon(names: list[str]) -> str | None:
 
 @dataclass(frozen=True)
 class Application:
-    """An application as the user sees it; the subscription is there if known."""
+    """An application as the user sees it, and the hosted service it stands in for,
+    if it is known."""
 
     name: str
     icon: str | None
-    alternative: str | None = None
-    usd_per_month: Decimal | None = None
+    hosted: HostedApp | None = None
+
+    @property
+    def alternative(self) -> str | None:
+        return None if self.hosted is None else self.hosted.label
+
+    @property
+    def usd_per_month(self) -> Decimal | None:
+        return None if self.hosted is None else self.hosted.usd_per_month
 
 
 def identify(image: str | None) -> Application | None:
@@ -135,7 +147,7 @@ def identify(image: str | None) -> Application | None:
 
     app = find_app(image)
     if app is not None:
-        return Application(app.name, app.icon, app.alternative, app.usd_per_month)
+        return Application(app.name, app.icon, equivalent_of(app))
 
     names = image_names(image)
     if not names:

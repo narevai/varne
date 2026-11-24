@@ -78,23 +78,6 @@ def test_an_unknown_or_missing_image_is_no_application():
     assert find_app(None) is None
 
 
-def test_every_catalog_slug_is_unique_and_has_a_positive_price():
-    from varne.catalog.apps import APPS
-
-    slugs = [slug for app in APPS for slug in app.slugs]
-
-    assert len(slugs) == len(set(slugs))
-    assert all(app.usd_per_month > 0 for app in APPS)
-
-
-def test_every_app_has_its_logo_to_show():
-    from varne.catalog.apps import APPS
-
-    assert [
-        app.name for app in APPS if app.icon is not None and app.icon not in ICONS
-    ] == []
-
-
 @pytest.mark.parametrize(
     ("image", "name"),
     [

@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import cast
+from typing import NamedTuple, cast
 
 from nicegui import run, ui
 
@@ -37,12 +37,22 @@ ROW_WITH_LOGO = """
     </div>
 </q-td>
 """
+HOSTED_CELL = """
+<q-td :props="props">
+    <div class="row items-center no-wrap" style="gap: 10px">
+        <template v-if="props.row.hosted">
+            <img v-if="props.row.hosted_icon" :src="props.row.hosted_icon"
+                 :class="props.row.hosted_mono ? 'logo-mono' : ''"
+                 style="width: 24px; height: 24px; flex: none; object-fit: contain" />
+            <q-icon v-else name="apps" size="24px" class="opacity-40" />
+        </template>
+        <span>{{ props.value }}</span>
+    </div>
+</q-td>
+"""
 DIFFERENCE_CELL = """
 <q-td :props="props" :class="props.row.tone"><b>{{ props.value }}</b></q-td>
 """
-
-# A segment of a bar is named only when it is wide enough to read the name.
-MIN_SHARE_FOR_TEXT = Decimal("0.06")
 
 
 def dollars(amount: Decimal | None) -> str:
@@ -91,18 +101,63 @@ def figure(label: str, amount: Decimal) -> None:
             ui.label("/ mo").classes("text-sm opacity-60")
 
 
-def bar(segments: list[tuple[Decimal, str, str, str]], scale: Decimal) -> None:
-    """One bar on a scale shared with the other, as (amount, kind, text, tip) parts."""
-    with ui.element("div").classes("bar"):
-        for amount, kind, text, tip in segments:
-            if amount <= 0 or scale <= 0:
+class Segment(NamedTuple):
+    """One part of a bar: what it is worth, what it says, and what it is."""
+
+    amount: Decimal
+    kind: str
+    tip: str
+    # Written on it when there is room: the logo, else the text, else the symbol that
+    # stands in for a logo.
+    text: str = ""
+    logo: str = ""
+    # A logo drawn in black only, to be shown light on the dark theme.
+    mono: bool = False
+    placeholder: str = ""
+
+
+def bar(segments: list[Segment], scale: Decimal, ordered: bool = False) -> None:
+    """One bar, on a scale that it shares with the other.
+
+    What is written on a segment is shown where it fits, see theme.py. On an ordered
+    bar it stops at the first segment where it does not fit: no segment to its right
+    is written on.
+    """
+    with ui.element("div").classes("bar bar-ordered" if ordered else "bar"):
+        for segment in segments:
+            if segment.amount <= 0 or scale <= 0:
                 continue
 
-            width = f"{float(amount / scale * 100):.2f}%"
-            with ui.element("div").classes(f"bar-seg {kind}").style(f"width: {width}"):
-                if text and amount / scale >= MIN_SHARE_FOR_TEXT:
-                    ui.label(text)
-                ui.tooltip(tip).style("white-space: pre-line")
+            width = f"{float(segment.amount / scale * 100):.2f}%"
+            with (
+                ui.element("div")
+                .classes(f"bar-seg {segment.kind}")
+                .style(f"width: {width}")
+            ):
+                if segment.logo or segment.text or segment.placeholder:
+                    with ui.element("div").classes("seg-text"):
+                        if segment.logo:
+                            ui.element("img").props(f"src={segment.logo}").classes(
+                                "seg-logo logo-mono" if segment.mono else "seg-logo"
+                            )
+                        elif segment.text:
+                            ui.label(segment.text)
+                        else:
+                            ui.icon(segment.placeholder, size="24px").classes(
+                                "opacity-40"
+                            )
+                # a mouse hovers over it, a finger taps it and the tip stays until the next tap
+                ui.tooltip(segment.tip).classes("seg-tip").style(
+                    "white-space: pre-line"
+                )
+                with (
+                    ui.menu()
+                    .classes("seg-menu")
+                    .props("anchor='top middle' self='bottom middle'")
+                ):
+                    ui.label(segment.tip).classes("px-3 py-2 text-sm").style(
+                        "white-space: pre-line"
+                    )
 
 
 def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
@@ -125,6 +180,14 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
             else "",
             "self_hosted": dollars(app.self_hosted),
             "alternative": app.alternative or "",
+            # the logo of the service, never that of the application
+            "hosted": "yes" if app.hosted else "",
+            "hosted_icon": (
+                f"/ui-assets/icons/{ICON_FILES[app.hosted.icon]}"
+                if app.hosted and app.hosted.icon
+                else ""
+            ),
+            "hosted_mono": "yes" if app.hosted and app.hosted.mono else "",
             "avoided_cost": dollars(app.avoided_cost),
             "difference": money(difference),
             "tone": tone(difference),
@@ -139,6 +202,9 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
             "all_containers": "",
             "self_hosted": dollars(cost),
             "alternative": "Not compared",
+            "hosted": "",
+            "hosted_icon": "",
+            "hosted_mono": "",
             "avoided_cost": "—",
             "difference": f"({dollars(cost)})",
             "tone": "text-negative",
@@ -162,10 +228,9 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
 
 
 def dashboard_view(comparison: Comparison, name: str) -> None:
-    hosted: dict[str, Decimal] = {
-        app.alternative: app.avoided_cost
-        for app in comparison.apps
-        if app.alternative is not None and app.avoided_cost is not None
+    # one for each hosted service, however many applications stand in for it
+    hosted = {
+        app.hosted.id: app.hosted for app in comparison.apps if app.hosted is not None
     }
     apps = sum(
         len(app.containers) if app.app == OTHER else 1 for app in comparison.apps
@@ -183,39 +248,46 @@ def dashboard_view(comparison: Comparison, name: str) -> None:
         figure("Hosted alternatives", comparison.avoided_cost)
         bar(
             [
-                (
-                    price,
+                Segment(
+                    service.usd_per_month,
                     "seg-hosted",
-                    f"{dollars(price)} · {alternative}",
-                    f"{alternative}\n{dollars(price)} / mo",
+                    f"{service.label}\n{dollars(service.usd_per_month)} / mo",
+                    # the logo of the service, never that of the application
+                    logo=(
+                        f"/ui-assets/icons/{ICON_FILES[service.icon]}"
+                        if service.icon
+                        else ""
+                    ),
+                    mono=service.mono,
+                    placeholder="apps",
                 )
-                for alternative, price in sorted(
-                    hosted.items(), key=lambda item: item[1], reverse=True
+                for service in sorted(
+                    hosted.values(), key=lambda s: s.usd_per_month, reverse=True
                 )
             ],
             scale,
+            ordered=True,
         )
 
         figure("Self-hosted total", comparison.machine_cost)
         bar(
             [
-                (
+                Segment(
                     used,
                     "seg-used",
-                    "",
                     f"Applications: {dollars(used)} / mo\nWhat the containers cost to run",
                 ),
-                (
+                Segment(
                     comparison.idle,
                     "seg-idle",
-                    "Idle",
                     f"Idle: {dollars(comparison.idle)} / mo\nCapacity that no container used",
+                    text="Idle",
                 ),
-                (
+                Segment(
                     comparison.avoided_cost - comparison.machine_cost,
                     "seg-avoided",
-                    f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided",
                     f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided\nWhat the subscriptions would cost beyond your machine",
+                    text=f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided",
                 ),
             ],
             scale,
@@ -247,6 +319,7 @@ def dashboard_view(comparison: Comparison, name: str) -> None:
         .props("hide-bottom")
     )
     table.add_slot("body-cell-app", ROW_WITH_LOGO)
+    table.add_slot("body-cell-alternative", HOSTED_CELL)
     table.add_slot("body-cell-difference", DIFFERENCE_CELL)
 
     net = comparison.avoided_cost - comparison.machine_cost

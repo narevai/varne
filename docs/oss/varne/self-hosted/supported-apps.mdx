@@ -52,4 +52,10 @@ Varne recognises these applications from the name of a container's image. Each e
 
 Varne still lists it, with its name taken from the image, its cost, and a logo when it has one. It has no subscription to compare with, so it adds to the cost but not to the savings.
 
-The catalog lives in `src/varne/catalog/apps.py` in the [Varne repository](https://github.com/narevai/varne). To add an application, add an entry with the names its images go by, the subscription it replaces, and the price of that subscription's most popular plan, and open a pull request. Check the price on the provider's own pricing page, in USD.
+The catalog is three lists in `src/varne/catalog/` in the [Varne repository](https://github.com/narevai/varne):
+
+- `selfhosted.py` has the self-hosted applications: their name, the names their images go by, and their logo.
+- `hosted.py` has the hosted services they stand in for: the name and the plan, the monthly price of its most popular plan for one seat, where that price was read, and the logo of the service.
+- `equivalents.py` says which hosted service each application stands in for. Several applications can stand in for one service.
+
+To add an application, add it to `selfhosted.py`, add the service it replaces to `hosted.py` if it is not there yet, and connect them in `equivalents.py`. Check the price on the provider's own pricing page, in USD, and open a pull request.

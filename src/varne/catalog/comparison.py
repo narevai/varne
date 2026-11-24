@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import cast
 
+from varne.catalog.hosted import HostedApp
 from varne.catalog.images import Application, application_name, identify
 from varne.providers.docker.allocation import IDLE
 
@@ -31,11 +32,18 @@ class AppComparison:
     containers: tuple[str, ...]
     # What running it costs in a month.
     self_hosted: Decimal
-    # The subscription it stands in for, when there is one.
-    alternative: str | None
-    # What that subscription would cost in a month, and so is not paid by running
-    # the application oneself.
-    avoided_cost: Decimal | None
+    # The hosted service it stands in for, when there is one.
+    hosted: HostedApp | None
+
+    @property
+    def alternative(self) -> str | None:
+        return None if self.hosted is None else self.hosted.label
+
+    @property
+    def avoided_cost(self) -> Decimal | None:
+        """What that service would cost in a month, and so is not paid by running the
+        application oneself."""
+        return None if self.hosted is None else self.hosted.usd_per_month
 
 
 @dataclass(frozen=True)
@@ -113,8 +121,7 @@ def compare(costs: Iterable[ContainerCost]) -> Comparison:
                 )
             ),
             self_hosted[name],
-            app.alternative,
-            app.usd_per_month,
+            app.hosted,
         )
         for name, app in found.items()
     ]
@@ -124,12 +131,12 @@ def compare(costs: Iterable[ContainerCost]) -> Comparison:
         apps=apps,
         machine_cost=sum((item.cost for item in costs), Decimal(0)) * to_month,
         idle=idle,
-        # One subscription stands in for all the applications it replaces.
+        # One hosted service stands in for all the applications that replace it.
         avoided_cost=sum(
             {
-                app.alternative: app.avoided_cost
+                app.hosted.id: app.hosted.usd_per_month
                 for app in apps
-                if app.alternative is not None and app.avoided_cost is not None
+                if app.hosted is not None
             }.values(),
             Decimal(0),
         ),
