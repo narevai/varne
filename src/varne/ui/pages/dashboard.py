@@ -101,7 +101,9 @@ def bar(segments: list[tuple[Decimal, str, str, str]], scale: Decimal) -> None:
             width = f"{float(amount / scale * 100):.2f}%"
             with ui.element("div").classes(f"bar-seg {kind}").style(f"width: {width}"):
                 if text and amount / scale >= MIN_SHARE_FOR_TEXT:
-                    ui.label(text)
+                    # theme.py hides it where it would be cut short
+                    with ui.element("div").classes("seg-text"):
+                        ui.label(text)
                 ui.tooltip(tip).style("white-space: pre-line")
 
 
@@ -186,7 +188,7 @@ def dashboard_view(comparison: Comparison, name: str) -> None:
                 (
                     price,
                     "seg-hosted",
-                    f"{dollars(price)} · {alternative}",
+                    "",
                     f"{alternative}\n{dollars(price)} / mo",
                 )
                 for alternative, price in sorted(

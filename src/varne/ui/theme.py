@@ -6,3 +6,33 @@ settings = get_settings()
 
 app.add_static_files("/ui-assets", settings.static_path)
 ui.add_css((settings.static_path / "theme.css").read_text(), shared=True)
+
+# What is written on a segment of a bar is shown whole or not at all: where it would
+# be cut short it is hidden, and it comes back when there is room. The segments come
+# and go with the page and the bars change with its width, so this watches both.
+ui.add_head_html(
+    """
+<script>
+(() => {
+  let pending = 0;
+  const fit = () => {
+    document.querySelectorAll(".bar-seg > .seg-text").forEach((text) => {
+      text.style.visibility = "visible";
+      if (text.scrollWidth > text.clientWidth) text.style.visibility = "hidden";
+    });
+  };
+  const schedule = () => {
+    cancelAnimationFrame(pending);
+    pending = requestAnimationFrame(fit);
+  };
+  window.addEventListener("resize", schedule);
+  new ResizeObserver(schedule).observe(document.documentElement);
+  new MutationObserver(schedule).observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+})();
+</script>
+""",
+    shared=True,
+)

@@ -23,8 +23,8 @@ def create_layout(title: str = "") -> Column:
         )
         logger.error(message)
 
-    with ui.left_drawer(top_corner=True, bottom_corner=True, value=True).props(
-        "breakpoint=768 width=232"
+    with ui.left_drawer(top_corner=True, bottom_corner=True, value=None).props(
+        "breakpoint=768 width=232 show-if-above"
     ) as drawer:
         with ui.row().classes("brand"):
             ui.label("V").classes("brand-mark")
