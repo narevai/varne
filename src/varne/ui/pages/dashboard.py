@@ -18,6 +18,7 @@ from varne.ui.components.container_costs import get_container_cost_rows
 from varne.ui.components.container_names import container_label
 from varne.ui.components.empty_state import empty_state, no_sources, no_stacks
 from varne.ui.components.stack_select import create_stack_select
+from varne.ui.components.sync import sync_sources
 from varne.ui.components.tip import TIP_ATTRIBUTES, TIP_PROPS, Tip, tip_table
 from varne.ui.layout import create_layout
 
@@ -96,8 +97,15 @@ def tone(amount: Decimal | None) -> str:
     return "text-positive" if amount >= 0 else "text-negative"
 
 
-def number_column(name: str, label: str) -> dict[str, str]:
-    return {"name": name, "label": label, "field": name, "align": "right"}
+def number_column(name: str, label: str, tint: str = "") -> dict[str, str]:
+    return {
+        "name": name,
+        "label": label,
+        "field": name,
+        "align": "right",
+        "classes": tint,
+        "headerClasses": tint,
+    }
 
 
 def figure(label: str, value: str, unit: str = "", apart: bool = False) -> None:
@@ -113,6 +121,32 @@ def figure(label: str, value: str, unit: str = "", apart: bool = False) -> None:
             ui.label(value).classes("statement-figure")
             if unit:
                 ui.label(unit).classes("text-sm opacity-60")
+
+
+def total(label: str, amount: Decimal, rows: list[tuple[str, Decimal]]) -> None:
+    """The total of a bar, on a line of its own. Opened, it says what it is made of."""
+
+    def line(name: str, value: Decimal, bold: bool = False) -> None:
+        with ui.row().classes("w-full justify-between items-baseline"):
+            ui.label(name).classes("text-sm" if not bold else "text-sm font-semibold")
+            with ui.row().classes("items-baseline gap-1"):
+                ui.label(dollars(value)).classes("statement-figure")
+                ui.label("/ mo").classes("text-sm opacity-60")
+
+    if not rows:
+        line(label, amount, bold=True)
+        return
+
+    with ui.expansion().classes("w-full total-expansion").props("dense") as expansion:
+        with expansion.add_slot("header"):
+            with ui.row().classes("w-full justify-between items-baseline"):
+                ui.label(label).classes("text-sm")
+                with ui.row().classes("items-baseline gap-1"):
+                    ui.label(dollars(amount)).classes("statement-figure")
+                    ui.label("/ mo").classes("text-sm opacity-60")
+        with ui.column().classes("total-items w-full gap-1 pb-2"):
+            for name, value in rows:
+                line(name, value)
 
 
 class Segment(NamedTuple):
@@ -258,9 +292,6 @@ LINE_LABELS = {
 def breakdown(owned: Ownership, avoided_cost: Decimal) -> None:
     """What the cost of self-hosting is made of, and when the hardware pays back."""
     with ui.column().classes("breakdown"):
-        for name, cost in owned.lines:
-            figure(LINE_LABELS.get(name, name), dollars(cost), "/ mo")
-
         # only hardware that was bought can pay back, not a machine rented by the hour
         result = payback(owned, avoided_cost)
         if result is not None:
@@ -279,13 +310,12 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
         app.hosted.id: app.hosted for app in comparison.apps if app.hosted is not None
     }
     scale = max(comparison.avoided_cost, comparison.machine_cost)
-    used = comparison.machine_cost - comparison.idle
 
     # not in a card: it is what the page is about, and it stands out the more for it
     with ui.column().classes("statement"):
         ui.label("Homelab profitability").classes("statement-title")
 
-        figure("Cost of hosted alternatives", dollars(comparison.avoided_cost), "/ mo")
+        ui.label("Cost of hosted alternatives").classes("statement-section")
         bar(
             [
                 Segment(
@@ -311,25 +341,38 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
             scale,
             ordered=True,
         )
+        total(
+            "Total",
+            comparison.avoided_cost,
+            [
+                (service.label, service.usd_per_month)
+                for service in sorted(
+                    hosted.values(), key=lambda s: s.usd_per_month, reverse=True
+                )
+            ],
+        )
 
-        figure("Cost of self-hosting", dollars(comparison.machine_cost), "/ mo")
+        ui.label("Cost of self-hosting").classes("statement-section")
         bar(
             [
-                Segment(
-                    used,
-                    "seg-used",
-                    (
-                        ("Applications", f"{dollars(used)} / mo"),
-                        ("Is", "what the containers cost to run"),
-                    ),
+                # one part for each application, so that it is clear what they are
+                *(
+                    Segment(
+                        app.self_hosted,
+                        "seg-used",
+                        (
+                            ("Application", app.app),
+                            ("Cost", f"{dollars(app.self_hosted)} / mo"),
+                        ),
+                    )
+                    for app in sorted(
+                        comparison.apps, key=lambda a: a.self_hosted, reverse=True
+                    )
                 ),
                 Segment(
                     comparison.idle,
                     "seg-idle",
-                    (
-                        ("Idle", f"{dollars(comparison.idle)} / mo"),
-                        ("Is", "capacity that no container used"),
-                    ),
+                    (("Idle", f"{dollars(comparison.idle)} / mo"),),
                     text="Idle",
                 ),
                 Segment(
@@ -340,12 +383,19 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
                             "Avoided",
                             f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo",
                         ),
-                        ("Is", "what the subscriptions would cost beyond your machine"),
                     ),
                     text=f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided",
                 ),
             ],
             scale,
+        )
+        total(
+            "Total",
+            comparison.machine_cost,
+            [
+                (LINE_LABELS.get(name, name), cost)
+                for name, cost in (owned.lines if owned is not None else [])
+            ],
         )
 
         if owned is not None:
@@ -359,15 +409,19 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
                     "label": "Self-hosted app",
                     "field": "app",
                     "align": "left",
+                    "classes": "col-self",
+                    "headerClasses": "col-self",
                 },
-                number_column("self_hosted", "Self-hosted cost"),
+                number_column("self_hosted", "Self-hosted cost", "col-self"),
                 {
                     "name": "alternative",
                     "label": "Hosted alternative",
                     "field": "alternative",
                     "align": "left",
+                    "classes": "col-hosted",
+                    "headerClasses": "col-hosted",
                 },
-                number_column("avoided_cost", "Hosted cost"),
+                number_column("avoided_cost", "Hosted cost", "col-hosted"),
                 number_column("difference", "Cost difference"),
             ],
             rows=statement_rows(comparison),
@@ -379,13 +433,6 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
     table.add_slot("body-cell-app", ROW_WITH_LOGO)
     table.add_slot("body-cell-alternative", HOSTED_CELL)
     table.add_slot("body-cell-difference", DIFFERENCE_CELL)
-
-    net = comparison.avoided_cost - comparison.machine_cost
-    with ui.row().classes("statement-total w-full justify-between"):
-        ui.label("Net per month, against the whole machine").classes("text-sm")
-        with ui.row().classes("items-baseline gap-3"):
-            ui.label(percent(comparison.roi)).classes(f"text-sm {tone(comparison.roi)}")
-            ui.label(money(net)).classes(f"statement-figure {tone(net)}")
 
 
 @ui.page("/")
@@ -424,12 +471,18 @@ async def page_dashboard() -> None:
             costs = await run.io_bound(get_container_cost_rows, db, stack_id)
 
             if not costs:
+
+                async def sync() -> None:
+                    ui.notify("Syncing, this can take a moment")
+                    if await sync_sources(stack, offered_sources(stack)):
+                        await result.refresh()
+
                 empty_state(
                     "dns",
                     "No Docker data yet",
-                    "Sync a docker source on the Integrations page to see what its containers cost and what the subscriptions they replace would.",
-                    "Go to Integrations",
-                    "/integrations",
+                    "The source is added to this stack but not synced. Sync it to see what its containers cost and what the subscriptions they replace would.",
+                    "Sync now",
+                    sync,
                 )
                 return
 

@@ -89,9 +89,7 @@ def bar_chart(
         .configure_axis(
             domain=False,
             ticks=False,
-            gridColor="currentColor",
-            gridOpacity=0.18,
-            gridDash=[3, 3],
+            grid=False,
             labelColor="currentColor",
             labelOpacity=0.65,
             labelFontSize=11,

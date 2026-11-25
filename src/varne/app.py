@@ -67,6 +67,8 @@ def main() -> None:
         ui.run(
             host=settings.host,
             port=settings.port,
+            title="Varne",
+            favicon=settings.static_path / "favicon.svg",
             reload=settings.debug,
             show=False,
         )

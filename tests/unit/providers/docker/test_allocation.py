@@ -61,8 +61,8 @@ def test_a_container_pays_for_the_share_of_the_machine_it_used():
     rows = allocate(hours, now=at(11))
 
     assert costs(rows)[9, "web"] == Decimal("0.175")
-    # the rest of hour 10 and the ten hours before it, which have no usage
-    assert costs(rows)[9, IDLE] == Decimal("10.825")
+    # the rest of hour 10, and nothing before it: there is no data to book it on
+    assert costs(rows)[9, IDLE] == Decimal("0.825")
 
 
 def test_rows_of_a_day_add_up_to_the_cost_of_the_machine():
@@ -74,7 +74,8 @@ def test_rows_of_a_day_add_up_to_the_cost_of_the_machine():
 
     rows = allocate(hours, now=datetime(2026, 9, 10, tzinfo=UTC))
 
-    assert sum(r.billed_cost for r in rows) == Decimal(24)
+    # from the first hour with data until the end of the day
+    assert sum(r.billed_cost for r in rows) == Decimal(14)
 
 
 def test_hours_without_capacity_are_all_idle():
@@ -82,7 +83,7 @@ def test_hours_without_capacity_are_all_idle():
 
     rows = allocate(hours, now=datetime(2026, 9, 10, tzinfo=UTC))
 
-    assert costs(rows) == {(9, IDLE): Decimal(24)}
+    assert costs(rows) == {(9, IDLE): Decimal(14)}
 
 
 def test_a_container_cannot_use_more_than_the_machine_has():
@@ -92,12 +93,12 @@ def test_a_container_cannot_use_more_than_the_machine_has():
         + container(at(10), "db", 9000, 12)
     )
 
-    rows = allocate(hours, now=at(11))
+    rows = allocate(hours, now=at(12))
     by_name = {name: cost for (_, name), cost in costs(rows).items()}
 
     assert by_name["web"] == by_name["db"]
     assert IDLE in by_name and by_name[IDLE] > 0
-    assert sum(r.billed_cost for r in rows) == Decimal(11)
+    assert sum(r.billed_cost for r in rows) == Decimal(2)
 
 
 def test_a_part_played_hour_costs_only_the_part_that_has_happened():
@@ -106,13 +107,19 @@ def test_a_part_played_hour_costs_only_the_part_that_has_happened():
     rows = allocate(hours, now=datetime(2026, 9, 9, 10, 30, tzinfo=UTC))
 
     assert costs(rows)[9, "web"] == Decimal("0.0875")
-    assert sum(r.billed_cost for r in rows) == Decimal("10.5")
+    assert sum(r.billed_cost for r in rows) == Decimal("0.5")
+
+
+def test_nothing_is_booked_before_the_first_data():
+    assert allocate([], now=datetime(2026, 9, 9, 6, 30, tzinfo=UTC)) == []
 
 
 def test_future_hours_cost_nothing():
-    rows = allocate([], now=datetime(2026, 9, 9, 6, 30, tzinfo=UTC))
+    hours = machine(at(5)) + container(at(5), "web", 1000, 4)
 
-    assert costs(rows) == {(9, IDLE): Decimal("6.5")}
+    rows = allocate(hours, now=datetime(2026, 9, 9, 6, 30, tzinfo=UTC))
+
+    assert sum(r.billed_cost for r in rows) == Decimal("1.5")
 
 
 def test_every_day_gets_its_own_rows():

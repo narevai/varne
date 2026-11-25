@@ -1,7 +1,6 @@
 from datetime import UTC, datetime
 from typing import cast
 
-from loguru import logger
 from nicegui import run, ui
 from nicegui.events import GenericEventArguments
 
@@ -13,10 +12,11 @@ from varne.config import (
     offered_sources,
 )
 from varne.db.sources import delete_source_data, last_synced, stored_source_ids
-from varne.dependencies import get_config_manager, get_db, get_service
+from varne.dependencies import get_config_manager, get_db
 from varne.ui.components.config_editor import config_editor
 from varne.ui.components.confirm import confirm
 from varne.ui.components.stack_select import create_stack_select
+from varne.ui.components.sync import sync_sources
 from varne.ui.layout import create_layout
 
 # A source that is stored but no longer configured is grey and can only be removed.
@@ -72,17 +72,7 @@ async def page_integrations() -> None:
             button_sync_all.disable()
             synced = 0
             try:
-                for source in sources:
-                    service = get_service(stack_id=stack.id, source=source)
-
-                    try:
-                        await run.io_bound(service.fetch_source_meta)
-                        await run.io_bound(service.fetch_source_data)
-                        synced += 1
-                    except Exception as ex:
-                        message = f"Sync failed for {stack.name} / {source.name}: {ex}"
-                        logger.error(message)
-                        ui.notify(message, type="negative")
+                synced = await sync_sources(stack, sources)
             finally:
                 button_sync_all.enable()
 
