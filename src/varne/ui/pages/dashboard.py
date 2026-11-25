@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import NamedTuple, cast
 
 from nicegui import run, ui
+from nicegui.events import GenericEventArguments
 
 from varne.catalog.comparison import (
     OTHER,
@@ -24,10 +25,13 @@ from varne.ui.layout import create_layout
 
 ROW_WITH_LOGO = """
 <q-td :props="props">
-    <div class="row items-center no-wrap" style="gap: 12px">
-        <img v-if="props.row.icon" :src="props.row.icon"
-             style="width: 28px; height: 28px; flex: none; object-fit: contain" />
-        <q-icon v-else :name="props.row.symbol || 'apps'" size="28px" class="opacity-40" />
+    <div class="row items-center no-wrap" style="gap: 12px"
+         :class="[props.row.more ? 'cursor-pointer' : '', props.row.nested ? 'row-nested' : '']">
+        <div class="logo-tile logo-self">
+            <img v-if="props.row.icon" :src="props.row.icon"
+                 style="width: 28px; height: 28px; flex: none; object-fit: contain" />
+            <q-icon v-else :name="props.row.symbol || 'apps'" size="28px" class="opacity-60" />
+        </div>
         <div>
             <div>{{ props.value }}</div>
             <div class="text-caption opacity-60" style="word-break: break-all">
@@ -48,12 +52,12 @@ ROW_WITH_LOGO = """
 HOSTED_CELL = """
 <q-td :props="props">
     <div class="row items-center no-wrap" style="gap: 10px">
-        <template v-if="props.row.hosted">
+        <div v-if="props.row.hosted" class="logo-tile logo-hosted">
             <img v-if="props.row.hosted_icon" :src="props.row.hosted_icon"
                  :class="props.row.hosted_mono ? 'logo-mono' : ''"
                  style="width: 24px; height: 24px; flex: none; object-fit: contain" />
-            <q-icon v-else name="apps" size="24px" class="opacity-40" />
-        </template>
+            <q-icon v-else name="apps" size="24px" class="opacity-60" />
+        </div>
         <span>{{ props.value }}</span>
     </div>
 </q-td>
@@ -97,15 +101,8 @@ def tone(amount: Decimal | None) -> str:
     return "text-positive" if amount >= 0 else "text-negative"
 
 
-def number_column(name: str, label: str, tint: str = "") -> dict[str, str]:
-    return {
-        "name": name,
-        "label": label,
-        "field": name,
-        "align": "right",
-        "classes": tint,
-        "headerClasses": tint,
-    }
+def number_column(name: str, label: str) -> dict[str, str]:
+    return {"name": name, "label": label, "field": name, "align": "right"}
 
 
 def figure(label: str, value: str, unit: str = "", apart: bool = False) -> None:
@@ -137,7 +134,11 @@ def total(label: str, amount: Decimal, rows: list[tuple[str, Decimal]]) -> None:
         line(label, amount, bold=True)
         return
 
-    with ui.expansion().classes("w-full total-expansion").props("dense") as expansion:
+    with (
+        ui.expansion()
+        .classes("w-full total-expansion")
+        .props("dense switch-toggle-side") as expansion
+    ):
         with expansion.add_slot("header"):
             with ui.row().classes("w-full justify-between items-baseline"):
                 ui.label(label).classes("text-sm")
@@ -207,7 +208,15 @@ def bar(segments: list[Segment], scale: Decimal, ordered: bool = False) -> None:
                     tip_table(segment.tip)
 
 
-def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
+# The table lists this many applications, or more when more of them are compared: every
+# one that is compared is listed, the ones that are not fill what is left, and the rest
+# is folded into one row.
+LISTED_ROWS = 25
+
+
+def statement_rows(
+    comparison: Comparison, expanded: bool = False
+) -> list[dict[str, str]]:
     compared = [
         app
         for app in comparison.apps
@@ -215,8 +224,22 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
     ]
     rest = [app for app in comparison.apps if app not in compared]
 
+    # One subscription stands in for all the applications that share it, and is paid for
+    # once: the first of them carries its price, against what all of them cost to run.
+    shared_cost: dict[str, Decimal] = {}
+    for app in compared:
+        if app.hosted is not None:
+            shared_cost[app.hosted.id] = (
+                shared_cost.get(app.hosted.id, Decimal(0)) + app.self_hosted
+            )
+    # the application that carries the price of each
+    priced: dict[str, str] = {}
+
     def row(app: AppComparison) -> dict[str, str]:
-        difference = (app.avoided_cost or Decimal(0)) - app.self_hosted
+        assert app.hosted is not None
+        payer = priced.setdefault(app.hosted.id, app.app)
+        repeated = payer != app.app
+        difference = (app.avoided_cost or Decimal(0)) - shared_cost[app.hosted.id]
         return {
             "app": app.app,
             "icon": f"/ui-assets/icons/{ICON_FILES[app.icon]}" if app.icon else "",
@@ -235,17 +258,21 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
                 else ""
             ),
             "hosted_mono": "yes" if app.hosted and app.hosted.mono else "",
-            "avoided_cost": dollars(app.avoided_cost),
-            "difference": money(difference),
-            "tone": tone(difference),
+            "avoided_cost": f"Shared with {payer}"
+            if repeated
+            else dollars(app.avoided_cost),
+            "difference": "" if repeated else money(difference),
+            "tone": "" if repeated else tone(difference),
         }
 
-    def left_out(name: str, symbol: str, cost: Decimal, count: str) -> dict[str, str]:
+    def left_out(
+        name: str, symbol: str, cost: Decimal, containers: str, icon: str = ""
+    ) -> dict[str, str]:
         return {
             "app": name,
-            "icon": "",
+            "icon": icon,
             "symbol": symbol,
-            "containers": count,
+            "containers": containers,
             "all_containers": "",
             "self_hosted": dollars(cost),
             "alternative": "Not compared",
@@ -257,17 +284,48 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
             "tone": "text-negative",
         }
 
-    rows = [row(app) for app in compared]
-    if rest:
-        count = sum(len(app.containers) if app.app == OTHER else 1 for app in rest)
-        rows.append(
-            left_out(
-                plural(count, "other app"),
-                "more_horiz",
-                sum((app.self_hosted for app in rest), Decimal(0)),
-                "",
+    # What has nothing to be compared with, one by one: an application of its own, and
+    # each container whose image says nothing about what it is.
+    singles: list[tuple[Decimal, dict[str, str]]] = []
+    for app in rest:
+        if app.app == OTHER:
+            for name, cost in zip(app.containers, app.container_costs, strict=True):
+                singles.append((cost, left_out(name, "apps", cost, "")))
+        else:
+            icon = f"/ui-assets/icons/{ICON_FILES[app.icon]}" if app.icon else ""
+            singles.append(
+                (
+                    app.self_hosted,
+                    left_out(
+                        app.app,
+                        "apps",
+                        app.self_hosted,
+                        container_label(app.containers),
+                        icon,
+                    ),
+                )
             )
+    singles.sort(key=lambda single: single[0], reverse=True)
+
+    rows = [row(app) for app in compared]
+    shown = max(LISTED_ROWS - len(rows), 0)
+    rows.extend(single for _, single in singles[:shown])
+    hidden = singles[shown:]
+    if hidden:
+        summary = left_out(
+            plural(len(hidden), "other app"),
+            "expand_less" if expanded else "expand_more",
+            sum((cost for cost, _ in hidden), Decimal(0)),
+            "click to hide" if expanded else "click to show",
         )
+        # a click on it shows or hides the ones it stands for
+        summary["more"] = "yes"
+        rows.append(summary)
+        if expanded:
+            for _, single in hidden:
+                # set in a little, under the row that opened them
+                single["nested"] = "yes"
+                rows.append(single)
     if comparison.idle > 0:
         rows.append(left_out("Idle", "hourglass_empty", comparison.idle, ""))
 
@@ -401,6 +459,7 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
         if owned is not None:
             breakdown(owned, comparison.avoided_cost)
 
+    expanded = False
     table = (
         ui.table(
             columns=[
@@ -409,27 +468,33 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
                     "label": "Self-hosted app",
                     "field": "app",
                     "align": "left",
-                    "classes": "col-self",
-                    "headerClasses": "col-self",
                 },
-                number_column("self_hosted", "Self-hosted cost", "col-self"),
+                number_column("self_hosted", "Self-hosted cost"),
                 {
                     "name": "alternative",
                     "label": "Hosted alternative",
                     "field": "alternative",
                     "align": "left",
-                    "classes": "col-hosted",
-                    "headerClasses": "col-hosted",
                 },
-                number_column("avoided_cost", "Hosted cost", "col-hosted"),
+                number_column("avoided_cost", "Hosted cost"),
                 number_column("difference", "Cost difference"),
             ],
-            rows=statement_rows(comparison),
+            rows=statement_rows(comparison, expanded),
             pagination={"rowsPerPage": 0},
         )
         .classes("w-full")
         .props("hide-bottom")
     )
+
+    def toggle_hidden(e: GenericEventArguments) -> None:
+        nonlocal expanded
+        _, row, _ = e.args
+        if row.get("more"):
+            expanded = not expanded
+            table.rows = statement_rows(comparison, expanded)
+            table.update()
+
+    table.on("rowClick", toggle_hidden)
     table.add_slot("body-cell-app", ROW_WITH_LOGO)
     table.add_slot("body-cell-alternative", HOSTED_CELL)
     table.add_slot("body-cell-difference", DIFFERENCE_CELL)

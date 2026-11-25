@@ -128,7 +128,7 @@ def test_the_containers_are_applications_the_catalog_knows():
     apps = [identify(c.image) for c in CONTAINERS]
 
     assert all(apps)
-    assert sum(1 for app in apps if app and app.alternative) == 11
+    assert sum(1 for app in apps if app and app.alternative) == 12
 
 
 def test_a_container_is_not_as_busy_every_day():
@@ -185,7 +185,7 @@ def test_the_made_up_host_shows_a_homelab_that_pays_for_itself(db: DatabaseBacke
 
     compared = [app for app in comparison.apps if app.alternative]
     assert len(comparison.apps) == 13
-    assert len(compared) == 11
+    assert len(compared) == 12
     # about a third of the machine is idle, most of it is used
     assert 0.2 < comparison.idle / comparison.machine_cost < 0.5
     assert comparison.roi is not None and comparison.roi > 1

@@ -72,13 +72,13 @@ def test_apps_are_listed_by_what_they_cost_to_run():
 def test_an_application_without_a_counterpart_is_listed_with_its_cost():
     comparison = compare(
         [
-            cost("tv", "lscr.io/linuxserver/sonarr:latest", "6", "100"),
+            cost("logs", "amir20/dozzle:latest", "6", "100"),
             cost("Idle", None, "94", "630"),
         ]
     )
 
     (app,) = comparison.apps
-    assert app.app == "Sonarr"
+    assert app.app == "Dozzle"
     assert app.self_hosted == Decimal(6)
     assert app.alternative is None
     assert app.avoided_cost is None
