@@ -414,7 +414,7 @@ body.body--dark .cm-editor .cm-selectionBackground {background:var(--accent)!imp
 .seg-avoided {
 	background:transparent;
 	border:1px dashed color-mix(in oklch,var(--foreground) 45%,transparent);
-	border-radius:8px;
+	border-radius:0 8px 8px 0;
 	box-sizing:border-box;
 	color:var(--muted-foreground)
 }
