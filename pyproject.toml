@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "varne"
-version = "1.0.0-alpha.2"
+version = "1.0.0"
 description = "varne - selfhosted FinOps platform"
 requires-python = ">=3.14,<3.15"
 dependencies = [
