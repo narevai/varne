@@ -447,13 +447,13 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
             ],
             scale,
         )
+        lines: list[tuple[str, Decimal]] = (
+            list(owned.lines) if owned is not None else []
+        )
         total(
             "Total",
             comparison.machine_cost,
-            [
-                (LINE_LABELS.get(name, name), cost)
-                for name, cost in (owned.lines if owned is not None else [])
-            ],
+            [(LINE_LABELS.get(name, name), cost) for name, cost in lines],
         )
 
         if owned is not None:
@@ -488,7 +488,7 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
 
     def toggle_hidden(e: GenericEventArguments) -> None:
         nonlocal expanded
-        _, row, _ = e.args
+        _, row, _ = cast(tuple[object, dict[str, str], object], e.args)
         if row.get("more"):
             expanded = not expanded
             table.rows = statement_rows(comparison, expanded)
