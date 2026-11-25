@@ -22,7 +22,7 @@ class Settings(BaseSettings):
 
     api_title: str = "Varne"
     api_description: str = "Varne API"
-    api_version: str = "1.0.0-alpha.0"
+    api_version: str = "1.0.0-alpha.1"
 
     database_path: str = "./data/app.duckdb"
     config_path: str = "./config/varne.yaml"
