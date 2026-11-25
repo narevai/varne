@@ -13,8 +13,10 @@ ENV ENVIRONMENT=production
 COPY pyproject.toml uv.lock ./
 COPY src/ ./src/
 RUN pip install --no-cache-dir --upgrade pip uv && \
-    uv export --frozen --no-dev --no-hashes --no-emit-project | uv pip install --system -r - && \
-    uv pip install --system --no-deps -e .
+    uv export --locked --no-dev --no-hashes --no-emit-project --output-file /tmp/varne-requirements.txt --quiet && \
+    uv pip install --system -r /tmp/varne-requirements.txt && \
+    uv pip install --system --no-deps -e . && \
+    rm /tmp/varne-requirements.txt
 
 EXPOSE $PORT
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \

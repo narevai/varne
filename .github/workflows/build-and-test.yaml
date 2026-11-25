@@ -28,8 +28,8 @@ jobs:
       - name: Check
         run: make check
 
-      - name: Run Tests with Coverage
-        run: pytest --cov=src/varne --cov-report=term-missing --cov-report=xml --cov-report=html
+      - name: Run Tests
+        run: make test
 
   docs:
     name: Documentation Build and Test

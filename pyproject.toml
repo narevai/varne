@@ -51,26 +51,6 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 
-[tool.coverage.run]
-source = ["src/varne"]
-omit = [
-    "tests/*",
-    "*/test_*.py",
-    "*/__pycache__/*",
-    "*/venv/*",
-    "*/env/*",
-]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-]
-show_missing = true
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
@@ -78,7 +58,7 @@ main_file = "src/varne/app.py"
 addopts = "-p nicegui.testing.user_plugin --import-mode=importlib"
 filterwarnings = [
     "ignore:fetch_arrow_table\\(\\) is deprecated, use to_arrow_table\\(\\) instead.:DeprecationWarning",
-    "ignore:The 'future.infer_string' option is deprecated:pandas.errors.Pandas4Warning:ibis.formats.pandas",
+    "ignore:The 'future.infer_string' option is deprecated:Warning:^ibis\\.formats\\.pandas$",
     "ignore::pydantic.warnings.PydanticDeprecatedSince211",
     "ignore:The anyio\\.abc\\.BlockingPortal alias is deprecated:DeprecationWarning:starlette\\.testclient",
 ]
@@ -97,7 +77,6 @@ dev = [
     "ruff==0.16.5",
     "pytest==9.1.1",
     "pytest-asyncio==1.4.0",
-    "pytest-cov==7.1.0",
     "httpx2==2.12.0",
     "pytest-recording==0.13.4",
     "vcrpy==8.3.0",

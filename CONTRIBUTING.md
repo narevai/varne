@@ -8,7 +8,7 @@ We want you here. Especially if youre not a bot.
 - **Suggest features** for better AI cost tracking
 - **Improve documentation** 
 - **Submit code changes**
-- **Add test coverage**
+- **Add tests**
 
 ### Before You Start
 
@@ -159,9 +159,8 @@ make dev       # Run server (uvicorn on port 8000)
 **Extra commands** (not in the Makefile):
 
 ```bash
-pytest --cov=src/varne --cov-report=term-missing   # Tests with coverage
-uv tool run deptry .                                        # Audit unused/missing dependencies
-rm -rf htmlcov .coverage .pytest_cache                      # Clean test artifacts
+uv tool run deptry .   # Audit unused/missing dependencies
+rm -rf .pytest_cache   # Clean pytest cache
 ```
 
 ### Frontend
@@ -213,7 +212,7 @@ make test
 - Formatter: Ruff (automatically applied in VS Code)
 - Linter: Ruff (configured in VS Code)
 - Style: Modern Python with type hints
-- Testing: pytest with good coverage
+- Testing: pytest
 
 ### Frontend
 
