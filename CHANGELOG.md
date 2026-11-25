@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-alpha.2] - 2026-11-25
+
+### Added
+
+- Show a per-container cost breakdown for each application in the dashboard, with new bar, total and statement-table components.
+- Sync a stack's sources from the UI; a failing source is reported without stopping the others.
+- Map more self-hosted applications to hosted equivalents (Home Assistant, n8n, Uptime Kuma, Prometheus, PostgreSQL, Redis, the *arr apps and others) and add their icons.
+
+### Changed
+
+- Rework the dashboard layout, config form and editor, and empty state.
+
+### Fixed
+
+- Do not book machine cost for hours before the monitoring has data, so Docker allocation no longer shows a month the app never watched.
+
 ## [1.0.0-alpha.1] - 2026-11-25
 
 ### Added
