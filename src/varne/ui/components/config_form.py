@@ -50,26 +50,20 @@ SOURCE_FIELDS: dict[SourceType, list[FormField]] = {
         ),
         LOOKBACK,
     ],
-    SourceType.DOCKER: [LOOKBACK],
+    SourceType.DOCKER: [],
 }
 
 # What a Docker machine costs: a rented hourly rate, or hardware plus power.
 HOURLY_COST = [FormField("hourly_cost", "Cost per hour (USD)", "number")]
 HARDWARE_COST = [
     FormField("machine_cost", "Price of the machine (USD)", "number"),
-    FormField(
-        "amortization_years", "Amortization (years)", "number", hint="6 by default"
-    ),
-    FormField(
-        "power_draw_watts",
-        "Power draw (W)",
-        "number",
-        hint="give it with the electricity price",
-    ),
+    FormField("amortization_years", "Amortization (years)", "number"),
+    FormField("power_draw_watts", "Power draw (W)", "number"),
     FormField("electricity_price_per_kwh", "Electricity (USD per kWh)", "number"),
 ]
+BESZEL_DOCS = "https://beszel.dev/guide/getting-started"
 BESZEL = [
-    FormField("url", "Beszel URL", hint="e.g. http://beszel:8090"),
+    FormField("url", "Beszel URL"),
     FormField("email", "Beszel e-mail"),
     FormField("password", "Beszel password", "secret", env_key="password_env"),
 ]
@@ -104,7 +98,20 @@ INPUT = "outlined dense"
 
 
 def new_source(source_type: SourceType) -> Data:
-    return {"id": "", "name": "", "type": source_type.value, "_new": True}
+    source: Data = {"id": "", "name": "", "type": source_type.value, "_new": True}
+    if source_type is SourceType.DOCKER:
+        source.update(
+            name="Homelab",
+            id="homelab",
+            cost={
+                "machine_cost": 500,
+                "amortization_years": 6,
+                "power_draw_watts": 30,
+                "electricity_price_per_kwh": 0.15,
+            },
+            usage={"type": "beszel", "url": "http://beszel:8090"},
+        )
+    return source
 
 
 def new_stack() -> Data:
@@ -255,12 +262,7 @@ def identity(data: Data) -> None:
         data, "name"
     ).classes("w-full")
 
-    hint = (
-        "Stored with the data, it cannot be changed after saving"
-        if is_new
-        else "Stored with the data, it cannot be changed"
-    )
-    id_input = ui.input("Id").props(INPUT).props(f'hint="{hint}"')
+    id_input = ui.input("Id").props(INPUT)
     id_input.bind_value(data, "id").classes("w-full")
     if not is_new:
         id_input.props("readonly")
@@ -271,7 +273,7 @@ def docker_form(source: Data) -> None:
     usage = cast(Data, source.setdefault("usage", {"type": "beszel"}))
     rented = cost.get("hourly_cost") is not None
 
-    ui.label("Cost of the machine").classes(f"text-sm opacity-70 {FULL}")
+    ui.label("Cost of the machine").classes(f"text-sm muted {FULL}")
 
     @ui.refreshable
     def fields() -> None:
@@ -293,14 +295,16 @@ def docker_form(source: Data) -> None:
     with ui.element("div").classes(f"{GRID} {FULL}"):
         fields()
 
-    ui.label("Usage from Beszel").classes(f"text-sm opacity-70 {FULL}")
+    with ui.row().classes(f"items-baseline gap-2 {FULL}"):
+        ui.label("Usage from Beszel").classes("text-sm muted")
+        ui.link("How to set it up", BESZEL_DOCS, new_tab=True).classes("text-sm")
     section(usage, BESZEL)
 
 
 def source_logo(source_type: SourceType) -> None:
     logo = LOGOS.get(source_type)
     if logo is None:
-        ui.icon(ICONS[source_type], size="28px").classes("opacity-70")
+        ui.icon(ICONS[source_type], size="28px").classes("muted")
         return
 
     image = (
@@ -327,7 +331,7 @@ def source_form(source: Data, on_remove: Callable[[], None]) -> None:
                 source_logo(source_type)
                 with ui.column().classes("gap-0"):
                     ui.label().bind_text_from(source, "name", title("New source"))
-                    ui.label(source_type.value).classes("text-xs opacity-60")
+                    ui.label(source_type.value).classes("text-xs faint")
                 ui.space()
                 ui.button(icon="delete", on_click=on_remove).props(
                     "flat round dense color=negative"
@@ -349,7 +353,7 @@ def config_form(data: Data, on_save: Callable[[], None]) -> None:
         if not stacks:
             ui.label(
                 "No stacks yet. A stack groups the sources of one product."
-            ).classes("opacity-70")
+            ).classes("muted")
 
         for stack in stacks:
             stack_form(stack)
@@ -365,7 +369,7 @@ def config_form(data: Data, on_save: Callable[[], None]) -> None:
 
         with ui.card().classes("w-full gap-4"):
             with ui.row().classes("w-full items-center no-wrap"):
-                ui.icon("layers").classes("opacity-70")
+                ui.icon("layers").classes("muted")
                 ui.label().classes("text-lg").bind_text_from(
                     stack, "name", title("New stack")
                 )
@@ -381,9 +385,9 @@ def config_form(data: Data, on_save: Callable[[], None]) -> None:
             with ui.element("div").classes(GRID):
                 identity(stack)
 
-            ui.label("Sources").classes("text-sm opacity-70")
+            ui.label("Sources").classes("text-sm muted")
             if not sources:
-                ui.label("No sources yet.").classes("text-sm opacity-60")
+                ui.label("No sources yet.").classes("text-sm faint")
             for source in sources:
                 source_form(
                     source,

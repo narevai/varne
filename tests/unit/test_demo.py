@@ -5,6 +5,7 @@ from typing import cast
 
 import pytest
 
+from varne.analytics.comparison import get_container_cost_rows
 from varne.catalog.comparison import compare
 from varne.catalog.images import identify
 from varne.db.sources import last_synced, stored_source_ids
@@ -17,7 +18,6 @@ from varne.providers.docker.rates import cost_lines
 from varne.providers.docker.service import DockerService
 from varne.providers.docker.usage import SYSTEM_ENTITY
 from varne.settings import Settings, get_settings
-from varne.ui.components.container_costs import get_container_cost_rows
 
 NOW = datetime(2026, 11, 20, 15, tzinfo=UTC)  # a Friday
 
@@ -128,7 +128,7 @@ def test_the_containers_are_applications_the_catalog_knows():
     apps = [identify(c.image) for c in CONTAINERS]
 
     assert all(apps)
-    assert sum(1 for app in apps if app and app.alternative) == 11
+    assert sum(1 for app in apps if app and app.alternative) == 12
 
 
 def test_a_container_is_not_as_busy_every_day():
@@ -185,7 +185,7 @@ def test_the_made_up_host_shows_a_homelab_that_pays_for_itself(db: DatabaseBacke
 
     compared = [app for app in comparison.apps if app.alternative]
     assert len(comparison.apps) == 13
-    assert len(compared) == 11
+    assert len(compared) == 12
     # about a third of the machine is idle, most of it is used
     assert 0.2 < comparison.idle / comparison.machine_cost < 0.5
     assert comparison.roi is not None and comparison.roi > 1

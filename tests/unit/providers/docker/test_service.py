@@ -32,8 +32,8 @@ def test_pull_books_the_cost_of_the_whole_machine(
     billing = db.table(TableName.FACT_BILLING)
     totals = billing.group_by("source_id").aggregate(total=ibis._.billed_cost.sum())
     total = cast(list[object], totals.execute()["total"].tolist())[0]
-    # the machine cost 1.1 for each of the 39 hours from the 19th until 15:00
-    assert Decimal(str(total)) == Decimal("1.1") * 39
+    # the machine cost 1.1 for each of the 2 hours the hub has data for
+    assert Decimal(str(total)) == Decimal("1.1") * 2
     assert set(cast(list[str], billing.source_type.execute().tolist())) == {"docker"}
 
 

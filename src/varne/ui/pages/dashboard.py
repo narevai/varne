@@ -1,8 +1,10 @@
 from decimal import Decimal
-from typing import NamedTuple, cast
+from typing import cast
 
 from nicegui import run, ui
+from nicegui.events import GenericEventArguments
 
+from varne.analytics.comparison import get_container_cost_rows
 from varne.catalog.comparison import (
     OTHER,
     AppComparison,
@@ -13,167 +15,31 @@ from varne.catalog.images import ICON_FILES
 from varne.catalog.ownership import Ownership, duration, ownership, payback
 from varne.config import ConfigDocker, StackId, offered_sources
 from varne.dependencies import get_config_manager, get_db
+from varne.ui.components.amount_line import amount_line
 from varne.ui.components.application_costs import application_costs
-from varne.ui.components.container_costs import get_container_cost_rows
-from varne.ui.components.container_names import container_label
+from varne.ui.components.bar import Segment, bar
 from varne.ui.components.empty_state import empty_state, no_sources, no_stacks
 from varne.ui.components.stack_select import create_stack_select
-from varne.ui.components.tip import TIP_ATTRIBUTES, TIP_PROPS, Tip, tip_table
+from varne.ui.components.statement_table import (
+    APPLICATION_CELL,
+    DIFFERENCE_CELL,
+    HOSTED_CELL,
+    number_column,
+)
+from varne.ui.components.total import total
+from varne.ui.format import container_label, dollars, money, plural, tone
 from varne.ui.layout import create_layout
+from varne.ui.sync import sync_with_notice
 
-ROW_WITH_LOGO = """
-<q-td :props="props">
-    <div class="row items-center no-wrap" style="gap: 12px">
-        <img v-if="props.row.icon" :src="props.row.icon"
-             style="width: 28px; height: 28px; flex: none; object-fit: contain" />
-        <q-icon v-else :name="props.row.symbol || 'apps'" size="28px" class="opacity-40" />
-        <div>
-            <div>{{ props.value }}</div>
-            <div class="text-caption opacity-60" style="word-break: break-all">
-                {{ props.row.containers }}
-                <q-tooltip v-if="props.row.all_containers" class="seg-tip" @tip-attributes>
-                    <table class="tip-table">
-                        <tr v-for="(name, index) in props.row.all_containers.split('\\n')" :key="name">
-                            <td class="key"><div>{{ index === 0 ? 'Containers' : '' }}</div></td>
-                            <td class="value"><div>{{ name }}</div></td>
-                        </tr>
-                    </table>
-                </q-tooltip>
-            </div>
-        </div>
-    </div>
-</q-td>
-""".replace("@tip-attributes", TIP_ATTRIBUTES)
-HOSTED_CELL = """
-<q-td :props="props">
-    <div class="row items-center no-wrap" style="gap: 10px">
-        <template v-if="props.row.hosted">
-            <img v-if="props.row.hosted_icon" :src="props.row.hosted_icon"
-                 :class="props.row.hosted_mono ? 'logo-mono' : ''"
-                 style="width: 24px; height: 24px; flex: none; object-fit: contain" />
-            <q-icon v-else name="apps" size="24px" class="opacity-40" />
-        </template>
-        <span>{{ props.value }}</span>
-    </div>
-</q-td>
-"""
-DIFFERENCE_CELL = """
-<q-td :props="props" :class="props.row.tone"><b>{{ props.value }}</b></q-td>
-"""
+# The table lists this many applications, or more when more of them are compared: every
+# one that is compared is listed, the ones that are not fill what is left, and the rest
+# is folded into one row.
+LISTED_ROWS = 25
 
 
-def dollars(amount: Decimal | None) -> str:
-    if amount is None:
-        return "—"
-
-    # a container costs fractions of a cent an hour, cents alone would show $0.00
-    if 0 < abs(amount) < Decimal("0.01"):
-        return f"${amount:.4f}"
-
-    return f"${amount:,.2f}"
-
-
-def percent(value: Decimal | None) -> str:
-    return "n/a" if value is None else f"{value:+.0%}"
-
-
-def money(amount: Decimal) -> str:
-    """Dollars, with the sign in front of the dollar sign."""
-    if amount < 0:
-        return f"-{dollars(-amount)}"
-
-    return dollars(amount)
-
-
-def plural(count: int, noun: str) -> str:
-    return f"{count} {noun}" if count == 1 else f"{count} {noun}s"
-
-
-def tone(amount: Decimal | None) -> str:
-    if amount is None:
-        return ""
-
-    return "text-positive" if amount >= 0 else "text-negative"
-
-
-def number_column(name: str, label: str) -> dict[str, str]:
-    return {"name": name, "label": label, "field": name, "align": "right"}
-
-
-def figure(label: str, value: str, unit: str = "", apart: bool = False) -> None:
-    """One line of the profitability: what it is, and what it comes to, on the right.
-
-    A line that is `apart` has a little room above it, to set it off from those before.
-    """
-    with ui.row().classes(
-        "w-full justify-between items-baseline" + (" figure-apart" if apart else "")
-    ):
-        ui.label(label).classes("text-sm")
-        with ui.row().classes("items-baseline gap-1"):
-            ui.label(value).classes("statement-figure")
-            if unit:
-                ui.label(unit).classes("text-sm opacity-60")
-
-
-class Segment(NamedTuple):
-    """One part of a bar: what it is worth, what it says, and what it is."""
-
-    amount: Decimal
-    kind: str
-    # What is said of it when it is hovered or tapped, as the rows of a table: the name
-    # of a field and its value, the way the tooltips of the charts say it.
-    tip: Tip
-    # Written on it when there is room: the logo, else the text, else the symbol that
-    # stands in for a logo.
-    text: str = ""
-    logo: str = ""
-    # A logo drawn in black only, to be shown light on the dark theme.
-    mono: bool = False
-    placeholder: str = ""
-
-
-def bar(segments: list[Segment], scale: Decimal, ordered: bool = False) -> None:
-    """One bar, on a scale that it shares with the other.
-
-    What is written on a segment is shown where it fits, see theme.py. On an ordered
-    bar it stops at the first segment where it does not fit: no segment to its right
-    is written on.
-    """
-    with ui.element("div").classes("bar bar-ordered" if ordered else "bar"):
-        for segment in segments:
-            if segment.amount <= 0 or scale <= 0:
-                continue
-
-            width = f"{float(segment.amount / scale * 100):.2f}%"
-            with (
-                ui.element("div")
-                .classes(f"bar-seg {segment.kind}")
-                .style(f"width: {width}")
-            ):
-                if segment.logo or segment.text or segment.placeholder:
-                    with ui.element("div").classes("seg-text"):
-                        if segment.logo:
-                            ui.element("img").props(f"src={segment.logo}").classes(
-                                "seg-logo logo-mono" if segment.mono else "seg-logo"
-                            )
-                        elif segment.text:
-                            ui.label(segment.text)
-                        else:
-                            ui.icon(segment.placeholder, size="24px").classes(
-                                "opacity-40"
-                            )
-                # a mouse hovers over it, a finger taps it and the tip stays until the next tap
-                with ui.tooltip().classes("seg-tip").props(TIP_PROPS):
-                    tip_table(segment.tip)
-                with (
-                    ui.menu()
-                    .classes("seg-menu")
-                    .props(f"anchor='top middle' self='bottom middle' {TIP_PROPS}")
-                ):
-                    tip_table(segment.tip)
-
-
-def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
+def statement_rows(
+    comparison: Comparison, expanded: bool = False
+) -> list[dict[str, str]]:
     compared = [
         app
         for app in comparison.apps
@@ -181,8 +47,22 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
     ]
     rest = [app for app in comparison.apps if app not in compared]
 
+    # One subscription stands in for all the applications that share it, and is paid for
+    # once: the first of them carries its price, against what all of them cost to run.
+    shared_cost: dict[str, Decimal] = {}
+    for app in compared:
+        if app.hosted is not None:
+            shared_cost[app.hosted.id] = (
+                shared_cost.get(app.hosted.id, Decimal(0)) + app.self_hosted
+            )
+    # the application that carries the price of each
+    priced: dict[str, str] = {}
+
     def row(app: AppComparison) -> dict[str, str]:
-        difference = (app.avoided_cost or Decimal(0)) - app.self_hosted
+        assert app.hosted is not None
+        payer = priced.setdefault(app.hosted.id, app.app)
+        repeated = payer != app.app
+        difference = (app.avoided_cost or Decimal(0)) - shared_cost[app.hosted.id]
         return {
             "app": app.app,
             "icon": f"/ui-assets/icons/{ICON_FILES[app.icon]}" if app.icon else "",
@@ -201,17 +81,21 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
                 else ""
             ),
             "hosted_mono": "yes" if app.hosted and app.hosted.mono else "",
-            "avoided_cost": dollars(app.avoided_cost),
-            "difference": money(difference),
-            "tone": tone(difference),
+            "avoided_cost": f"Shared with {payer}"
+            if repeated
+            else dollars(app.avoided_cost),
+            "difference": "" if repeated else money(difference),
+            "tone": "" if repeated else tone(difference),
         }
 
-    def left_out(name: str, symbol: str, cost: Decimal, count: str) -> dict[str, str]:
+    def left_out(
+        name: str, symbol: str, cost: Decimal, containers: str, icon: str = ""
+    ) -> dict[str, str]:
         return {
             "app": name,
-            "icon": "",
+            "icon": icon,
             "symbol": symbol,
-            "containers": count,
+            "containers": containers,
             "all_containers": "",
             "self_hosted": dollars(cost),
             "alternative": "Not compared",
@@ -223,17 +107,48 @@ def statement_rows(comparison: Comparison) -> list[dict[str, str]]:
             "tone": "text-negative",
         }
 
-    rows = [row(app) for app in compared]
-    if rest:
-        count = sum(len(app.containers) if app.app == OTHER else 1 for app in rest)
-        rows.append(
-            left_out(
-                plural(count, "other app"),
-                "more_horiz",
-                sum((app.self_hosted for app in rest), Decimal(0)),
-                "",
+    # What has nothing to be compared with, one by one: an application of its own, and
+    # each container whose image says nothing about what it is.
+    singles: list[tuple[Decimal, dict[str, str]]] = []
+    for app in rest:
+        if app.app == OTHER:
+            for name, cost in zip(app.containers, app.container_costs, strict=True):
+                singles.append((cost, left_out(name, "apps", cost, "")))
+        else:
+            icon = f"/ui-assets/icons/{ICON_FILES[app.icon]}" if app.icon else ""
+            singles.append(
+                (
+                    app.self_hosted,
+                    left_out(
+                        app.app,
+                        "apps",
+                        app.self_hosted,
+                        container_label(app.containers),
+                        icon,
+                    ),
+                )
             )
+    singles.sort(key=lambda single: single[0], reverse=True)
+
+    rows = [row(app) for app in compared]
+    shown = max(LISTED_ROWS - len(rows), 0)
+    rows.extend(single for _, single in singles[:shown])
+    hidden = singles[shown:]
+    if hidden:
+        summary = left_out(
+            plural(len(hidden), "other app"),
+            "expand_less" if expanded else "expand_more",
+            sum((cost for cost, _ in hidden), Decimal(0)),
+            "click to hide" if expanded else "click to show",
         )
+        # a click on it shows or hides the ones it stands for
+        summary["more"] = "yes"
+        rows.append(summary)
+        if expanded:
+            for _, single in hidden:
+                # set in a little, under the row that opened them
+                single["nested"] = "yes"
+                rows.append(single)
     if comparison.idle > 0:
         rows.append(left_out("Idle", "hourglass_empty", comparison.idle, ""))
 
@@ -258,13 +173,10 @@ LINE_LABELS = {
 def breakdown(owned: Ownership, avoided_cost: Decimal) -> None:
     """What the cost of self-hosting is made of, and when the hardware pays back."""
     with ui.column().classes("breakdown"):
-        for name, cost in owned.lines:
-            figure(LINE_LABELS.get(name, name), dollars(cost), "/ mo")
-
         # only hardware that was bought can pay back, not a machine rented by the hour
         result = payback(owned, avoided_cost)
         if result is not None:
-            figure(
+            amount_line(
                 "Payback period",
                 "never, the subscriptions cost less than the machines"
                 if result.months is None
@@ -279,13 +191,12 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
         app.hosted.id: app.hosted for app in comparison.apps if app.hosted is not None
     }
     scale = max(comparison.avoided_cost, comparison.machine_cost)
-    used = comparison.machine_cost - comparison.idle
 
     # not in a card: it is what the page is about, and it stands out the more for it
     with ui.column().classes("statement"):
         ui.label("Homelab profitability").classes("statement-title")
 
-        figure("Cost of hosted alternatives", dollars(comparison.avoided_cost), "/ mo")
+        ui.label("Cost of hosted alternatives").classes("statement-section")
         bar(
             [
                 Segment(
@@ -311,25 +222,38 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
             scale,
             ordered=True,
         )
+        total(
+            "Total",
+            comparison.avoided_cost,
+            [
+                (service.label, service.usd_per_month)
+                for service in sorted(
+                    hosted.values(), key=lambda s: s.usd_per_month, reverse=True
+                )
+            ],
+        )
 
-        figure("Cost of self-hosting", dollars(comparison.machine_cost), "/ mo")
+        ui.label("Cost of self-hosting").classes("statement-section")
         bar(
             [
-                Segment(
-                    used,
-                    "seg-used",
-                    (
-                        ("Applications", f"{dollars(used)} / mo"),
-                        ("Is", "what the containers cost to run"),
-                    ),
+                # one part for each application, so that it is clear what they are
+                *(
+                    Segment(
+                        app.self_hosted,
+                        "seg-used",
+                        (
+                            ("Application", app.app),
+                            ("Cost", f"{dollars(app.self_hosted)} / mo"),
+                        ),
+                    )
+                    for app in sorted(
+                        comparison.apps, key=lambda a: a.self_hosted, reverse=True
+                    )
                 ),
                 Segment(
                     comparison.idle,
                     "seg-idle",
-                    (
-                        ("Idle", f"{dollars(comparison.idle)} / mo"),
-                        ("Is", "capacity that no container used"),
-                    ),
+                    (("Idle", f"{dollars(comparison.idle)} / mo"),),
                     text="Idle",
                 ),
                 Segment(
@@ -340,17 +264,25 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
                             "Avoided",
                             f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo",
                         ),
-                        ("Is", "what the subscriptions would cost beyond your machine"),
                     ),
                     text=f"{dollars(comparison.avoided_cost - comparison.machine_cost)} / mo avoided",
                 ),
             ],
             scale,
         )
+        lines: list[tuple[str, Decimal]] = (
+            list(owned.lines) if owned is not None else []
+        )
+        total(
+            "Total",
+            comparison.machine_cost,
+            [(LINE_LABELS.get(name, name), cost) for name, cost in lines],
+        )
 
         if owned is not None:
             breakdown(owned, comparison.avoided_cost)
 
+    expanded = False
     table = (
         ui.table(
             columns=[
@@ -370,22 +302,25 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
                 number_column("avoided_cost", "Hosted cost"),
                 number_column("difference", "Cost difference"),
             ],
-            rows=statement_rows(comparison),
+            rows=statement_rows(comparison, expanded),
             pagination={"rowsPerPage": 0},
         )
         .classes("w-full")
         .props("hide-bottom")
     )
-    table.add_slot("body-cell-app", ROW_WITH_LOGO)
+
+    def toggle_hidden(e: GenericEventArguments) -> None:
+        nonlocal expanded
+        _, row, _ = cast(tuple[object, dict[str, str], object], e.args)
+        if row.get("more"):
+            expanded = not expanded
+            table.rows = statement_rows(comparison, expanded)
+            table.update()
+
+    table.on("rowClick", toggle_hidden)
+    table.add_slot("body-cell-app", APPLICATION_CELL)
     table.add_slot("body-cell-alternative", HOSTED_CELL)
     table.add_slot("body-cell-difference", DIFFERENCE_CELL)
-
-    net = comparison.avoided_cost - comparison.machine_cost
-    with ui.row().classes("statement-total w-full justify-between"):
-        ui.label("Net per month, against the whole machine").classes("text-sm")
-        with ui.row().classes("items-baseline gap-3"):
-            ui.label(percent(comparison.roi)).classes(f"text-sm {tone(comparison.roi)}")
-            ui.label(money(net)).classes(f"statement-figure {tone(net)}")
 
 
 @ui.page("/")
@@ -424,12 +359,18 @@ async def page_dashboard() -> None:
             costs = await run.io_bound(get_container_cost_rows, db, stack_id)
 
             if not costs:
+
+                async def sync() -> None:
+                    ui.notify("Syncing, this can take a moment")
+                    if await sync_with_notice(stack, offered_sources(stack)):
+                        await result.refresh()
+
                 empty_state(
                     "dns",
                     "No Docker data yet",
-                    "Sync a docker source on the Integrations page to see what its containers cost and what the subscriptions they replace would.",
-                    "Go to Integrations",
-                    "/integrations",
+                    "The source is added to this stack but not synced. Sync it to see what its containers cost and what the subscriptions they replace would.",
+                    "Sync now",
+                    sync,
                 )
                 return
 

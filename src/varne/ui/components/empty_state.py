@@ -1,16 +1,27 @@
+from collections.abc import Callable
+
 from nicegui import ui
 
 from varne.ui.layout import DOCS_URL
 
 
-def empty_state(icon: str, title: str, text: str, action: str, target: str) -> None:
+def empty_state(
+    icon: str, title: str, text: str, action: str, target: str | Callable[[], object]
+) -> None:
     """What a page says when there is nothing to show yet, and where to go from there."""
     with ui.column().classes("w-full items-center gap-2 py-16 text-center"):
         ui.icon(icon, size="56px").classes("opacity-40")
         ui.label(title).classes("text-xl")
-        ui.label(text).classes("opacity-70 max-w-md")
+        ui.label(text).classes("muted max-w-md")
         with ui.row().classes("mt-2 items-center"):
-            ui.button(action, on_click=lambda: ui.navigate.to(target))
+            ui.button(
+                action,
+                on_click=(
+                    (lambda: ui.navigate.to(target))
+                    if isinstance(target, str)
+                    else target
+                ),
+            )
             ui.button(
                 "Read the documentation",
                 icon="menu_book",

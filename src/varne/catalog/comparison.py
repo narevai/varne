@@ -34,6 +34,8 @@ class AppComparison:
     self_hosted: Decimal
     # The hosted service it stands in for, when there is one.
     hosted: HostedApp | None
+    # What each of the containers costs in a month, in the order of `containers`.
+    container_costs: tuple[Decimal, ...] = ()
 
     @property
     def alternative(self) -> str | None:
@@ -122,6 +124,12 @@ def compare(costs: Iterable[ContainerCost]) -> Comparison:
             ),
             self_hosted[name],
             app.hosted,
+            tuple(
+                cost * to_month
+                for _, cost in sorted(
+                    containers[name].items(), key=lambda c: (-c[1], c[0])
+                )
+            ),
         )
         for name, app in found.items()
     ]

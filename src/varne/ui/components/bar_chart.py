@@ -89,9 +89,7 @@ def bar_chart(
         .configure_axis(
             domain=False,
             ticks=False,
-            gridColor="currentColor",
-            gridOpacity=0.18,
-            gridDash=[3, 3],
+            grid=False,
             labelColor="currentColor",
             labelOpacity=0.65,
             labelFontSize=11,
@@ -116,7 +114,7 @@ def bar_chart(
     with ui.column().classes("w-full gap-1 chart-block"):
         ui.label(title).classes("text-sm font-medium")
         with ui.row().classes("gap-1 text-sm"):
-            ui.label("Total").classes("opacity-60")
+            ui.label("Total").classes("faint")
             ui.label(f"{total:,.2f}").classes("font-medium")
         widget = alt.JupyterChart(
             chart, embed_options={"renderer": "svg", "actions": False}

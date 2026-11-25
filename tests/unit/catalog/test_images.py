@@ -96,11 +96,11 @@ def test_every_image_gives_an_application_name_not_only_the_catalog(
 
 
 def test_an_application_outside_the_catalog_has_a_logo_when_one_is_shipped():
-    sonarr = identify("lscr.io/linuxserver/sonarr:latest")
+    dozzle = identify("amir20/dozzle:latest")
     unknown = identify("ghcr.io/someone/their-thing:1")
 
-    assert sonarr is not None and sonarr.icon == "sonarr"
-    assert sonarr.alternative is None
+    assert dozzle is not None and dozzle.icon == "dozzle"
+    assert dozzle.alternative is None
     assert unknown is not None and unknown.icon is None
 
 

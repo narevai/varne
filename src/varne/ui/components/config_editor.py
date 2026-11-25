@@ -21,18 +21,22 @@ def config_editor(on_saved: Callable[[], None]) -> None:
 
     if config_manager.read_only:
         # nothing to edit: it is shown, and the text says why it cannot be changed
-        ui.label(READ_ONLY_MESSAGE).classes("text-sm opacity-70")
+        ui.label(READ_ONLY_MESSAGE).classes("text-sm muted")
         ui.code(config_manager.path.read_text(), language="yaml").classes("w-full")
         return
 
-    def save_text(text: str) -> None:
+    def fail(message: str) -> None:
+        ui.notify(message, type="negative", close_button=True, multi_line=True)
+
+    def save_text(text: str) -> bool:
         error = config_manager.save_text(text)
-        if error is None:
-            error_label.set_text("")
-            ui.notify("Configuration saved")
-            on_saved()
-        else:
-            error_label.set_text(error)
+        if error is not None:
+            fail(error)
+            return False
+
+        ui.notify("Configuration saved", type="positive")
+        on_saved()
+        return True
 
     def save_yaml() -> None:
         save_text(editor.value)
@@ -40,8 +44,7 @@ def config_editor(on_saved: Callable[[], None]) -> None:
     def save_form() -> None:
         text = form_to_yaml(form_data)
         editor.set_value(text)
-        save_text(text)
-        if not error_label.text:
+        if save_text(text):
             # what was saved is now stored: its ids are locked
             form_data.clear()
             form_data.update(yaml_to_form(text))
@@ -49,18 +52,16 @@ def config_editor(on_saved: Callable[[], None]) -> None:
 
     def reset() -> None:
         editor.set_value(config_manager.path.read_text())
-        error_label.set_text("")
 
     def show_form() -> None:
         """Fill the form with what the YAML says now."""
         try:
             loaded = yaml_to_form(editor.value)
         except ValueError as exc:
-            error_label.set_text(str(exc))
+            fail(str(exc))
             tabs.set_value(yaml_tab)
             return
 
-        error_label.set_text("")
         form_data.clear()
         form_data.update(loaded)
         form.refresh()
@@ -113,5 +114,4 @@ def config_editor(on_saved: Callable[[], None]) -> None:
 
             form()
 
-    error_label = ui.label().style("color: var(--chart-error-ink)")
     tabs.on_value_change(lambda e: on_tab(e.value))

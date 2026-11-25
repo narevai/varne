@@ -156,7 +156,7 @@ async def test_dashboard_without_synced_data_says_what_to_do(
     await user.open("/")
 
     await user.should_see("No Docker data yet")
-    await user.should_see("Go to Integrations")
+    await user.should_see("Sync now")
 
 
 async def test_dashboard_reads_the_file_when_it_is_opened(
@@ -303,7 +303,7 @@ async def test_settings_form_only_offers_docker(user: User, config_path: Path) -
 
     # one kind of source to add, so there is no menu to choose from
     await user.should_not_see(kind=ui.menu_item)
-    await user.should_see("New source")
+    await user.should_see("Homelab")
 
 
 DOCKER_STACK = """
@@ -471,9 +471,9 @@ async def test_the_demo_cannot_be_edited(
 
 
 def test_the_table_of_the_dashboard_has_templates_the_browser_can_read() -> None:
-    from varne.ui.pages.dashboard import HOSTED_CELL, ROW_WITH_LOGO
+    from varne.ui.components.statement_table import APPLICATION_CELL, HOSTED_CELL
 
     # a new line written into the string of a template ends the string in the browser
-    for template in (ROW_WITH_LOGO, HOSTED_CELL):
+    for template in (APPLICATION_CELL, HOSTED_CELL):
         quoted = [line for line in template.splitlines() if "'" in line]
         assert all(line.count("'") % 2 == 0 for line in quoted), quoted

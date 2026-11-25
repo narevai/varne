@@ -94,7 +94,9 @@ def allocate_costs(
 
     Every hour that has happened costs the machine the same, used or not. What
     the containers did not use is booked as `Idle`, so the rows of a day always
-    add up to the cost of the machine.
+    add up to the cost of the machine. Nothing is booked before the first hour
+    the monitoring has data for, as the machine's cost would show a month the
+    app never watched.
     """
     cost_per_hour = sum((line.cost_per_hour for line in lines), Decimal(0))
 
@@ -105,7 +107,10 @@ def allocate_costs(
     costs: dict[tuple[datetime, Container | None], Decimal] = defaultdict(Decimal)
     hours: dict[tuple[datetime, Container | None], Decimal] = defaultdict(Decimal)
 
-    hour = date_from
+    if not by_hour:
+        return []
+
+    hour = max(date_from, min(by_hour))
     while hour < date_to:
         part = elapsed(hour, extracted_at)
 

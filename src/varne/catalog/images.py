@@ -31,7 +31,9 @@ ICONS = frozenset(ICON_FILES)
 ICON_ALIASES = {
     "actual-server": "actual-budget",
     "adventurelog": "adventure-log",
+    "autokuma": "uptime-kuma",
     "clamav": "clam-av",
+    "eclipse-mosquitto": "mosquitto",
     "crafty": "crafty-controller",
     "grampsweb": "gramps-web",
     "immichframe": "immich-frame",
@@ -39,6 +41,7 @@ ICON_ALIASES = {
     "lyrionmusicserver": "lyrion",
     "newt": "pangolin",
     "mylar3": "mylar-3",
+    "n8n": "n8n",
     "postgis": "postgres",
     "steamcmd": "steam",
     "zwave-js-ui": "z-wave-js-ui",
@@ -93,13 +96,19 @@ def image_names(image: str) -> list[str]:
     return list(dict.fromkeys(names))
 
 
+# What other applications run on. An image that is published by an application, such as
+# `immich-app/postgres`, is that application's, and only a plain image is the database.
+INFRASTRUCTURE = frozenset({"PostgreSQL", "Redis", "Valkey"})
+
+
 def find_app(image: str | None) -> SelfHostedApp | None:
     if image is None:
         return None
 
-    return next(
-        (INDEX[name] for name in image_names(image) if name in INDEX),
-        None,
+    found = [INDEX[name] for name in image_names(image) if name in INDEX]
+
+    return next((app for app in found if app.name not in INFRASTRUCTURE), None) or (
+        found[0] if found else None
     )
 
 
@@ -112,7 +121,8 @@ def find_icon(names: list[str]) -> str | None:
             start = "-".join(words[:count])
             icon = ICON_ALIASES.get(start, start)
 
-            if len(start) >= MIN_ICON_NAME and start not in GENERIC and icon in ICONS:
+            short = len(start) < MIN_ICON_NAME and start not in ICON_ALIASES
+            if not short and start not in GENERIC and icon in ICONS:
                 return icon
 
     return None

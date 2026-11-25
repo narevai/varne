@@ -55,6 +55,9 @@
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.141 0.005 285.823);
 	--primary: oklch(0.5081 0.1049 165.61);
+	--hosted: oklch(0.52 0.15 250);
+	--self-dark: color-mix(in oklch,var(--primary) 38%,black);
+	--hosted-dark: color-mix(in oklch,var(--hosted) 38%,black);
 	--primary-foreground: oklch(0.985 0 0);
 	--secondary: oklch(0.967 0.001 286.375);
 	--secondary-foreground: oklch(0.21 0.006 285.885);
@@ -125,6 +128,7 @@ body.body--dark {
 	--popover: oklch(0.2 0.003 286);
 	--popover-foreground: oklch(0.985 0 0);
 	--primary: oklch(0.72 0.14 166);
+	--hosted: oklch(0.7 0.13 250);
 	--primary-foreground: oklch(0.15 0.02 166);
 	--secondary: oklch(0.274 0.006 286.033);
 	--secondary-foreground: oklch(0.985 0 0);
@@ -379,20 +383,39 @@ body.body--dark .cm-editor .cm-selectionBackground {background:var(--accent)!imp
 /* The profitability of the homelab: the bars under their title, on the page itself. */
 .statement {gap:.75rem;width:100%;padding:.5rem 0 1rem}
 .statement-title {font-size:1.75rem;font-weight:600;letter-spacing:-.03em}
+.total-items {padding-left:1.25rem;border-left:2px solid color-mix(in oklch,var(--foreground) 14%,transparent);margin-left:.25rem;opacity:.85}
+.statement-section {font-size:1rem;font-weight:600}
+.total-expansion .q-item {padding:0 .75rem;min-height:40px;border-radius:8px}
+.total-expansion .q-focus-helper {display:none}
+.total-expansion .q-item:hover {background:transparent;color:inherit}
+.total-expansion .q-item__section--main {padding:0}
+.total-expansion .q-item__section--side {min-width:0;padding-right:.5rem}
+.total-expansion {width:calc(100% + 1.5rem)!important;margin:-.5rem -.75rem 0}
+.total-expansion .total-items {margin-left:1rem;margin-right:.75rem}
 .statement-figure {font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums}
-.bar {display:flex;gap:2px;width:100%;height:44px;border-radius:8px;overflow:hidden;margin-bottom:.75rem}
+.bar {display:flex;gap:2px;width:100%;height:44px;border-radius:8px;overflow:hidden}
 .bar-seg {height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;font-size:13px;min-width:2px}
 .bar-seg>.seg-text {display:flex;max-width:100%;overflow:hidden;white-space:nowrap;padding:0 .6rem}
-.seg-hosted {background:color-mix(in oklch,var(--foreground) 24%,var(--card))}
-.seg-used {background:var(--primary)}
-/* Idle is the green of what is used, lighter, and solid: it is real cost, unlike what is
-   avoided, which is only what would have been paid and is hatched. */
-.seg-idle {background:color-mix(in oklch,var(--primary) 55%,white)}
+.seg-hosted {background:var(--hosted-dark)}
+.row-nested {padding-left:1.5rem}
+.logo-tile {display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:8px}
+.logo-tile img {width:28px;height:28px;flex:none;object-fit:contain}
+.cell-logo {display:flex;align-items:center;flex-wrap:nowrap;gap:12px}
+.cell-caption {word-break:break-all}
+/* quieter text: a unit, a hint, a caption */
+.muted {opacity:.7}
+.faint {opacity:.6}
+.logo-self {background:var(--self-dark)}
+.logo-hosted {background:var(--hosted-dark)}
+.seg-used {background:var(--self-dark)}
+/* Idle is grey and solid: it is real cost, unlike what is avoided, which is only what
+   would have been paid and is hatched. */
+.seg-idle {background:color-mix(in oklch,var(--foreground) 24%,var(--card))}
 .seg-avoided {
 	background:repeating-linear-gradient(135deg,transparent 0 5px,color-mix(in oklch,var(--foreground) 14%,transparent) 5px 6px);
 	color:var(--muted-foreground)
 }
-.seg-idle>.seg-text {font-size:14px;color:oklch(0.22 0.04 166)}
+.seg-idle>.seg-text {font-size:14px;color:var(--foreground)}
 .seg-avoided>.seg-text {font-size:14px;color:var(--foreground)}
 .statement-total {padding:.25rem 1rem 0;align-items:baseline}
 

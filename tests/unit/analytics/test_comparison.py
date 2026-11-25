@@ -30,7 +30,7 @@ def test_costs_come_from_the_billing_of_docker_sources(
 
     names = cast(list[str], df["service_name"].tolist())
     assert "Idle" in names and "compose-lab-elastic-search-1" in names
-    assert sum(cast(list[Decimal], df["cost"].tolist()), Decimal(0)) == Decimal(39)
+    assert sum(cast(list[Decimal], df["cost"].tolist()), Decimal(0)) == Decimal(2)
     assert len(get_container_costs(db, "another stack").to_pandas()) == 0
 
     costs = [
