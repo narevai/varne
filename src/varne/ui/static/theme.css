@@ -56,8 +56,8 @@
 	--popover-foreground: oklch(0.141 0.005 285.823);
 	--primary: oklch(0.5081 0.1049 165.61);
 	--hosted: oklch(0.52 0.15 250);
-	--self-dark: color-mix(in oklch,var(--primary) 38%,black);
-	--hosted-dark: color-mix(in oklch,var(--hosted) 38%,black);
+	--self-dark: color-mix(in oklch,var(--primary) 60%,black);
+	--hosted-dark: color-mix(in oklch,var(--hosted) 60%,black);
 	--primary-foreground: oklch(0.985 0 0);
 	--secondary: oklch(0.967 0.001 286.375);
 	--secondary-foreground: oklch(0.21 0.006 285.885);
@@ -409,10 +409,13 @@ body.body--dark .cm-editor .cm-selectionBackground {background:var(--accent)!imp
 .logo-hosted {background:var(--hosted-dark)}
 .seg-used {background:var(--self-dark)}
 /* Idle is grey and solid: it is real cost, unlike what is avoided, which is only what
-   would have been paid and is hatched. */
+   would have been paid and is an empty box with a dashed outline. */
 .seg-idle {background:color-mix(in oklch,var(--foreground) 24%,var(--card))}
 .seg-avoided {
-	background:repeating-linear-gradient(135deg,transparent 0 5px,color-mix(in oklch,var(--foreground) 14%,transparent) 5px 6px);
+	background:transparent;
+	border:1px dashed color-mix(in oklch,var(--foreground) 45%,transparent);
+	border-radius:8px;
+	box-sizing:border-box;
 	color:var(--muted-foreground)
 }
 .seg-idle>.seg-text {font-size:14px;color:var(--foreground)}
