@@ -56,6 +56,8 @@
 	--popover-foreground: oklch(0.141 0.005 285.823);
 	--primary: oklch(0.5081 0.1049 165.61);
 	--hosted: oklch(0.52 0.15 250);
+	--self-dark: color-mix(in oklch,var(--primary) 38%,black);
+	--hosted-dark: color-mix(in oklch,var(--hosted) 38%,black);
 	--primary-foreground: oklch(0.985 0 0);
 	--secondary: oklch(0.967 0.001 286.375);
 	--secondary-foreground: oklch(0.21 0.006 285.885);
@@ -388,18 +390,24 @@ body.body--dark .cm-editor .cm-selectionBackground {background:var(--accent)!imp
 .total-expansion .q-item:hover {background:transparent;color:inherit}
 .total-expansion .q-item__section--main {padding:0}
 .total-expansion .q-item__section--side {min-width:0;padding-right:.5rem}
-.total-expansion {width:calc(100% + 1.5rem)!important;margin:0 -.75rem}
+.total-expansion {width:calc(100% + 1.5rem)!important;margin:-.5rem -.75rem 0}
 .total-expansion .total-items {margin-left:1rem;margin-right:.75rem}
 .statement-figure {font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums}
-.bar {display:flex;gap:2px;width:100%;height:44px;border-radius:8px;overflow:hidden;margin-bottom:.75rem}
+.bar {display:flex;gap:2px;width:100%;height:44px;border-radius:8px;overflow:hidden}
 .bar-seg {height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;font-size:13px;min-width:2px}
 .bar-seg>.seg-text {display:flex;max-width:100%;overflow:hidden;white-space:nowrap;padding:0 .6rem}
-.seg-hosted {background:color-mix(in oklch,var(--hosted) 38%,black)}
+.seg-hosted {background:var(--hosted-dark)}
 .row-nested {padding-left:1.5rem}
 .logo-tile {display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:8px}
-.logo-self {background:color-mix(in oklch,var(--primary) 38%,black)}
-.logo-hosted {background:color-mix(in oklch,var(--hosted) 38%,black)}
-.seg-used {background:color-mix(in oklch,var(--primary) 38%,black)}
+.logo-tile img {width:28px;height:28px;flex:none;object-fit:contain}
+.cell-logo {display:flex;align-items:center;flex-wrap:nowrap;gap:12px}
+.cell-caption {word-break:break-all}
+/* quieter text: a unit, a hint, a caption */
+.muted {opacity:.7}
+.faint {opacity:.6}
+.logo-self {background:var(--self-dark)}
+.logo-hosted {background:var(--hosted-dark)}
+.seg-used {background:var(--self-dark)}
 /* Idle is grey and solid: it is real cost, unlike what is avoided, which is only what
    would have been paid and is hatched. */
 .seg-idle {background:color-mix(in oklch,var(--foreground) 24%,var(--card))}

@@ -12,7 +12,7 @@ def empty_state(
     with ui.column().classes("w-full items-center gap-2 py-16 text-center"):
         ui.icon(icon, size="56px").classes("opacity-40")
         ui.label(title).classes("text-xl")
-        ui.label(text).classes("opacity-70 max-w-md")
+        ui.label(text).classes("muted max-w-md")
         with ui.row().classes("mt-2 items-center"):
             ui.button(
                 action,

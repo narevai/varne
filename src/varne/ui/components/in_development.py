@@ -26,10 +26,10 @@ def in_development() -> None:
     ui.label("In development").classes("text-xl font-semibold")
     ui.label(
         "These sources work from the configuration file, but the app does not offer them yet. Their form and charts live here until they do."
-    ).classes("text-sm opacity-70")
+    ).classes("text-sm muted")
 
     with ui.card().classes("w-full"):
-        ui.label("Source forms").classes("text-sm opacity-70")
+        ui.label("Source forms").classes("text-sm muted")
         for source_type in SourceType:
             if source_type not in SUPPORTED_SOURCES:
                 source_form(new_source(source_type), lambda: None)

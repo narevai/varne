@@ -5,6 +5,7 @@ from typing import cast
 
 import pytest
 
+from varne.analytics.comparison import get_container_cost_rows
 from varne.catalog.comparison import compare
 from varne.catalog.images import identify
 from varne.db.sources import last_synced, stored_source_ids
@@ -17,7 +18,6 @@ from varne.providers.docker.rates import cost_lines
 from varne.providers.docker.service import DockerService
 from varne.providers.docker.usage import SYSTEM_ENTITY
 from varne.settings import Settings, get_settings
-from varne.ui.components.container_costs import get_container_cost_rows
 
 NOW = datetime(2026, 11, 20, 15, tzinfo=UTC)  # a Friday
 

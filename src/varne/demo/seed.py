@@ -29,16 +29,14 @@ def seed_demo() -> None:
     It runs after the app is up, and not again when the demo has its data.
     """
     # imported here, the dependencies need the settings, which need this package
-    from varne.dependencies import get_config_manager, get_db, get_service
+    from varne.dependencies import get_config_manager, get_db
+    from varne.sync import sync_sources
 
     config = get_config_manager().load()
     stack = next((x for x in config.stacks if x.id == DEMO_STACK_ID), None)
     if stack is None or stored_source_ids(get_db(), stack.id):
         return
 
-    for source in stack.sources:
-        if isinstance(source, ConfigDocker):
-            service = get_service(stack_id=stack.id, source=source)
-            service.fetch_source_meta()
-            service.fetch_source_data()
-            logger.info(f"Demo data ready for {source.name}")
+    sources = [x for x in stack.sources if isinstance(x, ConfigDocker)]
+    result = sync_sources(stack, sources)
+    logger.info(f"Demo data ready for {result.synced} of {len(sources)} source(s)")

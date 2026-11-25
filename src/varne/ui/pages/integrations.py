@@ -16,8 +16,8 @@ from varne.dependencies import get_config_manager, get_db
 from varne.ui.components.config_editor import config_editor
 from varne.ui.components.confirm import confirm
 from varne.ui.components.stack_select import create_stack_select
-from varne.ui.components.sync import sync_sources
 from varne.ui.layout import create_layout
+from varne.ui.sync import sync_with_notice
 
 # A source that is stored but no longer configured is grey and can only be removed.
 SOURCE_ROW = """
@@ -72,7 +72,7 @@ async def page_integrations() -> None:
             button_sync_all.disable()
             synced = 0
             try:
-                synced = await sync_sources(stack, sources)
+                synced = await sync_with_notice(stack, sources)
             finally:
                 button_sync_all.enable()
 
@@ -124,7 +124,7 @@ async def page_integrations() -> None:
             sources = offered_sources(stack)
             if not sources:
                 ui.label("This stack has no sources. Add one below.").classes(
-                    "text-sm opacity-70"
+                    "text-sm muted"
                 )
                 return
 
@@ -171,7 +171,7 @@ async def page_integrations() -> None:
             table.on("remove", lambda e: remove_one(e))
 
         if config_manager.config is None or not config_manager.config.stacks:
-            ui.label("No stacks yet. Add one below.").classes("text-sm opacity-70")
+            ui.label("No stacks yet. Add one below.").classes("text-sm muted")
         else:
             with layout.header_tools:
                 stack_select = create_stack_select(config_manager.config)

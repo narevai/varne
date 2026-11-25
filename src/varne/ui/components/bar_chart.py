@@ -114,7 +114,7 @@ def bar_chart(
     with ui.column().classes("w-full gap-1 chart-block"):
         ui.label(title).classes("text-sm font-medium")
         with ui.row().classes("gap-1 text-sm"):
-            ui.label("Total").classes("opacity-60")
+            ui.label("Total").classes("faint")
             ui.label(f"{total:,.2f}").classes("font-medium")
         widget = alt.JupyterChart(
             chart, embed_options={"renderer": "svg", "actions": False}

@@ -1,9 +1,10 @@
 from decimal import Decimal
-from typing import NamedTuple, cast
+from typing import cast
 
 from nicegui import run, ui
 from nicegui.events import GenericEventArguments
 
+from varne.analytics.comparison import get_container_cost_rows
 from varne.catalog.comparison import (
     OTHER,
     AppComparison,
@@ -14,199 +15,21 @@ from varne.catalog.images import ICON_FILES
 from varne.catalog.ownership import Ownership, duration, ownership, payback
 from varne.config import ConfigDocker, StackId, offered_sources
 from varne.dependencies import get_config_manager, get_db
+from varne.ui.components.amount_line import amount_line
 from varne.ui.components.application_costs import application_costs
-from varne.ui.components.container_costs import get_container_cost_rows
-from varne.ui.components.container_names import container_label
+from varne.ui.components.bar import Segment, bar
 from varne.ui.components.empty_state import empty_state, no_sources, no_stacks
 from varne.ui.components.stack_select import create_stack_select
-from varne.ui.components.sync import sync_sources
-from varne.ui.components.tip import TIP_ATTRIBUTES, TIP_PROPS, Tip, tip_table
+from varne.ui.components.statement_table import (
+    APPLICATION_CELL,
+    DIFFERENCE_CELL,
+    HOSTED_CELL,
+    number_column,
+)
+from varne.ui.components.total import total
+from varne.ui.format import container_label, dollars, money, plural, tone
 from varne.ui.layout import create_layout
-
-ROW_WITH_LOGO = """
-<q-td :props="props">
-    <div class="row items-center no-wrap" style="gap: 12px"
-         :class="[props.row.more ? 'cursor-pointer' : '', props.row.nested ? 'row-nested' : '']">
-        <div class="logo-tile logo-self">
-            <img v-if="props.row.icon" :src="props.row.icon"
-                 style="width: 28px; height: 28px; flex: none; object-fit: contain" />
-            <q-icon v-else :name="props.row.symbol || 'apps'" size="28px" class="opacity-60" />
-        </div>
-        <div>
-            <div>{{ props.value }}</div>
-            <div class="text-caption opacity-60" style="word-break: break-all">
-                {{ props.row.containers }}
-                <q-tooltip v-if="props.row.all_containers" class="seg-tip" @tip-attributes>
-                    <table class="tip-table">
-                        <tr v-for="(name, index) in props.row.all_containers.split('\\n')" :key="name">
-                            <td class="key"><div>{{ index === 0 ? 'Containers' : '' }}</div></td>
-                            <td class="value"><div>{{ name }}</div></td>
-                        </tr>
-                    </table>
-                </q-tooltip>
-            </div>
-        </div>
-    </div>
-</q-td>
-""".replace("@tip-attributes", TIP_ATTRIBUTES)
-HOSTED_CELL = """
-<q-td :props="props">
-    <div class="row items-center no-wrap" style="gap: 10px">
-        <div v-if="props.row.hosted" class="logo-tile logo-hosted">
-            <img v-if="props.row.hosted_icon" :src="props.row.hosted_icon"
-                 :class="props.row.hosted_mono ? 'logo-mono' : ''"
-                 style="width: 24px; height: 24px; flex: none; object-fit: contain" />
-            <q-icon v-else name="apps" size="24px" class="opacity-60" />
-        </div>
-        <span>{{ props.value }}</span>
-    </div>
-</q-td>
-"""
-DIFFERENCE_CELL = """
-<q-td :props="props" :class="props.row.tone"><b>{{ props.value }}</b></q-td>
-"""
-
-
-def dollars(amount: Decimal | None) -> str:
-    if amount is None:
-        return "—"
-
-    # a container costs fractions of a cent an hour, cents alone would show $0.00
-    if 0 < abs(amount) < Decimal("0.01"):
-        return f"${amount:.4f}"
-
-    return f"${amount:,.2f}"
-
-
-def percent(value: Decimal | None) -> str:
-    return "n/a" if value is None else f"{value:+.0%}"
-
-
-def money(amount: Decimal) -> str:
-    """Dollars, with the sign in front of the dollar sign."""
-    if amount < 0:
-        return f"-{dollars(-amount)}"
-
-    return dollars(amount)
-
-
-def plural(count: int, noun: str) -> str:
-    return f"{count} {noun}" if count == 1 else f"{count} {noun}s"
-
-
-def tone(amount: Decimal | None) -> str:
-    if amount is None:
-        return ""
-
-    return "text-positive" if amount >= 0 else "text-negative"
-
-
-def number_column(name: str, label: str) -> dict[str, str]:
-    return {"name": name, "label": label, "field": name, "align": "right"}
-
-
-def figure(label: str, value: str, unit: str = "", apart: bool = False) -> None:
-    """One line of the profitability: what it is, and what it comes to, on the right.
-
-    A line that is `apart` has a little room above it, to set it off from those before.
-    """
-    with ui.row().classes(
-        "w-full justify-between items-baseline" + (" figure-apart" if apart else "")
-    ):
-        ui.label(label).classes("text-sm")
-        with ui.row().classes("items-baseline gap-1"):
-            ui.label(value).classes("statement-figure")
-            if unit:
-                ui.label(unit).classes("text-sm opacity-60")
-
-
-def total(label: str, amount: Decimal, rows: list[tuple[str, Decimal]]) -> None:
-    """The total of a bar, on a line of its own. Opened, it says what it is made of."""
-
-    def line(name: str, value: Decimal, bold: bool = False) -> None:
-        with ui.row().classes("w-full justify-between items-baseline"):
-            ui.label(name).classes("text-sm" if not bold else "text-sm font-semibold")
-            with ui.row().classes("items-baseline gap-1"):
-                ui.label(dollars(value)).classes("statement-figure")
-                ui.label("/ mo").classes("text-sm opacity-60")
-
-    if not rows:
-        line(label, amount, bold=True)
-        return
-
-    with (
-        ui.expansion()
-        .classes("w-full total-expansion")
-        .props("dense switch-toggle-side") as expansion
-    ):
-        with expansion.add_slot("header"):
-            with ui.row().classes("w-full justify-between items-baseline"):
-                ui.label(label).classes("text-sm")
-                with ui.row().classes("items-baseline gap-1"):
-                    ui.label(dollars(amount)).classes("statement-figure")
-                    ui.label("/ mo").classes("text-sm opacity-60")
-        with ui.column().classes("total-items w-full gap-1 pb-2"):
-            for name, value in rows:
-                line(name, value)
-
-
-class Segment(NamedTuple):
-    """One part of a bar: what it is worth, what it says, and what it is."""
-
-    amount: Decimal
-    kind: str
-    # What is said of it when it is hovered or tapped, as the rows of a table: the name
-    # of a field and its value, the way the tooltips of the charts say it.
-    tip: Tip
-    # Written on it when there is room: the logo, else the text, else the symbol that
-    # stands in for a logo.
-    text: str = ""
-    logo: str = ""
-    # A logo drawn in black only, to be shown light on the dark theme.
-    mono: bool = False
-    placeholder: str = ""
-
-
-def bar(segments: list[Segment], scale: Decimal, ordered: bool = False) -> None:
-    """One bar, on a scale that it shares with the other.
-
-    What is written on a segment is shown where it fits, see theme.py. On an ordered
-    bar it stops at the first segment where it does not fit: no segment to its right
-    is written on.
-    """
-    with ui.element("div").classes("bar bar-ordered" if ordered else "bar"):
-        for segment in segments:
-            if segment.amount <= 0 or scale <= 0:
-                continue
-
-            width = f"{float(segment.amount / scale * 100):.2f}%"
-            with (
-                ui.element("div")
-                .classes(f"bar-seg {segment.kind}")
-                .style(f"width: {width}")
-            ):
-                if segment.logo or segment.text or segment.placeholder:
-                    with ui.element("div").classes("seg-text"):
-                        if segment.logo:
-                            ui.element("img").props(f"src={segment.logo}").classes(
-                                "seg-logo logo-mono" if segment.mono else "seg-logo"
-                            )
-                        elif segment.text:
-                            ui.label(segment.text)
-                        else:
-                            ui.icon(segment.placeholder, size="24px").classes(
-                                "opacity-40"
-                            )
-                # a mouse hovers over it, a finger taps it and the tip stays until the next tap
-                with ui.tooltip().classes("seg-tip").props(TIP_PROPS):
-                    tip_table(segment.tip)
-                with (
-                    ui.menu()
-                    .classes("seg-menu")
-                    .props(f"anchor='top middle' self='bottom middle' {TIP_PROPS}")
-                ):
-                    tip_table(segment.tip)
-
+from varne.ui.sync import sync_with_notice
 
 # The table lists this many applications, or more when more of them are compared: every
 # one that is compared is listed, the ones that are not fill what is left, and the rest
@@ -353,7 +176,7 @@ def breakdown(owned: Ownership, avoided_cost: Decimal) -> None:
         # only hardware that was bought can pay back, not a machine rented by the hour
         result = payback(owned, avoided_cost)
         if result is not None:
-            figure(
+            amount_line(
                 "Payback period",
                 "never, the subscriptions cost less than the machines"
                 if result.months is None
@@ -495,7 +318,7 @@ def dashboard_view(comparison: Comparison, owned: Ownership | None) -> None:
             table.update()
 
     table.on("rowClick", toggle_hidden)
-    table.add_slot("body-cell-app", ROW_WITH_LOGO)
+    table.add_slot("body-cell-app", APPLICATION_CELL)
     table.add_slot("body-cell-alternative", HOSTED_CELL)
     table.add_slot("body-cell-difference", DIFFERENCE_CELL)
 
@@ -539,7 +362,7 @@ async def page_dashboard() -> None:
 
                 async def sync() -> None:
                     ui.notify("Syncing, this can take a moment")
-                    if await sync_sources(stack, offered_sources(stack)):
+                    if await sync_with_notice(stack, offered_sources(stack)):
                         await result.refresh()
 
                 empty_state(

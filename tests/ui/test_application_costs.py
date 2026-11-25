@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import cast
 
 from varne.ui.components.application_costs import cost_per_application
-from varne.ui.components.container_names import container_label
+from varne.ui.format import container_label
 
 DAY = datetime(2026, 9, 9, tzinfo=UTC)
 SEARX = '{"system": "lab", "image": "searxng/searxng:1"}'

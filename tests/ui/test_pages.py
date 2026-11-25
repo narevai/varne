@@ -471,9 +471,9 @@ async def test_the_demo_cannot_be_edited(
 
 
 def test_the_table_of_the_dashboard_has_templates_the_browser_can_read() -> None:
-    from varne.ui.pages.dashboard import HOSTED_CELL, ROW_WITH_LOGO
+    from varne.ui.components.statement_table import APPLICATION_CELL, HOSTED_CELL
 
     # a new line written into the string of a template ends the string in the browser
-    for template in (ROW_WITH_LOGO, HOSTED_CELL):
+    for template in (APPLICATION_CELL, HOSTED_CELL):
         quoted = [line for line in template.splitlines() if "'" in line]
         assert all(line.count("'") % 2 == 0 for line in quoted), quoted

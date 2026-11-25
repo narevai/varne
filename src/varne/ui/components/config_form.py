@@ -273,7 +273,7 @@ def docker_form(source: Data) -> None:
     usage = cast(Data, source.setdefault("usage", {"type": "beszel"}))
     rented = cost.get("hourly_cost") is not None
 
-    ui.label("Cost of the machine").classes(f"text-sm opacity-70 {FULL}")
+    ui.label("Cost of the machine").classes(f"text-sm muted {FULL}")
 
     @ui.refreshable
     def fields() -> None:
@@ -296,7 +296,7 @@ def docker_form(source: Data) -> None:
         fields()
 
     with ui.row().classes(f"items-baseline gap-2 {FULL}"):
-        ui.label("Usage from Beszel").classes("text-sm opacity-70")
+        ui.label("Usage from Beszel").classes("text-sm muted")
         ui.link("How to set it up", BESZEL_DOCS, new_tab=True).classes("text-sm")
     section(usage, BESZEL)
 
@@ -304,7 +304,7 @@ def docker_form(source: Data) -> None:
 def source_logo(source_type: SourceType) -> None:
     logo = LOGOS.get(source_type)
     if logo is None:
-        ui.icon(ICONS[source_type], size="28px").classes("opacity-70")
+        ui.icon(ICONS[source_type], size="28px").classes("muted")
         return
 
     image = (
@@ -331,7 +331,7 @@ def source_form(source: Data, on_remove: Callable[[], None]) -> None:
                 source_logo(source_type)
                 with ui.column().classes("gap-0"):
                     ui.label().bind_text_from(source, "name", title("New source"))
-                    ui.label(source_type.value).classes("text-xs opacity-60")
+                    ui.label(source_type.value).classes("text-xs faint")
                 ui.space()
                 ui.button(icon="delete", on_click=on_remove).props(
                     "flat round dense color=negative"
@@ -353,7 +353,7 @@ def config_form(data: Data, on_save: Callable[[], None]) -> None:
         if not stacks:
             ui.label(
                 "No stacks yet. A stack groups the sources of one product."
-            ).classes("opacity-70")
+            ).classes("muted")
 
         for stack in stacks:
             stack_form(stack)
@@ -369,7 +369,7 @@ def config_form(data: Data, on_save: Callable[[], None]) -> None:
 
         with ui.card().classes("w-full gap-4"):
             with ui.row().classes("w-full items-center no-wrap"):
-                ui.icon("layers").classes("opacity-70")
+                ui.icon("layers").classes("muted")
                 ui.label().classes("text-lg").bind_text_from(
                     stack, "name", title("New stack")
                 )
@@ -385,9 +385,9 @@ def config_form(data: Data, on_save: Callable[[], None]) -> None:
             with ui.element("div").classes(GRID):
                 identity(stack)
 
-            ui.label("Sources").classes("text-sm opacity-70")
+            ui.label("Sources").classes("text-sm muted")
             if not sources:
-                ui.label("No sources yet.").classes("text-sm opacity-60")
+                ui.label("No sources yet.").classes("text-sm faint")
             for source in sources:
                 source_form(
                     source,

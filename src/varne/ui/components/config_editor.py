@@ -21,7 +21,7 @@ def config_editor(on_saved: Callable[[], None]) -> None:
 
     if config_manager.read_only:
         # nothing to edit: it is shown, and the text says why it cannot be changed
-        ui.label(READ_ONLY_MESSAGE).classes("text-sm opacity-70")
+        ui.label(READ_ONLY_MESSAGE).classes("text-sm muted")
         ui.code(config_manager.path.read_text(), language="yaml").classes("w-full")
         return
 
