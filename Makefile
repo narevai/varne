@@ -1,7 +1,10 @@
 .PHONY: install format check test dev debug
 
 install:
-	uv pip install --system -e . --group dev
+	@requirements=$$(mktemp) && \
+		trap 'rm -f "$$requirements"' EXIT && \
+		uv export --locked --no-hashes --no-emit-project --output-file "$$requirements" --quiet && \
+		uv pip install --system -r "$$requirements" -e .
 
 format:
 	ruff format src tests
