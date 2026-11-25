@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-alpha.1] - 2026-11-25
+
+### Added
+
+- Track costs and usage by stack, with application-level views for self-hosted services.
+- Configure stacks and sources in the app, and explore a sample homelab with demo mode.
+
+### Changed
+
+- Ship the dashboard and API in one Docker image, with DuckDB data and YAML configuration stored in separate persistent folders.
+- Install Python CI dependencies from the Docker build's lockfile into the runner's Python.
+
+### Fixed
+
+- Allow pytest to start with the locked pandas version.
+
 ## [1.0.0-alpha.0] - 2026-08-31
 
 ### Changed
