@@ -4,6 +4,8 @@
 [![Latest tag](https://img.shields.io/github/v/tag/narevai/varne?label=latest)](https://github.com/narevai/varne/tags)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 
+**[Live demo](https://demo.varne.dev)** — sample stack and data, no install required.
+
 ## Devlog
 | YouTube                                                          | PR                                                |
 | ---------------------------------------------------------------- | ------------------------------------------------- |
@@ -35,24 +37,51 @@ Open http://localhost:8000.
 
 ## Docker Compose
 
+Varne with [Beszel](https://beszel.dev) for host metrics. The hub and agent talk over a shared socket volume; copy the agent key from the Beszel UI into `BESZEL_AGENT_KEY`.
+
 ```yaml
 services:
   varne:
     image: ghcr.io/narevai/varne:latest
     container_name: varne
+    restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/app/data
-      - ./config:/app/config
+      - ./varne/data:/app/data
+      - ./varne/config:/app/config
+
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
     restart: unless-stopped
+    ports:
+      - "8090:8090"
+    environment:
+      APP_URL: http://localhost:8090
+    volumes:
+      - ./beszel/data:/beszel_data
+      - ./beszel/socket:/beszel_socket
+
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./beszel/agent:/var/lib/beszel-agent
+      - ./beszel/socket:/beszel_socket
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      LISTEN: /beszel_socket/beszel.sock
+      KEY: ${BESZEL_AGENT_KEY:-}
 ```
 
 ```bash
 docker compose up -d
 ```
 
-Open http://localhost:8000.
+Varne: http://localhost:8000 · Beszel: http://localhost:8090
 
 ## Telemetry
 
